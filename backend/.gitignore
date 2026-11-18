@@ -1,0 +1,16 @@
+# Backend local dependencies & builds
+node_modules/
+dist/
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+
+# Local Database files
+janaseva_db.json
+janaseva_db.json.tmp
+
+# Logs
+logs/
+*.log

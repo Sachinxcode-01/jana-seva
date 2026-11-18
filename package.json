@@ -1,0 +1,22 @@
+{
+  "name": "janaseva-root",
+  "version": "1.0.0",
+  "description": "JANASEVA – Government Scheme Awareness for Betterment of Livelihood (CBP Project)",
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "backend:dev": "npm run dev --prefix backend",
+    "frontend:dev": "npm run dev --prefix frontend",
+    "build:all": "npm run build --prefix backend && npm run build --prefix frontend",
+    "start:backend": "npm start --prefix backend",
+    "preview:frontend": "npm run preview --prefix frontend",
+    "voice:install": "powershell -Command \"irm https://voicestudio.sh/install.ps1 | iex\"",
+    "voice:status": "powershell -Command \"Invoke-RestMethod http://localhost:3900/.well-known/voicestudio-speech -ErrorAction SilentlyContinue\""
+  },
+  "keywords": [
+    "civic-tech",
+    "government-schemes",
+    "karnataka",
+    "india",
+    "cbp-project"
+  ]
+}
