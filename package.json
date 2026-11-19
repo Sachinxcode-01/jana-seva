@@ -9,7 +9,10 @@
     "build:all": "npm run build --prefix backend && npm run build --prefix frontend",
     "start:backend": "npm start --prefix backend",
     "preview:frontend": "npm run preview --prefix frontend",
-    "voice:install": "powershell -Command \"irm https://voicestudio.sh/install.ps1 | iex\"",
+    "voice:start": "node scripts/start-voice-studio.mjs",
+    "voice:setup": "node scripts/start-voice-studio.mjs --setup",
+    "voice:mock": "node scripts/start-voice-studio.mjs --mock",
+    "voice:install": "git clone https://github.com/debpalash/VoiceStudio.git .agents/voice-studio",
     "voice:status": "powershell -Command \"Invoke-RestMethod http://localhost:3900/.well-known/voicestudio-speech -ErrorAction SilentlyContinue\""
   },
   "keywords": [

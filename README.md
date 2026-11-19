@@ -98,6 +98,16 @@ npm run dev
 ```
 *The frontend web portal will launch on `http://localhost:5173`.*
 
+### Step 3 (Optional): Start VoiceStudio Local Speech Engine (Terminal 3)
+```bash
+npm run voice:start
+```
+*Starts the local VoiceStudio speech engine on `http://localhost:3900`. Automatically detects dependencies (`uv`, `Python`, `Node.js`). If VoiceStudio is offline or not installed, the assistant seamlessly falls back to the high-quality browser WebSpeech Indian female voice (`en-IN`, `hi-IN`, `kn-IN`).*
+
+- Setup full OmniVoice Python models: `npm run voice:setup`
+- Instant lightweight mock mode: `npm run voice:mock`
+- Check speech service status: `npm run voice:status`
+
 ---
 
 ## 🔑 Demo Login Credentials for Lab Evaluation
