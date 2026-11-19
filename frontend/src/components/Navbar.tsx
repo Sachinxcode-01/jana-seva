@@ -121,11 +121,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="xl:hidden relative">
                 <button
                   onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
-                  className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex items-center space-x-1 cursor-pointer ${
-                    secondaryNavItems.some(i => i.id === currentTab)
+                  className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex items-center space-x-1 cursor-pointer ${secondaryNavItems.some(i => i.id === currentTab)
                       ? 'bg-white/10 text-[#f5f5f8] font-semibold'
                       : 'text-[#b6b6c2] hover:text-[#f5f5f8] hover:bg-white/[0.06]'
-                  }`}
+                    }`}
                 >
                   <span>More</span>
                   <ChevronDown className="w-3 h-3" />
@@ -143,9 +142,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                           setCurrentTab(item.id);
                           setMoreDropdownOpen(false);
                         }}
-                        className={`w-full text-left px-3.5 py-2 text-xs flex items-center transition-colors cursor-pointer ${
-                          currentTab === item.id ? 'bg-[#8f8bff]/15 text-[#8f8bff] font-semibold' : 'hover:bg-white/5 text-[#b6b6c2]'
-                        }`}
+                        className={`w-full text-left px-3.5 py-2 text-xs flex items-center transition-colors cursor-pointer ${currentTab === item.id ? 'bg-[#8f8bff]/15 text-[#8f8bff] font-semibold' : 'hover:bg-white/5 text-[#b6b6c2]'
+                          }`}
                       >
                         {item.label}
                       </button>
