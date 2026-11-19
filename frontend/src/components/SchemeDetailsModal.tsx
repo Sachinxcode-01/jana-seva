@@ -39,9 +39,12 @@ export const SchemeDetailsModal: React.FC<SchemeDetailsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#050507]/80 backdrop-blur-xl flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200">
+    <div 
+      className="fixed inset-0 z-50 overflow-y-auto bg-[#050507]/80 backdrop-blur-xl flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200 cursor-pointer"
+      onClick={onClose}
+    >
       <div 
-        className="bytune-card max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden text-[#f5f5f8] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)]"
+        className="bytune-card max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden text-[#f5f5f8] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] cursor-default"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}

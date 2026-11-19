@@ -31,13 +31,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   const primaryNavItems = [
     { id: 'home', label: t('home') },
     { id: 'schemes', label: t('schemesNav') || t('exploreSchemes') },
-    { id: 'states', label: '28 States' },
     { id: 'eligibility', label: t('eligibilityNav') || t('eligibilityChecker') },
-    { id: 'categories', label: t('categoriesNav') || t('categories') },
+    { id: 'compare', label: t('compareNav') || t('compareSchemes') },
   ];
 
   const secondaryNavItems = [
-    { id: 'compare', label: t('compareNav') || t('compareSchemes') },
     { id: 'about', label: t('aboutNav') || t('aboutUs') },
     { id: 'contact', label: t('contactNav') || t('contact') },
   ];

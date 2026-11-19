@@ -2,16 +2,13 @@ import React, { useState, useEffect } from 'react';
 import {
   Search, ArrowRight, ShieldCheck, Sparkles, Building2,
   Award, BookOpen, HeartHandshake, Briefcase,
-  IndianRupee, Stethoscope, ChevronRight, CheckCircle2,
-  BellRing, Calculator, MapPin, Layers, Cpu, HelpCircle,
-  FileCheck, Users, Lock, ChevronDown, Play, Volume2
+  IndianRupee, Stethoscope, ChevronRight, ChevronDown
 } from 'lucide-react';
 import { Scheme, SchemeCategory } from '../types';
 import { SchemeCard } from '../components/SchemeCard';
 import { EquationWorkflow } from '../components/EquationWorkflow';
 import { AllStatesDirectory } from '../components/AllStatesDirectory';
 import { useLanguage } from '../context/LanguageContext';
-import { ALL_INDIAN_STATES } from '../utils/indiaStates';
 import SplitText from '../components/SplitText';
 
 interface HomePageProps {
@@ -410,118 +407,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* Main Body Sections Container */}
-      <div className="space-y-16 sm:space-y-24 mt-10 sm:mt-16">
-        {/* SECTION: Academic CBP Engineering & Project Architecture */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-8">
-          <div className="bytune-card p-8 sm:p-12 space-y-8 relative overflow-hidden">
-            {/* Subtle Ambient Accent */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-[radial-gradient(circle,_rgba(143,139,255,0.08),_transparent_70%)] pointer-events-none" />
-
-            <div className="max-w-3xl space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#8f8bff] flex items-center">
-                <Award className="w-4 h-4 mr-1.5 text-[#f3c64f]" />
-                Computer Science & Engineering — Computer-Based Project (CBP)
-              </span>
-              <h2 className="text-2xl sm:text-4xl font-medium text-[#f5f5f8] tracking-[-0.025em]">
-                About the JANASEVA Project & Academic Engineering
-              </h2>
-              <p className="text-xs sm:text-sm text-[#b6b6c2] leading-relaxed">
-                JANASEVA is an engineering solution to the digital exclusion of rural citizens. Built as a full-stack, modular web application, it bridges the gap between state welfare policy and real-world citizen uptake.
-              </p>
-            </div>
-
-            {/* 6-Pillar Academic Architecture Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
-              <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-[#8f8bff]/30 transition-all space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-[#8f8bff]/10 text-[#8f8bff] flex items-center justify-center font-bold">
-                  <Layers className="w-5 h-5 text-[#8f8bff]" />
-                </div>
-                <h3 className="font-medium text-sm text-[#f5f5f8]">1. The Civic Problem</h3>
-                <p className="text-[#b6b6c2] leading-relaxed">
-                  Millions of eligible farmers, women, and students miss out on scholarships and DBT grants because rules are buried in complex gazette notifications, portals are fragmented, and unofficial agents demand bribes.
-                </p>
-              </div>
-
-              <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-[#1ed760]/30 transition-all space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-[#1ed760]/10 text-[#1ed760] flex items-center justify-center font-bold">
-                  <Calculator className="w-5 h-5 text-[#1ed760]" />
-                </div>
-                <h3 className="font-medium text-sm text-[#f5f5f8]">2. The Engineering Solution</h3>
-                <p className="text-[#b6b6c2] leading-relaxed">
-                  We developed an automated deterministic rule engine that evaluates candidate demographics against official constraints, generating immediate qualification percentages and document checklists without asking for Aadhaar numbers.
-                </p>
-              </div>
-
-              <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-[#f3c64f]/30 transition-all space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-[#f3c64f]/10 text-[#f3c64f] flex items-center justify-center font-bold">
-                  <Cpu className="w-5 h-5 text-[#f3c64f]" />
-                </div>
-                <h3 className="font-medium text-sm text-[#f5f5f8]">3. Modern Technology Stack</h3>
-                <p className="text-[#b6b6c2] leading-relaxed">
-                  Engineered with React 18, TypeScript, Tailwind CSS, Node.js, Express REST APIs, PostgreSQL relational schema, Recharts data analytics, and full multilingual translation in English, Kannada, and Hindi.
-                </p>
-              </div>
-
-              <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-rose-400/30 transition-all space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center font-bold">
-                  <Lock className="w-5 h-5 text-rose-400" />
-                </div>
-                <h3 className="font-medium text-sm text-[#f5f5f8]">4. Privacy-First Civic Protocol</h3>
-                <p className="text-[#b6b6c2] leading-relaxed">
-                  Adheres to zero-knowledge demographic matching. We deliberately collect zero Aadhaar numbers, OTPs, or bank account credentials, protecting rural beneficiaries from identity theft and unauthorized exploitation.
-                </p>
-              </div>
-
-              <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-[#6fd8ff]/30 transition-all space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-[#6fd8ff]/10 text-[#6fd8ff] flex items-center justify-center font-bold">
-                  <MapPin className="w-5 h-5 text-[#6fd8ff]" />
-                </div>
-                <h3 className="font-medium text-sm text-[#f5f5f8]">5. Pan-India State Directory</h3>
-                <p className="text-[#b6b6c2] leading-relaxed">
-                  Comprehensive directory encompassing all 28 Indian States with localized guarantee schemes, official portal redirection, and authentic state department links.
-                </p>
-              </div>
-
-              <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-teal-400/30 transition-all space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold">
-                  <Users className="w-5 h-5 text-teal-400" />
-                </div>
-                <h3 className="font-medium text-sm text-[#f5f5f8]">6. Trilingual Grassroots Inclusion</h3>
-                <p className="text-[#b6b6c2] leading-relaxed">
-                  Built with full native Unicode typography for Kannada (ಕನ್ನಡ) and Hindi (हिंदी) alongside English, ensuring vernacular citizens can seamlessly understand benefits, eligibility rules, and required documents.
-                </p>
-              </div>
-            </div>
-
-            {/* Academic Architecture Pipeline Banner */}
-            <div className="bg-[#050507]/60 rounded-2xl border border-white/[0.06] p-6">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8f8bff] mb-4 flex items-center">
-                <FileCheck className="w-4 h-4 mr-2 text-[#8f8bff]" />
-                System Architecture Flow: From Citizen Input to Official Application
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-center text-xs">
-                <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                  <span className="font-medium text-[#f5f5f8] block">1. Citizen Client</span>
-                  <span className="text-[11px] text-[#8a8a97]">React 18 + TS UI</span>
-                </div>
-                <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                  <span className="font-medium text-[#f5f5f8] block">2. Node.js API Gateway</span>
-                  <span className="text-[11px] text-[#8a8a97]">Express REST (:5000)</span>
-                </div>
-                <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                  <span className="font-medium text-[#f5f5f8] block">3. Multi-Gate Engine</span>
-                  <span className="text-[11px] text-[#8a8a97]">5-Gate Rule Resolution</span>
-                </div>
-                <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                  <span className="font-medium text-[#f5f5f8] block">4. Official Redirection</span>
-                  <span className="text-[11px] text-[#8a8a97]">Seva Sindhu / NSP / PM Portal</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION: ALL 28 STATES OF INDIA */}
+      <div className="space-y-12 sm:space-y-18 mt-8 sm:mt-12">
+        {/* SECTION: ALL 28 STATES OF INDIA (Responsive Compact State Buttons) */}
         <section className="max-w-7xl mx-auto px-4 sm:px-8">
           <AllStatesDirectory
             onSelectState={(stateName) => {

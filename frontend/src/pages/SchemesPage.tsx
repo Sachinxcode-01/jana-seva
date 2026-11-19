@@ -5,6 +5,7 @@ import {
 import { Scheme } from '../types';
 import { SchemeCard } from '../components/SchemeCard';
 import { useLanguage } from '../context/LanguageContext';
+import { ALL_INDIAN_STATES } from '../utils/indiaStates';
 
 interface SchemesPageProps {
   schemes: Scheme[];
@@ -203,16 +204,13 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
               className="w-full py-2 px-3 rounded-full border border-white/10 bg-[#101016] text-xs text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
             >
               <option value="All">All 28 States & Central</option>
-              <option value="Karnataka">Karnataka</option>
-              <option value="Maharashtra">Maharashtra</option>
-              <option value="Tamil Nadu">Tamil Nadu</option>
-              <option value="Telangana">Telangana</option>
-              <option value="Uttar Pradesh">Uttar Pradesh</option>
-              <option value="Madhya Pradesh">Madhya Pradesh</option>
-              <option value="West Bengal">West Bengal</option>
-              <option value="Kerala">Kerala</option>
-              <option value="Rajasthan">Rajasthan</option>
               <option value="All India">Central (All India)</option>
+              <option value="Karnataka">Karnataka (5 Guarantees)</option>
+              {ALL_INDIAN_STATES.filter(s => s.name !== 'Karnataka').map((s) => (
+                <option key={s.code} value={s.name}>
+                  {s.name} ({s.code})
+                </option>
+              ))}
             </select>
           </div>
 
