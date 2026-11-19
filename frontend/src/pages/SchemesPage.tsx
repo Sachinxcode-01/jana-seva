@@ -14,6 +14,8 @@ interface SchemesPageProps {
   savedSchemeIds: string[];
   initialCategory?: string;
   initialState?: string;
+  initialSearch?: string;
+  onClearSearch?: () => void;
 }
 
 export const SchemesPage: React.FC<SchemesPageProps> = ({
@@ -23,15 +25,35 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
   onToggleSaveScheme,
   savedSchemeIds,
   initialCategory,
-  initialState = 'All'
+  initialState = 'All',
+  initialSearch = '',
+  onClearSearch
 }) => {
   const { language, t } = useLanguage();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearch || '');
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'All');
   const [selectedClassification, setSelectedClassification] = useState<string>('All');
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<string>('All');
   const [selectedState, setSelectedState] = useState<string>(initialState || 'All');
   const [sortBy, setSortBy] = useState<'recent' | 'popular' | 'name'>('recent');
+
+  React.useEffect(() => {
+    if (initialSearch !== undefined) {
+      setSearchTerm(initialSearch);
+    }
+  }, [initialSearch]);
+
+  React.useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(initialCategory);
+    }
+  }, [initialCategory]);
+
+  React.useEffect(() => {
+    if (initialState) {
+      setSelectedState(initialState);
+    }
+  }, [initialState]);
 
   const categories = [
     'All',
@@ -106,6 +128,7 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
     setSelectedBeneficiary('All');
     setSelectedState('All');
     setSortBy('recent');
+    if (onClearSearch) onClearSearch();
   };
 
   const isAnyFilterActive = searchTerm || selectedCategory !== 'All' || selectedClassification !== 'All' || selectedBeneficiary !== 'All' || selectedState !== 'All';
@@ -142,7 +165,10 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
           />
           {searchTerm && (
             <button
-              onClick={() => setSearchTerm('')}
+              onClick={() => {
+                setSearchTerm('');
+                if (onClearSearch) onClearSearch();
+              }}
               className="absolute right-3.5 top-3 text-[#8a8a97] hover:text-[#f5f5f8] cursor-pointer"
             >
               <X className="w-4 h-4" />

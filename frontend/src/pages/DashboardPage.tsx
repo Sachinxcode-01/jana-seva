@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Bookmark, FileCheck, Plus, Trash2, 
-  CheckCircle2, Building2
+  CheckCircle2, Building2, Download, ShieldCheck, ShieldAlert
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -22,11 +22,12 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   onToggleSaveScheme,
   savedSchemeIds
 }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'recommended' | 'saved' | 'applications'>('recommended');
+  const [activeTab, setActiveTab] = useState<'recommended' | 'saved' | 'applications' | 'privacy'>('recommended');
   const [applications, setApplications] = useState<ApplicationRecord[]>([]);
   const [loading, setLoading] = useState(false);
+  const [exportNotification, setExportNotification] = useState<string | null>(null);
 
   // New Application Modal State
   const [showAddAppModal, setShowAddAppModal] = useState(false);
@@ -45,6 +46,31 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       console.error('Failed loading apps:', e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExportData = async () => {
+    const res = await api.exportUserData();
+    if (res.success && res.data) {
+      const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `janaseva_citizen_records_${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setExportNotification('Your personal citizen records have been downloaded.');
+      setTimeout(() => setExportNotification(null), 4000);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (confirm('Are you sure you want to permanently delete your account and all associated scheme records? This action cannot be undone under the DPDP Act 2023.')) {
+      await api.deleteAccount();
+      logout();
+      window.location.reload();
     }
   };
 
@@ -159,6 +185,18 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           <span className="px-2 py-0.5 rounded-full bg-[#1ed760]/15 text-[#1ed760] text-[10px] font-mono">
             {applications.length}
           </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('privacy')}
+          className={`py-3 px-4 border-b-2 transition-all flex items-center space-x-2 cursor-pointer ${
+            activeTab === 'privacy'
+              ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold'
+              : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
+          }`}
+        >
+          <ShieldCheck className="w-3.5 h-3.5 text-[#1ed760]" />
+          <span>Data Rights & Privacy</span>
         </button>
       </div>
 
@@ -290,6 +328,66 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               </p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Tab 4: Privacy & Statutory Data Rights (DPDP Act 2023) */}
+      {activeTab === 'privacy' && (
+        <div className="space-y-6">
+          {exportNotification && (
+            <div className="p-3.5 rounded-xl bg-[#1ed760]/15 border border-[#1ed760]/30 text-xs text-[#1ed760] flex items-center space-x-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <span>{exportNotification}</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Download Data Card */}
+            <div className="bytune-card p-6 space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#8f8bff]/15 text-[#8f8bff] flex items-center justify-center border border-[#8f8bff]/30">
+                  <Download className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-[#f5f5f8]">Download Personal Data</h4>
+                  <p className="text-[11px] text-[#8a8a97]">Right to Data Portability (DPDP Act 2023)</p>
+                </div>
+              </div>
+              <p className="text-xs text-[#b6b6c2] leading-relaxed">
+                Export a full JSON copy of your citizen profile, saved bookmarks, and application tracking records.
+              </p>
+              <button
+                onClick={handleExportData}
+                className="bytune-btn-solid flex items-center space-x-2 px-4 py-2.5 text-xs font-semibold cursor-pointer"
+              >
+                <Download className="w-4 h-4 text-[#0a0a0c]" />
+                <span>Export My Citizen Records</span>
+              </button>
+            </div>
+
+            {/* Right to Erasure / Account Deletion Card */}
+            <div className="bytune-card p-6 space-y-4 border-rose-500/20 hover:border-rose-500/40">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-rose-500/15 text-rose-300 flex items-center justify-center border border-rose-500/30">
+                  <ShieldAlert className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-[#f5f5f8]">Right to Erasure</h4>
+                  <p className="text-[11px] text-rose-300">Statutory Account Deletion</p>
+                </div>
+              </div>
+              <p className="text-xs text-[#b6b6c2] leading-relaxed">
+                Permanently purge your account, tracked scheme applications, and bookmarks from the JANASEVA database.
+              </p>
+              <button
+                onClick={handleDeleteAccount}
+                className="px-4 py-2.5 rounded-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 text-xs font-semibold cursor-pointer flex items-center space-x-2 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Purge & Delete Account</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

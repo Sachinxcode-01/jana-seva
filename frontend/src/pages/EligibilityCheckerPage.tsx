@@ -8,6 +8,7 @@ import { api, FALLBACK_SCHEMES } from '../services/api';
 import { EligibilityResult } from '../types';
 import { EquationWorkflow } from '../components/EquationWorkflow';
 import { useLanguage } from '../context/LanguageContext';
+import { ALL_INDIAN_STATES } from '../utils/indiaStates';
 
 interface EligibilityCheckerPageProps {
   onViewSchemeDetails?: (schemeId: string) => void;
@@ -228,11 +229,12 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                     className="w-full py-3 px-4 rounded-xl border border-white/10 bg-[#101016] text-xs font-medium text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none cursor-pointer"
                   >
                     <option value="Karnataka">Karnataka (Includes 5 State Guarantees: Gruha Lakshmi, Shakti, Yuva Nidhi, etc.)</option>
-                    <option value="Maharashtra">Maharashtra (Includes Ladki Bahin Yojana, etc.)</option>
-                    <option value="Tamil Nadu">Tamil Nadu (Includes Kalaignar Magalir Urimai Thogai, etc.)</option>
-                    <option value="Andhra Pradesh">Andhra Pradesh (Includes YSR Cheyutha, etc.)</option>
-                    <option value="Kerala">Kerala (Includes Karunya, etc.)</option>
-                    <option value="Other">Other Indian States (Central DBT Schemes)</option>
+                    {ALL_INDIAN_STATES.filter(s => s.name !== 'Karnataka').map(st => (
+                      <option key={st.code} value={st.name}>
+                        {st.name} (Capital: {st.capital})
+                      </option>
+                    ))}
+                    <option value="Other">Other States & Union Territories (Central DBT Schemes)</option>
                   </select>
                 </div>
               </div>

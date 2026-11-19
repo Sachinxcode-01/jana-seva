@@ -17,7 +17,7 @@ import SplitText from '../components/SplitText';
 interface HomePageProps {
   schemes: Scheme[];
   onSelectScheme: (scheme: Scheme) => void;
-  onNavigateTab: (tab: string, filterCategory?: string) => void;
+  onNavigateTab: (tab: string, filterCategory?: string, search?: string) => void;
   onToggleSaveScheme: (schemeId: string) => void;
   savedSchemeIds: string[];
   onSelectStateFilter?: (stateName: string) => void;
@@ -75,7 +75,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onNavigateTab('schemes');
+    onNavigateTab('schemes', undefined, searchTerm.trim());
   };
 
   const popularSearches = [
@@ -297,7 +297,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     type="button"
                     onClick={() => {
                       setSearchTerm(ps.query);
-                      onNavigateTab('schemes');
+                      onNavigateTab('schemes', undefined, ps.query);
                     }}
                     className="px-2.5 sm:px-3 py-1 rounded-full bg-white/[0.035] hover:bg-white/[0.09] text-[#b6b6c2] hover:text-[#f5f5f8] border border-white/[0.08] hover:border-white/20 transition-all cursor-pointer font-medium text-[11px] sm:text-xs"
                   >

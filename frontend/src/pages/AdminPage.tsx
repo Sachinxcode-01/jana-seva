@@ -20,8 +20,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
   const { user, isAdmin } = useAuth();
   const { t } = useLanguage();
   const [metrics, setMetrics] = useState<any>(null);
+  const [adminUsers, setAdminUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'schemes' | 'logs'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'schemes' | 'users' | 'logs'>('overview');
 
   // Add Scheme Modal state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -41,6 +42,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
       if (data.success) {
         setMetrics(data);
       }
+      const usersData = await api.getAdminUsers();
+      if (usersData.success) {
+        setAdminUsers(usersData.users);
+      }
     } catch (e) {
       console.error('Metrics loading error:', e);
     } finally {
@@ -57,26 +62,19 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
     if (!newName.trim() || !newDept.trim() || !newDesc.trim()) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/schemes`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${api.getToken()}`
-        },
-        body: JSON.stringify({
-          name: newName,
-          department: newDept,
-          category: newCat,
-          classification: newClass,
-          state: newState,
-          description: newDesc,
-          benefits: newBenefits.split('\n').filter(b => b.trim()),
-          requiredDocuments: newDocs.split('\n').filter(d => d.trim()),
-          officialWebsite: newWebsite || 'https://india.gov.in'
-        })
+      const res = await api.createScheme({
+        name: newName,
+        department: newDept,
+        category: newCat,
+        classification: newClass,
+        state: newState,
+        description: newDesc,
+        benefits: newBenefits.split('\n').filter(b => b.trim()),
+        requiredDocuments: newDocs.split('\n').filter(d => d.trim()),
+        officialWebsite: newWebsite || 'https://india.gov.in'
       });
 
-      if (res.ok) {
+      if (res.success) {
         setShowAddModal(false);
         setNewName('');
         setNewDept('');
@@ -95,10 +93,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
   const handleDeleteScheme = async (id: string) => {
     if (confirm('Are you sure you want to delete this government scheme record?')) {
       try {
-        await fetch(`http://localhost:5000/api/admin/schemes/${id}`, {
-          method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${api.getToken()}` }
-        });
+        await api.deleteScheme(id);
         onRefreshSchemes();
         loadMetrics();
       } catch {
@@ -211,6 +206,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
           Manage Schemes ({schemes.length})
         </button>
         <button
+          onClick={() => setActiveTab('users')}
+          className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${
+            activeTab === 'users' ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold' : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
+          }`}
+        >
+          Citizens & Accounts ({adminUsers.length || metrics?.stats?.totalUsers || 0})
+        </button>
+        <button
           onClick={() => setActiveTab('logs')}
           className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${
             activeTab === 'logs' ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold' : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
@@ -310,6 +313,57 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Users & Citizens */}
+      {activeTab === 'users' && (
+        <div className="bytune-card overflow-hidden">
+          <div className="p-5 border-b border-white/[0.08] flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-sm text-[#f5f5f8]">Registered Citizens & Accounts</h3>
+              <p className="text-[11px] text-[#8a8a97] mt-0.5">Directory of authenticated public accounts and administrators.</p>
+            </div>
+            <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/[0.04] text-[#6fd8ff] border border-white/10">
+              {adminUsers.length} Registered
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left divide-y divide-white/[0.08]">
+              <thead className="bg-[#0a0a0e]/80 text-[#8a8a97]">
+                <tr>
+                  <th className="p-4">Full Name</th>
+                  <th className="p-4">Email</th>
+                  <th className="p-4">Role</th>
+                  <th className="p-4">State</th>
+                  <th className="p-4">Occupation</th>
+                  <th className="p-4">Created Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/[0.06] text-[#b6b6c2]">
+                {adminUsers.map((u) => (
+                  <tr key={u.id} className="hover:bg-white/[0.02]">
+                    <td className="p-4 font-medium text-[#f5f5f8]">{u.fullName}</td>
+                    <td className="p-4 font-mono text-[#8a8a97]">{u.email}</td>
+                    <td className="p-4">
+                      <span className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] ${
+                        u.role === 'admin'
+                          ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30'
+                          : 'bg-[#1ed760]/15 text-[#1ed760] border border-[#1ed760]/30'
+                      }`}>
+                        {u.role.toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="p-4">{u.state || 'Karnataka'}</td>
+                    <td className="p-4">{u.occupation || 'General Citizen'}</td>
+                    <td className="p-4 font-mono text-[11px] text-[#8a8a97]">
+                      {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'Active'}
                     </td>
                   </tr>
                 ))}

@@ -44,6 +44,8 @@
     font-family: var(--font-body);
     background-color: var(--bg-0);
     color: var(--text-hi);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   body {
@@ -52,6 +54,33 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* Touch targets & tap-friendly sizes for mobile devices */
+  @media (max-width: 640px) {
+    button, a, input, select, textarea, [role="button"] {
+      -webkit-tap-highlight-color: transparent;
+    }
+    button { touch-action: manipulation; }
+  }
+
+  /* Prevent horizontal overflow from long content on small screens */
+  @media (max-width: 640px) {
+    .bytune-card, .byTune-card, .bytune-card-hover, .max-w-7xl, .max-w-4xl, .max-w-6xl, .max-w-3xl, .max-w-5xl, .max-w-2xl {
+      max-width: 100%;
+      min-width: 0;
+    }
+    * {
+      min-width: 0;
+    }
+  }
+
+  /* Improve readability of long words / URLs that may overflow on mobile */
+  @media (max-width: 640px) {
+    .font-mono, code, pre, kbd, samp {
+      word-break: break-word;
+    }
   }
 }
 
@@ -188,6 +217,7 @@
 }
 
 /* Custom Scrollbars */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -204,4 +234,42 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(143, 139, 255, 0.4);
+}
+
+/* Additional mobile optimizations */
+@media (max-width: 640px) {
+  /* Optimize text scaling for readability */
+  html {
+    font-size: 14px;
+  }
+
+  /* Better spacing on mobile */
+  .space-y-8 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(2rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(2rem * var(--tw-space-y-reverse));
+  }
+
+  /* Ensure form elements are easily tappable */
+  input, select, textarea {
+    font-size: 16px; /* Prevent iOS zoom on focus */
+    padding: 0.75rem 1rem;
+  }
+
+  /* Better card spacing on mobile */
+  .bytune-card {
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Responsive grid adjustments */
+  .grid-cols-1.sm\:grid-cols-2 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  @media (min-width: 640px) {
+    .grid-cols-1.sm\:grid-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
 }

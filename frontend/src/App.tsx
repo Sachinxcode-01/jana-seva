@@ -28,6 +28,7 @@ const MainApp: React.FC = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [stateFilter, setStateFilter] = useState<string>('All');
+  const [searchFilter, setSearchFilter] = useState<string>('');
   const [savedSchemeIds, setSavedSchemeIds] = useState<string[]>(() => {
     return JSON.parse(localStorage.getItem('janaseva_saved_ids') || '["scheme-pm-kisan"]');
   });
@@ -58,9 +59,12 @@ const MainApp: React.FC = () => {
     setSavedSchemeIds(updated);
   };
 
-  const handleNavigateWithCategory = (tab: string, cat?: string) => {
-    if (cat) {
+  const handleNavigateWithCategory = (tab: string, cat?: string, search?: string) => {
+    if (cat !== undefined) {
       setCategoryFilter(cat);
+    }
+    if (search !== undefined) {
+      setSearchFilter(search);
     }
     setCurrentTab(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -122,6 +126,8 @@ const MainApp: React.FC = () => {
             savedSchemeIds={savedSchemeIds}
             initialCategory={categoryFilter}
             initialState={stateFilter}
+            initialSearch={searchFilter}
+            onClearSearch={() => setSearchFilter('')}
           />
         )}
 

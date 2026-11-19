@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Scale, CheckCircle2, X, ExternalLink, Plus } from 'lucide-react';
+import { Scale, CheckCircle2, X, ExternalLink, Plus, Eye } from 'lucide-react';
 import { Scheme } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -92,7 +92,13 @@ export const ComparePage: React.FC<ComparePageProps> = ({ schemes, onSelectSchem
                         }`}>
                         {s.classification}
                       </span>
-                      <h3 className="font-medium text-base text-[#f5f5f8] mt-2">{s.name}</h3>
+                      <h3
+                        onClick={() => onSelectScheme(s)}
+                        className="font-medium text-base text-[#f5f5f8] mt-2 hover:text-[#8f8bff] hover:underline cursor-pointer transition-colors"
+                        title="Click to view full scheme details"
+                      >
+                        {s.name}
+                      </h3>
                       <p className="text-[11px] text-[#8a8a97] font-normal">{s.department}</p>
                     </div>
                     {selectedIds.length > 1 && (
@@ -188,18 +194,27 @@ export const ComparePage: React.FC<ComparePageProps> = ({ schemes, onSelectSchem
 
             {/* Actions */}
             <tr>
-              <td className="p-5 font-medium bg-white/[0.02] text-[#f5f5f8] border-r border-white/[0.08]">Official Portal</td>
+              <td className="p-5 font-medium bg-white/[0.02] text-[#f5f5f8] border-r border-white/[0.08]">Scheme Actions</td>
               {comparedSchemes.map((s) => (
                 <td key={s.id} className="p-5 border-r border-white/[0.08] last:border-r-0">
-                  <a
-                    href={s.officialWebsite}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="bytune-btn-solid inline-flex items-center space-x-1.5 px-4 py-2 text-xs font-semibold cursor-pointer"
-                  >
-                    <span>Official Portal</span>
-                    <ExternalLink className="w-3 h-3 text-[#0a0a0c]" />
-                  </a>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      onClick={() => onSelectScheme(s)}
+                      className="px-3 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-[#f5f5f8] text-xs font-medium transition-colors flex items-center space-x-1.5 cursor-pointer border border-white/10"
+                    >
+                      <Eye className="w-3 h-3 text-[#8f8bff]" />
+                      <span>View Details</span>
+                    </button>
+                    <a
+                      href={s.officialWebsite}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="bytune-btn-solid inline-flex items-center space-x-1.5 px-3.5 py-1.5 text-xs font-semibold cursor-pointer"
+                    >
+                      <span>Official Portal</span>
+                      <ExternalLink className="w-3 h-3 text-[#0a0a0c]" />
+                    </a>
+                  </div>
                 </td>
               ))}
             </tr>
