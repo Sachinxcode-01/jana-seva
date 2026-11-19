@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Bookmark, FileCheck, Plus, Trash2, 
+import {
+  Bookmark, FileCheck, Plus, Trash2,
   CheckCircle2, Building2, Download, ShieldCheck, ShieldAlert
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -145,11 +145,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       <div className="flex border-b border-white/[0.06] space-x-2 text-xs">
         <button
           onClick={() => setActiveTab('recommended')}
-          className={`py-3 px-4 border-b-2 transition-all flex items-center space-x-2 cursor-pointer ${
-            activeTab === 'recommended'
+          className={`py-3 px-4 border-b-2 transition-all flex items-center space-x-2 cursor-pointer ${activeTab === 'recommended'
               ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold'
               : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
-          }`}
+            }`}
         >
           <span>Recommended For You</span>
           <span className="px-2 py-0.5 rounded-full bg-[#8f8bff]/15 text-[#8f8bff] text-[10px] font-mono">
@@ -159,11 +158,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
         <button
           onClick={() => setActiveTab('saved')}
-          className={`py-3 px-4 border-b-2 transition-all flex items-center space-x-2 cursor-pointer ${
-            activeTab === 'saved'
+          className={`py-3 px-4 border-b-2 transition-all flex items-center space-x-2 cursor-pointer ${activeTab === 'saved'
               ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold'
               : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
-          }`}
+            }`}
         >
           <Bookmark className="w-3.5 h-3.5" />
           <span>Saved Bookmarks</span>
@@ -174,11 +172,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
         <button
           onClick={() => setActiveTab('applications')}
-          className={`py-3 px-4 border-b-2 transition-all flex items-center space-x-2 cursor-pointer ${
-            activeTab === 'applications'
+          className={`py-3 px-4 border-b-2 transition-all flex items-center space-x-2 cursor-pointer ${activeTab === 'applications'
               ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold'
               : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
-          }`}
+            }`}
         >
           <FileCheck className="w-3.5 h-3.5" />
           <span>Application Tracker</span>
@@ -189,11 +186,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
         <button
           onClick={() => setActiveTab('privacy')}
-          className={`py-3 px-4 border-b-2 transition-all flex items-center space-x-2 cursor-pointer ${
-            activeTab === 'privacy'
+          className={`py-3 px-4 border-b-2 transition-all flex items-center space-x-2 cursor-pointer ${activeTab === 'privacy'
               ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold'
               : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
-          }`}
+            }`}
         >
           <ShieldCheck className="w-3.5 h-3.5 text-[#1ed760]" />
           <span>Data Rights & Privacy</span>
@@ -293,12 +289,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                       <select
                         value={app.status}
                         onChange={(e) => handleStatusChange(app.id, e.target.value)}
-                        className={`text-xs font-medium px-3.5 py-1.5 rounded-full border focus:outline-none bg-[#101016] ${
-                          app.status === 'Approved' ? 'text-[#1ed760] border-[#1ed760]/30' :
-                          app.status === 'In Review' ? 'text-[#f3c64f] border-[#f3c64f]/30' :
-                          app.status === 'Rejected' ? 'text-rose-400 border-rose-500/30' :
-                          'text-[#8f8bff] border-[#8f8bff]/30'
-                        }`}
+                        className={`text-xs font-medium px-3.5 py-1.5 rounded-full border focus:outline-none bg-[#101016] ${app.status === 'Approved' ? 'text-[#1ed760] border-[#1ed760]/30' :
+                            app.status === 'In Review' ? 'text-[#f3c64f] border-[#f3c64f]/30' :
+                              app.status === 'Rejected' ? 'text-rose-400 border-rose-500/30' :
+                                'text-[#8f8bff] border-[#8f8bff]/30'
+                          }`}
                       >
                         <option value="Draft">Draft</option>
                         <option value="Submitted">Submitted</option>

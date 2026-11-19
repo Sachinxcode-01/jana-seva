@@ -87,8 +87,8 @@ export const ComparePage: React.FC<ComparePageProps> = ({ schemes, onSelectSchem
                   <div className="flex justify-between items-start gap-2">
                     <div>
                       <span className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full ${s.classification === 'State'
-                          ? 'bg-[#f3c64f]/15 text-[#f3c64f] border border-[#f3c64f]/30'
-                          : 'bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30'
+                        ? 'bg-[#f3c64f]/15 text-[#f3c64f] border border-[#f3c64f]/30'
+                        : 'bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30'
                         }`}>
                         {s.classification}
                       </span>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Building2, Users, Eye, Plus, 
+import {
+  Building2, Users, Eye, Plus,
   Trash2, ShieldCheck
 } from 'lucide-react';
-import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer 
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from 'recharts';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -63,18 +63,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
 
     try {
       const res = await api.createScheme({
-        name: newName,
-        department: newDept,
-        category: newCat,
-        classification: newClass,
-        state: newState,
-        description: newDesc,
-        benefits: newBenefits.split('\n').filter(b => b.trim()),
-        requiredDocuments: newDocs.split('\n').filter(d => d.trim()),
-        officialWebsite: newWebsite || 'https://india.gov.in'
-      });
+          name: newName,
+          department: newDept,
+          category: newCat,
+          classification: newClass,
+          state: newState,
+          description: newDesc,
+          benefits: newBenefits.split('\n').filter(b => b.trim()),
+          requiredDocuments: newDocs.split('\n').filter(d => d.trim()),
+          officialWebsite: newWebsite || 'https://india.gov.in'
+        });
 
-      if (res.success) {
+          if (res.success) {
         setShowAddModal(false);
         setNewName('');
         setNewDept('');
@@ -191,33 +191,29 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
       <div className="flex border-b border-white/[0.06] space-x-2 text-xs">
         <button
           onClick={() => setActiveTab('overview')}
-          className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${
-            activeTab === 'overview' ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold' : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
-          }`}
+          className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${activeTab === 'overview' ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold' : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
+            }`}
         >
           Analytics & Charts
         </button>
         <button
           onClick={() => setActiveTab('schemes')}
-          className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${
-            activeTab === 'schemes' ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold' : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
-          }`}
+          className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${activeTab === 'schemes' ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold' : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
+            }`}
         >
           Manage Schemes ({schemes.length})
         </button>
         <button
           onClick={() => setActiveTab('users')}
-          className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${
-            activeTab === 'users' ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold' : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
-          }`}
+          className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${activeTab === 'users' ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold' : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
+            }`}
         >
           Citizens & Accounts ({adminUsers.length || metrics?.stats?.totalUsers || 0})
         </button>
         <button
           onClick={() => setActiveTab('logs')}
-          className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${
-            activeTab === 'logs' ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold' : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
-          }`}
+          className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${activeTab === 'logs' ? 'border-[#8f8bff] text-[#f5f5f8] font-semibold' : 'border-transparent text-[#8a8a97] hover:text-[#f5f5f8]'
+            }`}
         >
           Audit Activity Logs
         </button>
@@ -297,9 +293,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
                     <td className="p-4 font-medium text-[#f5f5f8]">{s.name}</td>
                     <td className="p-4 text-[#8a8a97]">{s.department}</td>
                     <td className="p-4">
-                      <span className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] ${
-                        s.classification === 'State' ? 'bg-[#f3c64f]/15 text-[#f3c64f] border border-[#f3c64f]/30' : 'bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30'
-                      }`}>
+                      <span className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] ${s.classification === 'State' ? 'bg-[#f3c64f]/15 text-[#f3c64f] border border-[#f3c64f]/30' : 'bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30'
+                        }`}>
                         {s.classification}
                       </span>
                     </td>
@@ -352,11 +347,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
                     <td className="p-4 font-medium text-[#f5f5f8]">{u.fullName}</td>
                     <td className="p-4 font-mono text-[#8a8a97]">{u.email}</td>
                     <td className="p-4">
-                      <span className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] ${
-                        u.role === 'admin'
+                      <span className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] ${u.role === 'admin'
                           ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30'
                           : 'bg-[#1ed760]/15 text-[#1ed760] border border-[#1ed760]/30'
-                      }`}>
+                        }`}>
                         {u.role.toUpperCase()}
                       </span>
                     </td>

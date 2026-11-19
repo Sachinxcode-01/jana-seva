@@ -138,13 +138,12 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                     <button
                       type="button"
                       onClick={() => step > s.num && setStep(s.num as any)}
-                      className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 border ${
-                        step === s.num
+                      className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 border ${step === s.num
                           ? 'bg-[#8f8bff] text-[#050507] border-[#8f8bff] shadow-[0_0_15px_rgba(143,139,255,0.45)] scale-110'
                           : step > s.num
                             ? 'bg-[#1ed760] text-[#050507] border-[#1ed760] cursor-pointer'
                             : 'bg-white/[0.04] text-[#8a8a97] border-white/10'
-                      }`}
+                        }`}
                     >
                       {step > s.num ? <CheckCircle2 className="w-4 h-4 stroke-[2.5]" /> : s.num}
                     </button>
@@ -156,7 +155,7 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
               </div>
               {/* Background Connecting Line */}
               <div className="absolute top-[28px] left-12 right-12 h-[2px] bg-white/[0.08] -z-0">
-                <div 
+                <div
                   className="h-full bg-gradient-to-r from-[#8f8bff] to-[#1ed760] transition-all duration-300"
                   style={{ width: step === 1 ? '0%' : step === 2 ? '50%' : '100%' }}
                 />
@@ -204,11 +203,10 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                       <div
                         key={g.val}
                         onClick={() => setGender(g.val as any)}
-                        className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
-                          gender === g.val
+                        className={`p-3.5 rounded-xl border cursor-pointer transition-all ${gender === g.val
                             ? 'bg-[#8f8bff]/15 border-[#8f8bff]/60 text-[#f5f5f8] shadow-[0_0_15px_rgba(143,139,255,0.2)]'
                             : 'bg-white/[0.02] border-white/10 hover:border-white/20 text-[#b6b6c2]'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center justify-between">
                           <span className="font-semibold text-xs text-[#f5f5f8]">{g.label}</span>
@@ -368,11 +366,10 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div
                       onClick={() => setHasBPLCard(true)}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                        hasBPLCard
+                      className={`p-4 rounded-xl border cursor-pointer transition-all ${hasBPLCard
                           ? 'bg-[#1ed760]/10 border-[#1ed760]/40 text-[#f5f5f8] shadow-[0_0_15px_rgba(30,215,96,0.15)]'
                           : 'bg-white/[0.02] border-white/10 hover:border-white/20 text-[#b6b6c2]'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-semibold text-xs text-[#f5f5f8]">Yes, Holds BPL / Priority Card</span>
@@ -385,11 +382,10 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
 
                     <div
                       onClick={() => setHasBPLCard(false)}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                        !hasBPLCard
+                      className={`p-4 rounded-xl border cursor-pointer transition-all ${!hasBPLCard
                           ? 'bg-[#8f8bff]/15 border-[#8f8bff]/40 text-[#f5f5f8] shadow-[0_0_15px_rgba(143,139,255,0.15)]'
                           : 'bg-white/[0.02] border-white/10 hover:border-white/20 text-[#b6b6c2]'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-semibold text-xs text-[#f5f5f8]">No / APL / Non-Priority Card</span>

@@ -412,305 +412,305 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* Main Body Sections Container */}
       <div className="space-y-16 sm:space-y-24 mt-10 sm:mt-16">
         {/* SECTION: Academic CBP Engineering & Project Architecture */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8">
-        <div className="bytune-card p-8 sm:p-12 space-y-8 relative overflow-hidden">
-          {/* Subtle Ambient Accent */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[radial-gradient(circle,_rgba(143,139,255,0.08),_transparent_70%)] pointer-events-none" />
+        <section className="max-w-7xl mx-auto px-4 sm:px-8">
+          <div className="bytune-card p-8 sm:p-12 space-y-8 relative overflow-hidden">
+            {/* Subtle Ambient Accent */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[radial-gradient(circle,_rgba(143,139,255,0.08),_transparent_70%)] pointer-events-none" />
 
-          <div className="max-w-3xl space-y-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#8f8bff] flex items-center">
-              <Award className="w-4 h-4 mr-1.5 text-[#f3c64f]" />
-              Computer Science & Engineering — Computer-Based Project (CBP)
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-medium text-[#f5f5f8] tracking-[-0.025em]">
-              About the JANASEVA Project & Academic Engineering
-            </h2>
-            <p className="text-xs sm:text-sm text-[#b6b6c2] leading-relaxed">
-              JANASEVA is an engineering solution to the digital exclusion of rural citizens. Built as a full-stack, modular web application, it bridges the gap between state welfare policy and real-world citizen uptake.
-            </p>
-          </div>
-
-          {/* 6-Pillar Academic Architecture Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
-            <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-[#8f8bff]/30 transition-all space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-[#8f8bff]/10 text-[#8f8bff] flex items-center justify-center font-bold">
-                <Layers className="w-5 h-5 text-[#8f8bff]" />
-              </div>
-              <h3 className="font-medium text-sm text-[#f5f5f8]">1. The Civic Problem</h3>
-              <p className="text-[#b6b6c2] leading-relaxed">
-                Millions of eligible farmers, women, and students miss out on scholarships and DBT grants because rules are buried in complex gazette notifications, portals are fragmented, and unofficial agents demand bribes.
+            <div className="max-w-3xl space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#8f8bff] flex items-center">
+                <Award className="w-4 h-4 mr-1.5 text-[#f3c64f]" />
+                Computer Science & Engineering — Computer-Based Project (CBP)
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-medium text-[#f5f5f8] tracking-[-0.025em]">
+                About the JANASEVA Project & Academic Engineering
+              </h2>
+              <p className="text-xs sm:text-sm text-[#b6b6c2] leading-relaxed">
+                JANASEVA is an engineering solution to the digital exclusion of rural citizens. Built as a full-stack, modular web application, it bridges the gap between state welfare policy and real-world citizen uptake.
               </p>
             </div>
 
-            <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-[#1ed760]/30 transition-all space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-[#1ed760]/10 text-[#1ed760] flex items-center justify-center font-bold">
-                <Calculator className="w-5 h-5 text-[#1ed760]" />
-              </div>
-              <h3 className="font-medium text-sm text-[#f5f5f8]">2. The Engineering Solution</h3>
-              <p className="text-[#b6b6c2] leading-relaxed">
-                We developed an automated deterministic rule engine that evaluates candidate demographics against official constraints, generating immediate qualification percentages and document checklists without asking for Aadhaar numbers.
-              </p>
-            </div>
-
-            <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-[#f3c64f]/30 transition-all space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-[#f3c64f]/10 text-[#f3c64f] flex items-center justify-center font-bold">
-                <Cpu className="w-5 h-5 text-[#f3c64f]" />
-              </div>
-              <h3 className="font-medium text-sm text-[#f5f5f8]">3. Modern Technology Stack</h3>
-              <p className="text-[#b6b6c2] leading-relaxed">
-                Engineered with React 18, TypeScript, Tailwind CSS, Node.js, Express REST APIs, PostgreSQL relational schema, Recharts data analytics, and full multilingual translation in English, Kannada, and Hindi.
-              </p>
-            </div>
-
-            <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-rose-400/30 transition-all space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center font-bold">
-                <Lock className="w-5 h-5 text-rose-400" />
-              </div>
-              <h3 className="font-medium text-sm text-[#f5f5f8]">4. Privacy-First Civic Protocol</h3>
-              <p className="text-[#b6b6c2] leading-relaxed">
-                Adheres to zero-knowledge demographic matching. We deliberately collect zero Aadhaar numbers, OTPs, or bank account credentials, protecting rural beneficiaries from identity theft and unauthorized exploitation.
-              </p>
-            </div>
-
-            <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-[#6fd8ff]/30 transition-all space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-[#6fd8ff]/10 text-[#6fd8ff] flex items-center justify-center font-bold">
-                <MapPin className="w-5 h-5 text-[#6fd8ff]" />
-              </div>
-              <h3 className="font-medium text-sm text-[#f5f5f8]">5. Pan-India State Directory</h3>
-              <p className="text-[#b6b6c2] leading-relaxed">
-                Comprehensive directory encompassing all 28 Indian States with localized guarantee schemes, official portal redirection, and authentic state department links.
-              </p>
-            </div>
-
-            <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-teal-400/30 transition-all space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold">
-                <Users className="w-5 h-5 text-teal-400" />
-              </div>
-              <h3 className="font-medium text-sm text-[#f5f5f8]">6. Trilingual Grassroots Inclusion</h3>
-              <p className="text-[#b6b6c2] leading-relaxed">
-                Built with full native Unicode typography for Kannada (ಕನ್ನಡ) and Hindi (हिंदी) alongside English, ensuring vernacular citizens can seamlessly understand benefits, eligibility rules, and required documents.
-              </p>
-            </div>
-          </div>
-
-          {/* Academic Architecture Pipeline Banner */}
-          <div className="bg-[#050507]/60 rounded-2xl border border-white/[0.06] p-6">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8f8bff] mb-4 flex items-center">
-              <FileCheck className="w-4 h-4 mr-2 text-[#8f8bff]" />
-              System Architecture Flow: From Citizen Input to Official Application
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-center text-xs">
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                <span className="font-medium text-[#f5f5f8] block">1. Citizen Client</span>
-                <span className="text-[11px] text-[#8a8a97]">React 18 + TS UI</span>
-              </div>
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                <span className="font-medium text-[#f5f5f8] block">2. Node.js API Gateway</span>
-                <span className="text-[11px] text-[#8a8a97]">Express REST (:5000)</span>
-              </div>
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                <span className="font-medium text-[#f5f5f8] block">3. Multi-Gate Engine</span>
-                <span className="text-[11px] text-[#8a8a97]">5-Gate Rule Resolution</span>
-              </div>
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                <span className="font-medium text-[#f5f5f8] block">4. Official Redirection</span>
-                <span className="text-[11px] text-[#8a8a97]">Seva Sindhu / NSP / PM Portal</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION: ALL 28 STATES OF INDIA */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8">
-        <AllStatesDirectory
-          onSelectState={(stateName) => {
-            if (onSelectStateFilter) onSelectStateFilter(stateName);
-            onNavigateTab('schemes');
-          }}
-        />
-      </section>
-
-      {/* Welfare Categories Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-          <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#8f8bff]/10 border border-[#8f8bff]/20 text-[#8f8bff] text-xs font-medium tracking-wide">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#8f8bff] animate-pulse"></span>
-              <span className="uppercase tracking-wider">Targeted Public Support</span>
-            </div>
-            <SplitText
-              key={`cat-title-${language}`}
-              text="Explore Schemes by Beneficiary Category"
-              tag="h2"
-              className="text-2xl sm:text-3xl lg:text-4xl font-medium text-[#f5f5f8] tracking-[-0.02em] block"
-              delay={25}
-              duration={0.6}
-              splitType="words"
-              effect="rise"
-            />
-            <p className="text-xs sm:text-sm text-[#b6b6c2] max-w-2xl font-normal">
-              Explore targeted welfare schemes categorized by citizen group, demographic needs, and financial support programs.
-            </p>
-          </div>
-          <button
-            onClick={() => onNavigateTab('categories')}
-            className="text-xs font-medium text-[#8f8bff] hover:text-[#6fd8ff] flex items-center transition-colors cursor-pointer shrink-0 self-start md:self-end pb-1"
-          >
-            View all categories <ArrowRight className="w-3.5 h-3.5 ml-1" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {categories.map((cat, idx) => {
-            const Icon = cat.icon;
-            return (
-              <div
-                key={idx}
-                onClick={() => onNavigateTab('schemes', cat.name)}
-                className="bytune-card bytune-card-hover p-6 cursor-pointer flex items-start space-x-4 group relative overflow-hidden"
-              >
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${cat.color} group-hover:scale-108 transition-all duration-300 shadow-sm`}>
-                  <Icon className="w-6 h-6" />
+            {/* 6-Pillar Academic Architecture Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
+              <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-[#8f8bff]/30 transition-all space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-[#8f8bff]/10 text-[#8f8bff] flex items-center justify-center font-bold">
+                  <Layers className="w-5 h-5 text-[#8f8bff]" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-1">
-                    <h3 className="font-semibold text-[14px] text-[#f5f5f8] group-hover:text-[#8f8bff] transition-colors truncate">
-                      {cat.name}
-                    </h3>
-                    <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-white/[0.04] text-[#b6b6c2] border border-white/5 shrink-0">
-                      {cat.count} Schemes
-                    </span>
-                  </div>
-                  <p className="text-xs text-[#b6b6c2] mt-1.5 leading-relaxed line-clamp-2">
-                    {cat.description}
-                  </p>
-                  <div className="mt-2.5 flex items-center text-[11px] font-medium text-[#8a8a97] group-hover:text-[#8f8bff] transition-colors">
-                    <span>Explore category</span>
-                    <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
-                  </div>
+                <h3 className="font-medium text-sm text-[#f5f5f8]">1. The Civic Problem</h3>
+                <p className="text-[#b6b6c2] leading-relaxed">
+                  Millions of eligible farmers, women, and students miss out on scholarships and DBT grants because rules are buried in complex gazette notifications, portals are fragmented, and unofficial agents demand bribes.
+                </p>
+              </div>
+
+              <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-[#1ed760]/30 transition-all space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-[#1ed760]/10 text-[#1ed760] flex items-center justify-center font-bold">
+                  <Calculator className="w-5 h-5 text-[#1ed760]" />
+                </div>
+                <h3 className="font-medium text-sm text-[#f5f5f8]">2. The Engineering Solution</h3>
+                <p className="text-[#b6b6c2] leading-relaxed">
+                  We developed an automated deterministic rule engine that evaluates candidate demographics against official constraints, generating immediate qualification percentages and document checklists without asking for Aadhaar numbers.
+                </p>
+              </div>
+
+              <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-[#f3c64f]/30 transition-all space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-[#f3c64f]/10 text-[#f3c64f] flex items-center justify-center font-bold">
+                  <Cpu className="w-5 h-5 text-[#f3c64f]" />
+                </div>
+                <h3 className="font-medium text-sm text-[#f5f5f8]">3. Modern Technology Stack</h3>
+                <p className="text-[#b6b6c2] leading-relaxed">
+                  Engineered with React 18, TypeScript, Tailwind CSS, Node.js, Express REST APIs, PostgreSQL relational schema, Recharts data analytics, and full multilingual translation in English, Kannada, and Hindi.
+                </p>
+              </div>
+
+              <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-rose-400/30 transition-all space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center font-bold">
+                  <Lock className="w-5 h-5 text-rose-400" />
+                </div>
+                <h3 className="font-medium text-sm text-[#f5f5f8]">4. Privacy-First Civic Protocol</h3>
+                <p className="text-[#b6b6c2] leading-relaxed">
+                  Adheres to zero-knowledge demographic matching. We deliberately collect zero Aadhaar numbers, OTPs, or bank account credentials, protecting rural beneficiaries from identity theft and unauthorized exploitation.
+                </p>
+              </div>
+
+              <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-[#6fd8ff]/30 transition-all space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-[#6fd8ff]/10 text-[#6fd8ff] flex items-center justify-center font-bold">
+                  <MapPin className="w-5 h-5 text-[#6fd8ff]" />
+                </div>
+                <h3 className="font-medium text-sm text-[#f5f5f8]">5. Pan-India State Directory</h3>
+                <p className="text-[#b6b6c2] leading-relaxed">
+                  Comprehensive directory encompassing all 28 Indian States with localized guarantee schemes, official portal redirection, and authentic state department links.
+                </p>
+              </div>
+
+              <div className="bg-white/[0.025] p-6 rounded-2xl border border-white/[0.07] hover:border-teal-400/30 transition-all space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold">
+                  <Users className="w-5 h-5 text-teal-400" />
+                </div>
+                <h3 className="font-medium text-sm text-[#f5f5f8]">6. Trilingual Grassroots Inclusion</h3>
+                <p className="text-[#b6b6c2] leading-relaxed">
+                  Built with full native Unicode typography for Kannada (ಕನ್ನಡ) and Hindi (हिंदी) alongside English, ensuring vernacular citizens can seamlessly understand benefits, eligibility rules, and required documents.
+                </p>
+              </div>
+            </div>
+
+            {/* Academic Architecture Pipeline Banner */}
+            <div className="bg-[#050507]/60 rounded-2xl border border-white/[0.06] p-6">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8f8bff] mb-4 flex items-center">
+                <FileCheck className="w-4 h-4 mr-2 text-[#8f8bff]" />
+                System Architecture Flow: From Citizen Input to Official Application
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-center text-xs">
+                <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                  <span className="font-medium text-[#f5f5f8] block">1. Citizen Client</span>
+                  <span className="text-[11px] text-[#8a8a97]">React 18 + TS UI</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                  <span className="font-medium text-[#f5f5f8] block">2. Node.js API Gateway</span>
+                  <span className="text-[11px] text-[#8a8a97]">Express REST (:5000)</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                  <span className="font-medium text-[#f5f5f8] block">3. Multi-Gate Engine</span>
+                  <span className="text-[11px] text-[#8a8a97]">5-Gate Rule Resolution</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                  <span className="font-medium text-[#f5f5f8] block">4. Official Redirection</span>
+                  <span className="text-[11px] text-[#8a8a97]">Seva Sindhu / NSP / PM Portal</span>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Flagship Featured Schemes */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 space-y-6">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#1ed760]/10 border border-[#1ed760]/20 text-[#1ed760] text-xs font-medium tracking-wide">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#1ed760]" />
-              <span className="uppercase tracking-wider">Direct Benefit Transfer & Welfare</span>
             </div>
-            <SplitText
-              key={`feat-title-${language}`}
-              text={t('featuredSchemesTitle')}
-              tag="h2"
-              className="text-2xl sm:text-3xl lg:text-4xl font-medium text-[#f5f5f8] tracking-[-0.02em] block"
-              delay={25}
-              duration={0.6}
-              splitType="words"
-              effect="rise"
-            />
-            <p className="text-xs sm:text-sm text-[#b6b6c2] max-w-2xl font-normal">
-              {t('featuredSchemesSubtitle')}
-            </p>
           </div>
-          <button
-            onClick={() => onNavigateTab('schemes')}
-            className="text-xs font-medium text-[#8f8bff] hover:text-[#6fd8ff] flex items-center transition-colors cursor-pointer shrink-0 self-start md:self-end pb-1"
-          >
-            Explore all {schemes.length} schemes <ChevronRight className="w-3.5 h-3.5 ml-1" />
-          </button>
-        </div>
+        </section>
 
-        {/* Featured Filter Tabs */}
-        <div className="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar text-xs">
-          {[
-            { id: 'all', label: 'All Flagship' },
-            { id: 'karnataka', label: 'Karnataka 5 Guarantees' },
-            { id: 'farmer', label: 'Farmer Welfare (DBT)' },
-            { id: 'student', label: 'Student Scholarships' },
-            { id: 'health', label: 'Healthcare & Social' },
-          ].map((tab) => (
+        {/* SECTION: ALL 28 STATES OF INDIA */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-8">
+          <AllStatesDirectory
+            onSelectState={(stateName) => {
+              if (onSelectStateFilter) onSelectStateFilter(stateName);
+              onNavigateTab('schemes');
+            }}
+          />
+        </section>
+
+        {/* Welfare Categories Grid */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+            <div className="space-y-2">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#8f8bff]/10 border border-[#8f8bff]/20 text-[#8f8bff] text-xs font-medium tracking-wide">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#8f8bff] animate-pulse"></span>
+                <span className="uppercase tracking-wider">Targeted Public Support</span>
+              </div>
+              <SplitText
+                key={`cat-title-${language}`}
+                text="Explore Schemes by Beneficiary Category"
+                tag="h2"
+                className="text-2xl sm:text-3xl lg:text-4xl font-medium text-[#f5f5f8] tracking-[-0.02em] block"
+                delay={25}
+                duration={0.6}
+                splitType="words"
+                effect="rise"
+              />
+              <p className="text-xs sm:text-sm text-[#b6b6c2] max-w-2xl font-normal">
+                Explore targeted welfare schemes categorized by citizen group, demographic needs, and financial support programs.
+              </p>
+            </div>
             <button
-              key={tab.id}
-              onClick={() => setFeaturedFilter(tab.id as any)}
-              className={`px-3.5 py-1.5 rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap font-medium text-[11.5px] border ${featuredFilter === tab.id
+              onClick={() => onNavigateTab('categories')}
+              className="text-xs font-medium text-[#8f8bff] hover:text-[#6fd8ff] flex items-center transition-colors cursor-pointer shrink-0 self-start md:self-end pb-1"
+            >
+              View all categories <ArrowRight className="w-3.5 h-3.5 ml-1" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {categories.map((cat, idx) => {
+              const Icon = cat.icon;
+              return (
+                <div
+                  key={idx}
+                  onClick={() => onNavigateTab('schemes', cat.name)}
+                  className="bytune-card bytune-card-hover p-6 cursor-pointer flex items-start space-x-4 group relative overflow-hidden"
+                >
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${cat.color} group-hover:scale-108 transition-all duration-300 shadow-sm`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1">
+                      <h3 className="font-semibold text-[14px] text-[#f5f5f8] group-hover:text-[#8f8bff] transition-colors truncate">
+                        {cat.name}
+                      </h3>
+                      <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-white/[0.04] text-[#b6b6c2] border border-white/5 shrink-0">
+                        {cat.count} Schemes
+                      </span>
+                    </div>
+                    <p className="text-xs text-[#b6b6c2] mt-1.5 leading-relaxed line-clamp-2">
+                      {cat.description}
+                    </p>
+                    <div className="mt-2.5 flex items-center text-[11px] font-medium text-[#8a8a97] group-hover:text-[#8f8bff] transition-colors">
+                      <span>Explore category</span>
+                      <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Flagship Featured Schemes */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 space-y-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="space-y-2">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#1ed760]/10 border border-[#1ed760]/20 text-[#1ed760] text-xs font-medium tracking-wide">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#1ed760]" />
+                <span className="uppercase tracking-wider">Direct Benefit Transfer & Welfare</span>
+              </div>
+              <SplitText
+                key={`feat-title-${language}`}
+                text={t('featuredSchemesTitle')}
+                tag="h2"
+                className="text-2xl sm:text-3xl lg:text-4xl font-medium text-[#f5f5f8] tracking-[-0.02em] block"
+                delay={25}
+                duration={0.6}
+                splitType="words"
+                effect="rise"
+              />
+              <p className="text-xs sm:text-sm text-[#b6b6c2] max-w-2xl font-normal">
+                {t('featuredSchemesSubtitle')}
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigateTab('schemes')}
+              className="text-xs font-medium text-[#8f8bff] hover:text-[#6fd8ff] flex items-center transition-colors cursor-pointer shrink-0 self-start md:self-end pb-1"
+            >
+              Explore all {schemes.length} schemes <ChevronRight className="w-3.5 h-3.5 ml-1" />
+            </button>
+          </div>
+
+          {/* Featured Filter Tabs */}
+          <div className="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+            {[
+              { id: 'all', label: 'All Flagship' },
+              { id: 'karnataka', label: 'Karnataka 5 Guarantees' },
+              { id: 'farmer', label: 'Farmer Welfare (DBT)' },
+              { id: 'student', label: 'Student Scholarships' },
+              { id: 'health', label: 'Healthcare & Social' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setFeaturedFilter(tab.id as any)}
+                className={`px-3.5 py-1.5 rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap font-medium text-[11.5px] border ${featuredFilter === tab.id
                   ? 'bg-white/12 text-[#f5f5f8] border-white/20 shadow-sm'
                   : 'bg-white/[0.03] text-[#8a8a97] hover:text-[#f5f5f8] border-white/[0.06] hover:bg-white/[0.07]'
-                }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {featuredSchemes.map((scheme) => (
-            <SchemeCard
-              key={scheme.id}
-              scheme={scheme}
-              onViewDetails={onSelectScheme}
-              onCheckEligibility={() => onNavigateTab('eligibility')}
-              isSaved={savedSchemeIds.includes(scheme.id)}
-              onToggleSave={onToggleSaveScheme}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Interactive Equation Workflow Engine */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8">
-        <EquationWorkflow
-          schemes={schemes}
-          onSelectScheme={onSelectScheme}
-        />
-      </section>
-
-      {/* Frequently Asked Questions (FAQ) Section */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-8 space-y-6">
-        <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#8f8bff]/10 border border-[#8f8bff]/20 text-[#8f8bff] text-xs font-medium tracking-wide">
-            <span className="uppercase tracking-wider">Frequently Asked Questions</span>
-          </div>
-          <SplitText
-            key={`faq-title-${language}`}
-            text="Common Citizen Inquiries & Answers"
-            tag="h2"
-            className="text-2xl sm:text-3xl lg:text-4xl font-medium text-[#f5f5f8] tracking-[-0.02em] block"
-            delay={25}
-            duration={0.6}
-            splitType="words"
-            effect="rise"
-            textAlign="center"
-          />
-        </div>
-
-        <div className="space-y-3">
-          {faqs.map((faq, fIdx) => (
-            <div
-              key={fIdx}
-              className="bytune-card overflow-hidden transition-all duration-200"
-            >
-              <button
-                onClick={() => setActiveFaq(activeFaq === fIdx ? null : fIdx)}
-                className="w-full text-left p-5 flex items-center justify-between font-medium text-sm text-[#f5f5f8] hover:text-[#8f8bff] transition-colors cursor-pointer"
+                  }`}
               >
-                <span>{faq.q}</span>
-                <ChevronDown className={`w-4 h-4 text-[#8a8a97] transition-transform ${activeFaq === fIdx ? 'rotate-180 text-[#8f8bff]' : ''}`} />
+                {tab.label}
               </button>
-              {activeFaq === fIdx && (
-                <div className="px-5 pb-5 pt-1 text-xs text-[#b6b6c2] leading-relaxed border-t border-white/[0.06] bg-black/20">
-                  {faq.a}
-                </div>
-              )}
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {featuredSchemes.map((scheme) => (
+              <SchemeCard
+                key={scheme.id}
+                scheme={scheme}
+                onViewDetails={onSelectScheme}
+                onCheckEligibility={() => onNavigateTab('eligibility')}
+                isSaved={savedSchemeIds.includes(scheme.id)}
+                onToggleSave={onToggleSaveScheme}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Interactive Equation Workflow Engine */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-8">
+          <EquationWorkflow
+            schemes={schemes}
+            onSelectScheme={onSelectScheme}
+          />
+        </section>
+
+        {/* Frequently Asked Questions (FAQ) Section */}
+        <section className="max-w-4xl mx-auto px-4 sm:px-8 space-y-6">
+          <div className="text-center space-y-2 max-w-2xl mx-auto">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#8f8bff]/10 border border-[#8f8bff]/20 text-[#8f8bff] text-xs font-medium tracking-wide">
+              <span className="uppercase tracking-wider">Frequently Asked Questions</span>
             </div>
-          ))}
-        </div>
-      </section>
+            <SplitText
+              key={`faq-title-${language}`}
+              text="Common Citizen Inquiries & Answers"
+              tag="h2"
+              className="text-2xl sm:text-3xl lg:text-4xl font-medium text-[#f5f5f8] tracking-[-0.02em] block"
+              delay={25}
+              duration={0.6}
+              splitType="words"
+              effect="rise"
+              textAlign="center"
+            />
+          </div>
+
+          <div className="space-y-3">
+            {faqs.map((faq, fIdx) => (
+              <div
+                key={fIdx}
+                className="bytune-card overflow-hidden transition-all duration-200"
+              >
+                <button
+                  onClick={() => setActiveFaq(activeFaq === fIdx ? null : fIdx)}
+                  className="w-full text-left p-5 flex items-center justify-between font-medium text-sm text-[#f5f5f8] hover:text-[#8f8bff] transition-colors cursor-pointer"
+                >
+                  <span>{faq.q}</span>
+                  <ChevronDown className={`w-4 h-4 text-[#8a8a97] transition-transform ${activeFaq === fIdx ? 'rotate-180 text-[#8f8bff]' : ''}`} />
+                </button>
+                {activeFaq === fIdx && (
+                  <div className="px-5 pb-5 pt-1 text-xs text-[#b6b6c2] leading-relaxed border-t border-white/[0.06] bg-black/20">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   );

@@ -79,10 +79,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Vertical Separator */}
-            <div className="hidden lg:block h-4 w-[1px] bg-white/[0.1] shrink-0" />
+            <div className="hidden md:block h-4 w-[1px] bg-white/[0.1] shrink-0" />
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center space-x-0.5 bg-white/[0.03] p-1 rounded-full border border-white/[0.07] backdrop-blur-md">
+            <nav className="hidden md:flex items-center space-x-0.5 bg-white/[0.03] p-1 rounded-full border border-white/[0.07] backdrop-blur-md">
               {/* Primary Links */}
               {primaryNavItems.map((item) => {
                 const isActive = currentTab === item.id;

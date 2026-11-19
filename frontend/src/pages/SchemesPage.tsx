@@ -183,8 +183,8 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
               key={c}
               onClick={() => setSelectedCategory(c)}
               className={`px-3 py-1 rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap text-[11px] font-medium border ${selectedCategory === c
-                  ? 'bg-[#8f8bff]/20 text-[#8f8bff] border-[#8f8bff]/40 shadow-sm'
-                  : 'bg-white/[0.03] text-[#8a8a97] hover:text-[#f5f5f8] border-white/[0.06] hover:bg-white/[0.08]'
+                ? 'bg-[#8f8bff]/20 text-[#8f8bff] border-[#8f8bff]/40 shadow-sm'
+                : 'bg-white/[0.03] text-[#8a8a97] hover:text-[#f5f5f8] border-white/[0.06] hover:bg-white/[0.08]'
                 }`}
             >
               {c === 'All' ? 'All Schemes' : c}
