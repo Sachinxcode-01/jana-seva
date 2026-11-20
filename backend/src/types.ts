@@ -1,15 +1,51 @@
 export type Role = 'citizen' | 'admin';
 
+export interface UserPreferences {
+  language: 'en' | 'kn' | 'hi';
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+  schemeUpdates: boolean;
+  theme: 'dark' | 'light' | 'system';
+}
+
+export interface UserSession {
+  id: string;
+  ip: string;
+  userAgent: string;
+  loggedInAt: string;
+  lastActive: string;
+}
+
+export interface DocumentItem {
+  id: string;
+  name: string;
+  category: 'Identity' | 'Residence' | 'Income & Caste' | 'Education' | 'Agriculture & Land' | 'Other';
+  status: 'available' | 'pending' | 'not_applicable';
+  notes?: string;
+  documentNumber?: string;
+  updatedAt: string;
+}
+
 export interface User {
   id: string;
   fullName: string;
   email: string;
+  mobileNumber?: string;
   passwordHash: string;
   role: Role;
   state: string;
+  district?: string;
+  villageTown?: string;
   occupation: string;
+  beneficiaryCategory?: string;
   incomeRange: string;
+  gender?: 'Female' | 'Male' | 'Other';
+  preferredLanguage?: 'en' | 'kn' | 'hi';
+  preferences?: UserPreferences;
+  sessions?: UserSession[];
+  documents?: DocumentItem[];
   createdAt: string;
+  updatedAt?: string;
 }
 
 export type SchemeClassification = 'Central' | 'State';
@@ -54,6 +90,7 @@ export interface Scheme {
     offlineModeAvailable: boolean;
   };
   officialWebsite: string;
+  deadline?: string;
   lastUpdated: string;
   isVerified: boolean;
   isPublished: boolean;
@@ -70,6 +107,12 @@ export interface SavedScheme {
 
 export type ApplicationStatus = 'Draft' | 'Submitted' | 'In Review' | 'Approved' | 'Rejected';
 
+export interface ApplicationTimelineEvent {
+  status: ApplicationStatus;
+  date: string;
+  note: string;
+}
+
 export interface ApplicationRecord {
   id: string;
   userId: string;
@@ -78,7 +121,9 @@ export interface ApplicationRecord {
   appliedDate: string;
   status: ApplicationStatus;
   notes: string;
+  timeline?: ApplicationTimelineEvent[];
   updatedAt: string;
+  scheme?: Scheme;
 }
 
 export interface EligibilityResult {
@@ -93,6 +138,29 @@ export interface EligibilityResult {
   officialUrl: string;
 }
 
+export interface SavedEligibilityRecord {
+  id: string;
+  userId: string;
+  schemeId: string;
+  schemeName: string;
+  category: SchemeCategory;
+  matchScore: number;
+  isEligible: boolean;
+  matchingReasons: string[];
+  unmetConditions: string[];
+  requiredDocuments: string[];
+  evaluatedAt: string;
+  inputCriteria: {
+    age: number;
+    state: string;
+    occupation: string;
+    beneficiaryCategory: string;
+    annualIncome: number;
+    educationLevel?: string;
+    gender?: string;
+  };
+}
+
 export interface EligibilityAssessment {
   id: string;
   userId?: string;
@@ -104,6 +172,7 @@ export interface EligibilityAssessment {
     beneficiaryCategory: string;
     annualIncome: number;
     educationLevel?: string;
+    gender?: string;
   };
   eligibleSchemesCount: number;
 }

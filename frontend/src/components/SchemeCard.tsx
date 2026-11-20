@@ -54,10 +54,10 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({
     <div className="bytune-card bytune-card-hover flex flex-col justify-between group overflow-hidden transition-all duration-300 hover:border-white/20 hover:shadow-[0_20px_45px_-12px_rgba(0,0,0,0.85)] relative">
       {/* Top Banner Tag */}
       <div>
-        <div className="px-5 pt-4 pb-3 border-b border-white/[0.06] flex items-center justify-between gap-2 bg-white/[0.015]">
-          <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
+        <div className="px-4 sm:px-5 pt-3.5 sm:pt-4 pb-3 border-b border-white/[0.06] flex items-center justify-between gap-2 bg-white/[0.015]">
+          <div className="flex items-center gap-1.5 flex-wrap">
             {/* Classification Pill */}
-            <span className={`text-[10.5px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${scheme.classification === 'State'
+            <span className={`text-[10.5px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider shrink-0 ${scheme.classification === 'State'
                 ? 'bg-[#f3c64f]/15 text-[#f3c64f] border border-[#f3c64f]/30'
                 : 'bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30'
               }`}>
@@ -65,7 +65,7 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({
             </span>
 
             {/* State Domicile Tag */}
-            <span className={`text-[10.5px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1 border ${isKarnataka
+            <span className={`text-[10.5px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1 border shrink-0 ${isKarnataka
                 ? 'bg-amber-500/10 text-amber-300 border-amber-500/20'
                 : 'bg-white/[0.04] text-[#8a8a97] border-white/[0.08]'
               }`}>
@@ -74,7 +74,7 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({
             </span>
 
             {/* Category Pill */}
-            <span className={`text-[10.5px] font-medium px-2 py-0.5 rounded-full border ${getCategoryBadgeClass(scheme.category)}`}>
+            <span className={`text-[10.5px] font-medium px-2 py-0.5 rounded-full border shrink-0 ${getCategoryBadgeClass(scheme.category)}`}>
               {scheme.category}
             </span>
           </div>
@@ -139,25 +139,32 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({
       </div>
 
       {/* Footer Actions */}
-      <div className="px-5 py-3.5 bg-black/30 border-t border-white/[0.06] flex items-center justify-between gap-2">
-        <div className="flex items-center text-[11px] text-[#8a8a97] font-normal">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#1ed760] mr-1.5 shrink-0" />
-          <span className="hidden sm:inline">Official Verified</span>
+      <div className="px-4 sm:px-5 py-3 sm:py-3.5 bg-black/30 border-t border-white/[0.06] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-2">
+        <div className="flex items-center justify-between sm:justify-start text-[11px] text-[#8a8a97] font-normal">
+          <div className="flex items-center">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#1ed760] mr-1.5 shrink-0" />
+            <span>Official Verified</span>
+          </div>
+          <span className="sm:hidden text-[10px] text-[#60606c] font-mono">
+            {scheme.classification === 'State' ? 'State' : 'Central'}
+          </span>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           {onCheckEligibility && (
             <button
               onClick={() => onCheckEligibility(scheme)}
-              className="text-xs font-medium text-[#b6b6c2] hover:text-[#f5f5f8] px-3 py-1.5 rounded-full hover:bg-white/[0.08] transition-colors border border-transparent hover:border-white/10 cursor-pointer"
+              className="flex-1 sm:flex-initial flex items-center justify-center space-x-1.5 text-xs font-medium text-[#8f8bff] bg-[#8f8bff]/15 hover:bg-[#8f8bff]/25 active:bg-[#8f8bff]/30 px-3.5 py-2 sm:py-1.5 rounded-full transition-all border border-[#8f8bff]/30 hover:border-[#8f8bff]/50 cursor-pointer shadow-sm active:scale-95 whitespace-nowrap"
+              title="Check Scheme Eligibility"
             >
-              Eligibility
+              <Sparkles className="w-3.5 h-3.5 text-[#f3c64f] shrink-0" />
+              <span>Check Eligibility</span>
             </button>
           )}
 
           <button
             onClick={() => onViewDetails(scheme)}
-            className="bytune-pill flex items-center space-x-1.5 text-xs font-medium px-3.5 py-1.5 hover:border-[#8f8bff]/40 hover:text-[#8f8bff] cursor-pointer bg-white/[0.04] transition-all"
+            className="flex-1 sm:flex-initial bytune-pill flex items-center justify-center space-x-1.5 text-xs font-medium px-4 py-2 sm:py-1.5 hover:border-[#8f8bff]/40 hover:text-[#8f8bff] cursor-pointer bg-white/[0.04] transition-all active:scale-95 whitespace-nowrap"
           >
             <span>{t('viewDetails')}</span>
             <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />

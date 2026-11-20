@@ -54,6 +54,7 @@ export interface Scheme {
     offlineModeAvailable: boolean;
   };
   officialWebsite: string;
+  deadline?: string;
   lastUpdated: string;
   isVerified: boolean;
   isPublished: boolean;

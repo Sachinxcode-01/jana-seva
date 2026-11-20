@@ -615,12 +615,12 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 no-print">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 no-print">
       {/* Floating Toggle Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="flex items-center space-x-2.5 bg-[#121826]/95 hover:bg-[#161D2E] backdrop-blur-xl text-[#F8FAFC] px-5 py-3 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:shadow-[0_10px_35px_rgba(34,197,94,0.25)] hover:scale-105 transition-all duration-300 border border-[#243045] hover:border-[#22C55E]/40 cursor-pointer group"
+          className="flex items-center space-x-2 bg-[#121826]/95 hover:bg-[#161D2E] backdrop-blur-xl text-[#F8FAFC] px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:shadow-[0_10px_35px_rgba(34,197,94,0.25)] hover:scale-105 transition-all duration-300 border border-[#243045] hover:border-[#22C55E]/40 cursor-pointer group"
           aria-label="Open Janaseva Assistant"
         >
           <div className="relative">

@@ -135,9 +135,9 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
   const isAnyFilterActive = searchTerm || selectedCategory !== 'All' || selectedClassification !== 'All' || selectedBeneficiary !== 'All' || selectedState !== 'All';
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 space-y-8 text-[#f5f5f8]">
+    <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-8 pb-24 sm:pb-12 space-y-6 sm:space-y-8 text-[#f5f5f8]">
       {/* Header Banner */}
-      <div className="bytune-card p-6 sm:p-8 relative overflow-hidden">
+      <div className="bytune-card p-5 sm:p-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-[radial-gradient(circle,_rgba(143,139,255,0.12),_transparent_70%)] pointer-events-none" />
         <div className="max-w-3xl space-y-2">
           <span className="text-xs font-semibold uppercase tracking-wider text-[#8f8bff]">
@@ -153,16 +153,16 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
       </div>
 
       {/* Search and Filters Bar */}
-      <div className="bytune-card p-5 space-y-4">
+      <div className="bytune-card p-4 sm:p-5 space-y-4">
         {/* Search input */}
         <div className="relative">
-          <Search className="w-5 h-5 text-[#8a8a97] absolute left-4 top-3" />
+          <Search className="w-4 h-4 sm:w-5 sm:h-5 text-[#8a8a97] absolute left-4 top-3 sm:top-3.5" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by scheme title, department, or keyword (e.g. Gruha Lakshmi, PM-KISAN, SSP, Shakti)..."
-            className="w-full pl-12 pr-10 py-2.5 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] placeholder-[#60606c] focus:border-[#8f8bff]/60 text-xs sm:text-sm focus:outline-none"
+            placeholder="Search schemes, department, or keyword (e.g. Gruha Lakshmi, PM-KISAN, SSP)..."
+            className="w-full pl-11 sm:pl-12 pr-10 py-2.5 sm:py-3 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] placeholder-[#60606c] focus:border-[#8f8bff]/60 text-xs sm:text-sm focus:outline-none transition-all"
           />
           {searchTerm && (
             <button
@@ -170,20 +170,20 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
                 setSearchTerm('');
                 if (onClearSearch) onClearSearch();
               }}
-              className="absolute right-3.5 top-3 text-[#8a8a97] hover:text-[#f5f5f8] cursor-pointer"
+              className="absolute right-3.5 top-3 sm:top-3.5 text-[#8a8a97] hover:text-[#f5f5f8] cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        {/* Quick Category Filter Pills */}
-        <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
+        {/* Quick Category Filter Pills - Fixed overlapping with shrink-0, gap-2 and no-scrollbar */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-1 no-scrollbar text-xs scroll-smooth -webkit-overflow-scrolling-touch">
           {categories.map((c) => (
             <button
               key={c}
               onClick={() => setSelectedCategory(c)}
-              className={`px-3 py-1 rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap text-[11px] font-medium border ${selectedCategory === c
+              className={`shrink-0 px-3.5 py-1.5 rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap text-xs font-medium border ${selectedCategory === c
                 ? 'bg-[#8f8bff]/20 text-[#8f8bff] border-[#8f8bff]/40 shadow-sm'
                 : 'bg-white/[0.03] text-[#8a8a97] hover:text-[#f5f5f8] border-white/[0.06] hover:bg-white/[0.08]'
                 }`}
@@ -194,14 +194,14 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
         </div>
 
         {/* Filter Controls */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs pt-1 border-t border-white/[0.05]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs pt-3 border-t border-white/[0.05]">
           {/* State Filter */}
           <div>
             <label className="block font-medium text-[#8a8a97] mb-1">State</label>
             <select
               value={selectedState}
               onChange={(e) => setSelectedState(e.target.value)}
-              className="w-full py-2 px-3 rounded-full border border-white/10 bg-[#101016] text-xs text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+              className="w-full py-2.5 px-3.5 rounded-xl border border-white/10 bg-[#101016] text-xs text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none cursor-pointer"
             >
               <option value="All">All 28 States & Central</option>
               <option value="All India">Central (All India)</option>
@@ -220,7 +220,7 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full py-2 px-3 rounded-full border border-white/10 bg-[#101016] text-xs text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+              className="w-full py-2.5 px-3.5 rounded-xl border border-white/10 bg-[#101016] text-xs text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none cursor-pointer"
             >
               {categories.map((c) => (
                 <option key={c} value={c}>{c === 'All' ? 'All Categories' : c}</option>
@@ -234,7 +234,7 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
             <select
               value={selectedClassification}
               onChange={(e) => setSelectedClassification(e.target.value)}
-              className="w-full py-2 px-3 rounded-full border border-white/10 bg-[#101016] text-xs text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+              className="w-full py-2.5 px-3.5 rounded-xl border border-white/10 bg-[#101016] text-xs text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none cursor-pointer"
             >
               <option value="All">Central & State Combined</option>
               <option value="Central">Central Government</option>
@@ -248,7 +248,7 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
             <select
               value={selectedBeneficiary}
               onChange={(e) => setSelectedBeneficiary(e.target.value)}
-              className="w-full py-2 px-3 rounded-full border border-white/10 bg-[#101016] text-xs text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+              className="w-full py-2.5 px-3.5 rounded-xl border border-white/10 bg-[#101016] text-xs text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none cursor-pointer"
             >
               {beneficiaries.map((b) => (
                 <option key={b} value={b}>{b === 'All' ? 'All Beneficiaries' : b}</option>
@@ -262,7 +262,7 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="w-full py-2 px-3 rounded-full border border-white/10 bg-[#101016] text-xs text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+              className="w-full py-2.5 px-3.5 rounded-xl border border-white/10 bg-[#101016] text-xs text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none cursor-pointer"
             >
               <option value="recent">Recently Updated</option>
               <option value="popular">Most Viewed</option>
@@ -273,29 +273,29 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
 
         {/* Active Filter Chips & Clear */}
         {isAnyFilterActive && (
-          <div className="pt-3 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div className="flex items-center space-x-2 flex-wrap gap-y-1.5">
-              <span className="text-[#8a8a97] font-medium">Active Filters:</span>
+          <div className="pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[#8a8a97] font-medium shrink-0">Active Filters:</span>
               {selectedCategory !== 'All' && (
-                <span className="px-3 py-1 rounded-full bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30 font-medium flex items-center">
+                <span className="px-3 py-1 rounded-full bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30 font-medium flex items-center shrink-0">
                   Category: {selectedCategory}
                   <button onClick={() => setSelectedCategory('All')} className="ml-1.5 hover:text-white cursor-pointer"><X className="w-3 h-3" /></button>
                 </span>
               )}
               {selectedClassification !== 'All' && (
-                <span className="px-3 py-1 rounded-full bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30 font-medium flex items-center">
+                <span className="px-3 py-1 rounded-full bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30 font-medium flex items-center shrink-0">
                   Govt: {selectedClassification}
                   <button onClick={() => setSelectedClassification('All')} className="ml-1.5 hover:text-white cursor-pointer"><X className="w-3 h-3" /></button>
                 </span>
               )}
               {selectedBeneficiary !== 'All' && (
-                <span className="px-3 py-1 rounded-full bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30 font-medium flex items-center">
+                <span className="px-3 py-1 rounded-full bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30 font-medium flex items-center shrink-0">
                   Target: {selectedBeneficiary}
                   <button onClick={() => setSelectedBeneficiary('All')} className="ml-1.5 hover:text-white cursor-pointer"><X className="w-3 h-3" /></button>
                 </span>
               )}
               {selectedState !== 'All' && (
-                <span className="px-3 py-1 rounded-full bg-[#1ed760]/15 text-[#1ed760] border border-[#1ed760]/30 font-medium flex items-center">
+                <span className="px-3 py-1 rounded-full bg-[#1ed760]/15 text-[#1ed760] border border-[#1ed760]/30 font-medium flex items-center shrink-0">
                   State: {selectedState}
                   <button onClick={() => setSelectedState('All')} className="ml-1.5 hover:text-white cursor-pointer"><X className="w-3 h-3" /></button>
                 </span>
@@ -304,7 +304,7 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
 
             <button
               onClick={resetFilters}
-              className="flex items-center space-x-1 text-[#8a8a97] hover:text-[#f5f5f8] font-medium cursor-pointer"
+              className="flex items-center space-x-1.5 text-[#8a8a97] hover:text-[#f5f5f8] font-medium cursor-pointer self-end sm:self-auto shrink-0 transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>{t('resetFilters')}</span>
@@ -314,10 +314,10 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
       </div>
 
       {/* Schemes Results Counter */}
-      <div className="flex items-center justify-between text-xs text-[#8a8a97]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[#8a8a97] px-1">
         <span>Showing <strong className="text-[#f5f5f8] font-mono">{filteredSchemes.length}</strong> verified government schemes</span>
-        <span className="text-[11px] text-[#1ed760] bg-[#1ed760]/10 border border-[#1ed760]/20 px-3 py-0.5 rounded-full flex items-center font-mono">
-          <CheckCircle2 className="w-3 h-3 mr-1 text-[#1ed760]" />
+        <span className="text-[11px] text-[#1ed760] bg-[#1ed760]/10 border border-[#1ed760]/20 px-3 py-1 rounded-full flex items-center font-mono w-fit">
+          <CheckCircle2 className="w-3 h-3 mr-1 text-[#1ed760] shrink-0" />
           Official Verified Sources
         </span>
       </div>

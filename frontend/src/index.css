@@ -69,10 +69,6 @@
   @media (max-width: 640px) {
     .bytune-card, .byTune-card, .bytune-card-hover, .max-w-7xl, .max-w-4xl, .max-w-6xl, .max-w-3xl, .max-w-5xl, .max-w-2xl {
       max-width: 100%;
-      min-width: 0;
-    }
-    * {
-      min-width: 0;
     }
   }
 
@@ -217,7 +213,6 @@
 }
 
 /* Custom Scrollbars */
-/* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -234,6 +229,19 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(143, 139, 255, 0.4);
+}
+
+/* Hide scrollbar utility for horizontally scrollable carousels & tabs */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Additional mobile optimizations */

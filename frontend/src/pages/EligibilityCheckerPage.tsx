@@ -240,7 +240,7 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
               <div className="flex justify-end pt-4 border-t border-white/[0.08]">
                 <button
                   onClick={() => setStep(2)}
-                  className="bytune-btn-solid flex items-center space-x-1.5 px-6 py-2.5 text-xs font-semibold cursor-pointer"
+                  className="bytune-btn-solid w-full sm:w-auto justify-center flex items-center space-x-1.5 px-6 py-2.5 text-xs font-semibold cursor-pointer active:scale-98"
                 >
                   <span>Continue to Step 2</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -309,10 +309,10 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                 </div>
               </div>
 
-              <div className="flex justify-between items-center pt-4 border-t border-white/[0.08]">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-white/[0.08]">
                 <button
                   onClick={() => setStep(1)}
-                  className="bytune-pill px-4 py-2 text-xs flex items-center space-x-1 cursor-pointer"
+                  className="bytune-pill px-4 py-2.5 sm:py-2 text-xs flex items-center justify-center space-x-1 cursor-pointer w-full sm:w-auto"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Back</span>
@@ -320,7 +320,7 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
 
                 <button
                   onClick={() => setStep(3)}
-                  className="bytune-btn-solid flex items-center space-x-1.5 px-6 py-2.5 text-xs font-semibold cursor-pointer"
+                  className="bytune-btn-solid flex items-center justify-center space-x-1.5 px-6 py-2.5 text-xs font-semibold cursor-pointer w-full sm:w-auto active:scale-98"
                 >
                   <span>Continue to Step 3</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -399,10 +399,10 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                 </div>
               </div>
 
-              <div className="flex justify-between items-center pt-4 border-t border-white/[0.08]">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-white/[0.08]">
                 <button
                   onClick={() => setStep(2)}
-                  className="bytune-pill px-4 py-2 text-xs flex items-center space-x-1 cursor-pointer"
+                  className="bytune-pill px-4 py-2.5 sm:py-2 text-xs flex items-center justify-center space-x-1 cursor-pointer w-full sm:w-auto"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Back</span>
@@ -411,7 +411,7 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                 <button
                   onClick={handleEvaluate}
                   disabled={loading}
-                  className="bytune-btn-accent flex items-center space-x-2 px-8 py-3 text-xs font-semibold cursor-pointer disabled:opacity-50"
+                  className="bytune-btn-accent flex items-center justify-center space-x-2 px-8 py-3 text-xs font-semibold cursor-pointer disabled:opacity-50 w-full sm:w-auto shadow-md active:scale-98"
                 >
                   <Sparkles className="w-4 h-4 text-[#050507]" />
                   <span>{loading ? 'Evaluating Rules...' : 'Compute Eligible Schemes'}</span>

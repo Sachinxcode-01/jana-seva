@@ -514,7 +514,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
 
             {/* Featured Filter Tabs */}
-            <div className="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-1 no-scrollbar text-xs scroll-smooth -webkit-overflow-scrolling-touch">
               {[
                 { id: 'all', label: 'All Flagship' },
                 { id: 'karnataka', label: 'Karnataka 5 Guarantees' },
@@ -525,7 +525,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => setFeaturedFilter(tab.id as any)}
-                  className={`px-3.5 py-1.5 rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap font-medium text-[11.5px] border ${featuredFilter === tab.id
+                  className={`shrink-0 px-3.5 py-1.5 rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap font-medium text-xs border ${featuredFilter === tab.id
                     ? 'bg-white/12 text-[#f5f5f8] border-white/20 shadow-sm'
                     : 'bg-white/[0.03] text-[#8a8a97] hover:text-[#f5f5f8] border-white/[0.06] hover:bg-white/[0.07]'
                     }`}
