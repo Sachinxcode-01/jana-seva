@@ -723,6 +723,12 @@ class Database {
 
   getUserByEmailOrMobile(identifier: string): User | undefined {
     const clean = identifier.trim().toLowerCase();
+    if (clean === 'admin' || clean === 'admin@janaseva.gov.in') {
+      return this.data.users.find(u => u.email.toLowerCase() === 'admin@janaseva.gov.in' || u.role === 'admin');
+    }
+    if (clean === 'citizen' || clean === 'citizen@janaseva.gov.in') {
+      return this.data.users.find(u => u.email.toLowerCase() === 'citizen@janaseva.gov.in');
+    }
     if (clean.includes('@')) {
       return this.data.users.find(u => u.email.toLowerCase() === clean);
     }

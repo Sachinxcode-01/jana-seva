@@ -107,8 +107,6 @@ CREATE TABLE saved_schemes (
         CONSTRAINT unique_user_scheme UNIQUE (user_id, scheme_id)
 );
 
-CREATE INDEX idx_saved_schemes_user ON saved_schemes (user_id);
-
 -- 5. Citizen Application Tracker Table
 CREATE TABLE application_records (
     id VARCHAR(50) PRIMARY KEY,

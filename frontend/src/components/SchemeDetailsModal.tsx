@@ -118,151 +118,145 @@ export const SchemeDetailsModal: React.FC<SchemeDetailsModalProps> = ({
               </span>
               <span>Target: <strong className="text-[#f5f5f8]">{scheme.beneficiaryCategory}</strong></span>
               <span>Region: <strong className="text-[#f5f5f8]">{scheme.state}</strong></span>
-              {scheme.deadline && (
-                <span className="flex items-center text-amber-300 font-medium bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/25">
-                  <Clock className="w-3 h-3 mr-1 text-amber-400" />
-                  Deadline / Cycle: <strong className="ml-1 text-[#f5f5f8]">{scheme.deadline}</strong>
-                </span>
-              )}
             </div>
 
             {/* Deadline & Application Period Callout */}
             {scheme.deadline && (
-              <div className="mt-3.5 p-3.5 rounded-xl bg-gradient-to-r from-amber-500/[0.08] via-amber-500/[0.04] to-transparent border border-amber-500/25 flex items-center justify-between gap-3 text-xs">
-                <div className="flex items-center space-x-2 text-amber-300">
-                  <Clock className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span className="font-medium">Official Application Period / Submission Deadline:</span>
-                </div>
-                <span className="font-semibold text-[#f5f5f8] bg-black/40 px-3 py-1 rounded-md border border-white/10">
-                  {scheme.deadline}
-                </span>
-              </div>
+                  <div className="mt-3.5 p-3.5 rounded-xl bg-gradient-to-r from-amber-500/[0.08] via-amber-500/[0.04] to-transparent border border-amber-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+                    <div className="flex items-center space-x-2 text-amber-300 shrink-0">
+                      <Clock className="w-4 h-4 text-amber-400 shrink-0" />
+                      <span className="font-medium">Official Application Period / Submission Deadline:</span>
+                    </div>
+                      <span className="font-semibold text-[#f5f5f8] bg-black/40 px-3 py-1.5 rounded-md border border-white/10 break-words whitespace-normal leading-relaxed text-left sm:text-right">
+                        {scheme.deadline}
+                      </span>
+                  </div>
             )}
 
-            <p className="mt-4 text-sm text-[#b6b6c2] leading-relaxed bg-white/[0.025] p-4 rounded-2xl border border-white/[0.06]">
-              {displayDesc}
-            </p>
-          </div>
-
-          {/* Key Benefits */}
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-[#f5f5f8] mb-3 flex items-center space-x-2">
-              <span className="w-2 h-2 rounded-full bg-[#1ed760] shadow-[0_0_8px_#1ed760]"></span>
-              <span>{t('benefits')}</span>
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {scheme.benefits.map((benefit, index) => (
-                <div key={index} className="flex items-start space-x-2.5 p-3.5 rounded-xl bg-white/[0.025] border border-white/[0.06] text-xs text-[#f5f5f8]">
-                  <CheckCircle2 className="w-4 h-4 text-[#1ed760] shrink-0 mt-0.5" />
-                  <span className="leading-relaxed text-[#b6b6c2]">{benefit}</span>
+                  <p className="mt-4 text-sm text-[#b6b6c2] leading-relaxed bg-white/[0.025] p-4 rounded-2xl border border-white/[0.06]">
+                    {displayDesc}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Eligibility Criteria */}
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-[#f5f5f8] mb-3 flex items-center space-x-2">
-              <span className="w-2 h-2 rounded-full bg-[#8f8bff] shadow-[0_0_8px_#8f8bff]"></span>
-              <span>{t('eligibility')}</span>
-            </h3>
-            <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-5 space-y-2.5 text-xs text-[#b6b6c2]">
-              {scheme.eligibilityCriteria.rules.map((rule, idx) => (
-                <div key={idx} className="flex items-start space-x-2">
-                  <span className="font-bold text-[#8f8bff]">•</span>
-                  <span className="leading-relaxed">{rule}</span>
-                </div>
-              ))}
-              {scheme.eligibilityCriteria.maxAnnualIncome && (
-                <div className="flex items-start space-x-2 font-medium text-[#f5f5f8]">
-                  <span className="font-bold text-[#8f8bff]">•</span>
-                  <span>Maximum Family Annual Income: <strong className="text-[#8f8bff] font-mono">₹{scheme.eligibilityCriteria.maxAnnualIncome.toLocaleString('en-IN')}</strong></span>
-                </div>
-              )}
-              {scheme.eligibilityCriteria.educationRequirements && (
-                <div className="flex items-start space-x-2 font-medium text-[#f5f5f8]">
-                  <span className="font-bold text-[#8f8bff]">•</span>
-                  <span>Educational Qualification: <strong className="text-[#f5f5f8]">{scheme.eligibilityCriteria.educationRequirements}</strong></span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Required Documents */}
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-[#f5f5f8] mb-3 flex items-center space-x-2">
-              <span className="w-2 h-2 rounded-full bg-[#f3c64f] shadow-[0_0_8px_#f3c64f]"></span>
-              <span>{t('documentsRequired')}</span>
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {scheme.requiredDocuments.map((doc, i) => (
-                <div key={i} className="flex items-start space-x-2 p-3 rounded-xl bg-white/[0.025] border border-white/[0.06] text-xs text-[#b6b6c2]">
-                  <FileText className="w-4 h-4 text-[#f3c64f] shrink-0 mt-0.5" />
-                  <span>{doc}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Step-by-Step How to Apply */}
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-[#f5f5f8] mb-3 flex items-center space-x-2">
-              <span className="w-2 h-2 rounded-full bg-[#6fd8ff] shadow-[0_0_8px_#6fd8ff]"></span>
-              <span>{t('howToApply')}</span>
-            </h3>
-            <div className="space-y-3">
-              {scheme.applicationProcedure.steps.map((step, sIdx) => (
-                <div key={sIdx} className="flex items-start space-x-3 text-xs text-[#b6b6c2]">
-                  <span className="w-6 h-6 rounded-full bg-white/[0.06] border border-white/10 text-[#8f8bff] flex items-center justify-center font-bold font-mono text-xs shrink-0">
-                    {sIdx + 1}
-                  </span>
-                  <p className="mt-1 leading-relaxed">{step}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Official Portal Action Box */}
-          <div className="p-6 rounded-2xl bg-gradient-to-r from-[#101016] to-[#16161d] border border-[#8f8bff]/30 text-[#f5f5f8] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-[0_0_30px_-10px_rgba(143,139,255,0.2)]">
-            <div>
-              <p className="text-xs text-[#8f8bff] font-semibold uppercase tracking-wider">Ready to apply?</p>
-              <h4 className="text-base font-medium text-[#f5f5f8] mt-0.5">Proceed to Official Government Portal</h4>
-              <p className="text-[11px] text-[#8a8a97] mt-1 font-mono">
-                You will be redirected to the verified government portal ({scheme.officialWebsite}). Zero intermediary fees.
-              </p>
-            </div>
-            <a
-              href={scheme.applicationProcedure.onlineUrl || scheme.officialWebsite}
-              target="_blank"
-              rel="noreferrer"
-              className="bytune-btn-accent px-6 py-3 text-xs font-semibold inline-flex items-center space-x-2 cursor-pointer shrink-0"
-            >
-              <span>{t('applyOnline')}</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
-
-          {/* Related Schemes */}
-          {relatedSchemes.length > 0 && (
-            <div className="border-t border-white/[0.08] pt-6">
-              <h4 className="text-sm font-semibold text-[#f5f5f8] mb-3">Related Welfare Schemes in {scheme.category}</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {relatedSchemes.map((rel) => (
-                  <div
-                    key={rel.id}
-                    onClick={() => onSelectScheme(rel)}
-                    className="p-3.5 rounded-xl border border-white/[0.08] hover:border-[#8f8bff]/40 bg-white/[0.02] cursor-pointer hover:bg-white/[0.05] transition-all text-xs space-y-1.5"
-                  >
-                    <span className="text-[10px] font-mono text-[#8f8bff]">{rel.classification}</span>
-                    <p className="font-medium text-[#f5f5f8] line-clamp-1">{rel.name}</p>
-                    <p className="text-[11px] text-[#8a8a97] line-clamp-1">{rel.department}</p>
+                {/* Key Benefits */}
+                <div>
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-[#f5f5f8] mb-3 flex items-center space-x-2">
+                    <span className="w-2 h-2 rounded-full bg-[#1ed760] shadow-[0_0_8px_#1ed760]"></span>
+                    <span>{t('benefits')}</span>
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {scheme.benefits.map((benefit, index) => (
+                      <div key={index} className="flex items-start space-x-2.5 p-3.5 rounded-xl bg-white/[0.025] border border-white/[0.06] text-xs text-[#f5f5f8]">
+                        <CheckCircle2 className="w-4 h-4 text-[#1ed760] shrink-0 mt-0.5" />
+                        <span className="leading-relaxed text-[#b6b6c2]">{benefit}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+
+                {/* Eligibility Criteria */}
+                <div>
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-[#f5f5f8] mb-3 flex items-center space-x-2">
+                    <span className="w-2 h-2 rounded-full bg-[#8f8bff] shadow-[0_0_8px_#8f8bff]"></span>
+                    <span>{t('eligibility')}</span>
+                  </h3>
+                  <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-5 space-y-2.5 text-xs text-[#b6b6c2]">
+                    {scheme.eligibilityCriteria.rules.map((rule, idx) => (
+                      <div key={idx} className="flex items-start space-x-2">
+                        <span className="font-bold text-[#8f8bff]">•</span>
+                        <span className="leading-relaxed">{rule}</span>
+                      </div>
+                    ))}
+                    {scheme.eligibilityCriteria.maxAnnualIncome && (
+                      <div className="flex items-start space-x-2 font-medium text-[#f5f5f8]">
+                        <span className="font-bold text-[#8f8bff]">•</span>
+                        <span>Maximum Family Annual Income: <strong className="text-[#8f8bff] font-mono">₹{scheme.eligibilityCriteria.maxAnnualIncome.toLocaleString('en-IN')}</strong></span>
+                      </div>
+                    )}
+                    {scheme.eligibilityCriteria.educationRequirements && (
+                      <div className="flex items-start space-x-2 font-medium text-[#f5f5f8]">
+                        <span className="font-bold text-[#8f8bff]">•</span>
+                        <span>Educational Qualification: <strong className="text-[#f5f5f8]">{scheme.eligibilityCriteria.educationRequirements}</strong></span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Required Documents */}
+                <div>
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-[#f5f5f8] mb-3 flex items-center space-x-2">
+                    <span className="w-2 h-2 rounded-full bg-[#f3c64f] shadow-[0_0_8px_#f3c64f]"></span>
+                    <span>{t('documentsRequired')}</span>
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {scheme.requiredDocuments.map((doc, i) => (
+                      <div key={i} className="flex items-start space-x-2 p-3 rounded-xl bg-white/[0.025] border border-white/[0.06] text-xs text-[#b6b6c2]">
+                        <FileText className="w-4 h-4 text-[#f3c64f] shrink-0 mt-0.5" />
+                        <span>{doc}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Step-by-Step How to Apply */}
+                <div>
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-[#f5f5f8] mb-3 flex items-center space-x-2">
+                    <span className="w-2 h-2 rounded-full bg-[#6fd8ff] shadow-[0_0_8px_#6fd8ff]"></span>
+                    <span>{t('howToApply')}</span>
+                  </h3>
+                  <div className="space-y-3">
+                    {scheme.applicationProcedure.steps.map((step, sIdx) => (
+                      <div key={sIdx} className="flex items-start space-x-3 text-xs text-[#b6b6c2]">
+                        <span className="w-6 h-6 rounded-full bg-white/[0.06] border border-white/10 text-[#8f8bff] flex items-center justify-center font-bold font-mono text-xs shrink-0">
+                          {sIdx + 1}
+                        </span>
+                        <p className="mt-1 leading-relaxed">{step}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Official Portal Action Box */}
+                <div className="p-6 rounded-2xl bg-gradient-to-r from-[#101016] to-[#16161d] border border-[#8f8bff]/30 text-[#f5f5f8] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-[0_0_30px_-10px_rgba(143,139,255,0.2)]">
+                  <div>
+                    <p className="text-xs text-[#8f8bff] font-semibold uppercase tracking-wider">Ready to apply?</p>
+                    <h4 className="text-base font-medium text-[#f5f5f8] mt-0.5">Proceed to Official Government Portal</h4>
+                    <p className="text-[11px] text-[#8a8a97] mt-1 font-mono">
+                      You will be redirected to the verified government portal ({scheme.officialWebsite}). Zero intermediary fees.
+                    </p>
+                  </div>
+                  <a
+                    href={scheme.applicationProcedure.onlineUrl || scheme.officialWebsite}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="bytune-btn-accent px-6 py-3 text-xs font-semibold inline-flex items-center space-x-2 cursor-pointer shrink-0"
+                  >
+                    <span>{t('applyOnline')}</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+
+                {/* Related Schemes */}
+                {relatedSchemes.length > 0 && (
+                  <div className="border-t border-white/[0.08] pt-6">
+                    <h4 className="text-sm font-semibold text-[#f5f5f8] mb-3">Related Welfare Schemes in {scheme.category}</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {relatedSchemes.map((rel) => (
+                        <div
+                          key={rel.id}
+                          onClick={() => onSelectScheme(rel)}
+                          className="p-3.5 rounded-xl border border-white/[0.08] hover:border-[#8f8bff]/40 bg-white/[0.02] cursor-pointer hover:bg-white/[0.05] transition-all text-xs space-y-1.5"
+                        >
+                          <span className="text-[10px] font-mono text-[#8f8bff]">{rel.classification}</span>
+                          <p className="font-medium text-[#f5f5f8] line-clamp-1">{rel.name}</p>
+                          <p className="text-[11px] text-[#8a8a97] line-clamp-1">{rel.department}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
-        </div>
       </div>
-    </div>
-  );
+        </div>
+        );
 };
