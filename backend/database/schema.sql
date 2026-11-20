@@ -12,7 +12,7 @@ CREATE TYPE application_status AS ENUM ('Draft', 'Submitted', 'In Review', 'Appr
 
 CREATE TYPE document_status AS ENUM ('available', 'pending', 'not_applicable');
 
-CREATE TYPE document_category AS ENUM ('Identity', 'Residence', 'Income & Caste', 'Education', 'Agriculture & Land', 'Other');
+CREATE TYPE document_category AS ENUM ('Identity', 'Income', 'Residence', 'Education', 'Category', 'Banking', 'Income & Caste', 'Agriculture & Land', 'Other');
 
 -- 1. Users & Citizen Profiles Table
 CREATE TABLE users (

@@ -45,6 +45,68 @@ const router = Router();
     return res.json({ success: true, user: formatSafeUser(user) });
   });
 
+  // GET /api/v1/users/me/dashboard & /api/user/dashboard
+  router.get(['/me/dashboard', '/dashboard'], authenticate, (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const userId = req.user!.id;
+      const user = db.getUserById(userId);
+      if (!user) return res.status(404).json({ success: false, message: 'User not found.' });
+
+      const saved = db.getSavedSchemes(userId);
+      const eligibilityHistory = db.getUserEligibilityHistory(userId);
+      const documents = db.getUserDocuments(userId);
+      const notifications = db.getNotifications(userId);
+      const allSchemes = db.getSchemes();
+
+      // Profile Completion Percentage Calculation
+      let score = 0;
+      if (user.fullName) score += 20;
+      if (user.email) score += 15;
+      if (user.mobileNumber) score += 15;
+      if (user.state) score += 15;
+      if (user.district) score += 10;
+      if (user.occupation) score += 15;
+      if (user.incomeRange) score += 10;
+      const profileCompletion = Math.min(100, score);
+
+      const availableDocsCount = documents.filter(d => d.status === 'available').length;
+      const pendingDocsCount = documents.filter(d => d.status === 'pending').length;
+
+      // Filter recommended schemes tailored to user profile
+      const recommended = allSchemes.filter(s => {
+        if (user.occupation?.toLowerCase().includes('farmer') && (s.category === 'Farmer Welfare' || s.beneficiaryCategory === 'Farmers')) return true;
+        if (user.occupation?.toLowerCase().includes('student') && (s.category === 'Student Scholarships' || s.beneficiaryCategory === 'Students')) return true;
+        if (user.gender === 'Female' && (s.category === 'Women Empowerment' || s.beneficiaryCategory === 'Women')) return true;
+        if (s.beneficiaryCategory === 'General' || s.category === 'Health and Social Welfare' || s.category === 'Financial Assistance') return true;
+        return false;
+      }).slice(0, 4);
+
+      return res.json({
+        success: true,
+        user: formatSafeUser(user),
+        statistics: {
+          savedSchemesCount: saved.length,
+          eligibilityChecksCount: eligibilityHistory.length,
+          documentsPreparedCount: availableDocsCount,
+          totalDocumentsCount: documents.length,
+          profileCompletionPercentage: profileCompletion
+        },
+        recentlySavedSchemes: saved.slice(0, 4),
+        recentlyEvaluatedSchemes: eligibilityHistory.slice(0, 4),
+        recommendedSchemes: recommended,
+        documentsSummary: {
+          available: availableDocsCount,
+          pending: pendingDocsCount,
+          total: documents.length
+        },
+        announcements: notifications.slice(0, 3)
+      });
+    } catch (err) {
+      console.error('Dashboard endpoint error:', err);
+      return res.status(500).json({ success: false, message: 'Server error retrieving citizen dashboard data.' });
+    }
+  });
+
   // PUT /api/v1/users/me & /api/user/me
   router.put(['/me', '/profile'], authenticate, (req: AuthenticatedRequest, res: Response) => {
     try {
@@ -405,6 +467,35 @@ const router = Router();
               } catch (err) {
                 console.error('Update documents error:', err);
                 return res.status(500).json({ success: false, message: 'Failed to update documents checklist.' });
+              }
+            });
+
+            // PUT /api/v1/users/me/documents/:documentId & /api/user/documents/:documentId
+            router.put(['/me/documents/:documentId', '/documents/:documentId'], authenticate, (req: AuthenticatedRequest, res: Response) => {
+              try {
+                const userId = req.user!.id;
+                const documentId = String(req.params.documentId);
+                const { status, documentNumber, notes } = req.body;
+
+                const validStatuses = ['available', 'pending', 'not_applicable'];
+                if (status && !validStatuses.includes(status)) {
+                  return res.status(400).json({ success: false, message: 'Invalid status. Must be available, pending, or not_applicable.' });
+                }
+
+                const updated = db.updateUserSingleDocument(userId, documentId, {
+                  ...(status && { status }),
+                  ...(documentNumber !== undefined && { documentNumber: String(documentNumber).trim().slice(0, 100) }),
+                  ...(notes !== undefined && { notes: String(notes).trim().slice(0, 500) })
+                });
+
+                if (!updated) {
+                  return res.status(404).json({ success: false, message: 'Document checklist item not found.' });
+                }
+
+                return res.json({ success: true, message: 'Document checklist item updated.', document: updated });
+              } catch (err) {
+                console.error('Update single document error:', err);
+                return res.status(500).json({ success: false, message: 'Server error updating document item.' });
               }
             });
 
