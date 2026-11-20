@@ -45,6 +45,7 @@ export interface User {
   preferences?: UserPreferences;
   documents?: DocumentItem[];
   sessions?: UserSession[];
+  accountStatus?: 'active' | 'suspended';
   createdAt?: string;
   updatedAt?: string;
 }
@@ -95,6 +96,9 @@ export interface Scheme {
   lastUpdated: string;
   isVerified: boolean;
   isPublished: boolean;
+  isArchived?: boolean;
+  verifiedBy?: string;
+  officialSourceUrl?: string;
   viewCount: number;
   sourceVerificationStatus: string;
 }

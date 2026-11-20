@@ -13,10 +13,12 @@ router.get('/', (req: Request, res: Response) => {
       state,
       beneficiary,
       department,
-      sortBy
+      sortBy,
+      page,
+      limit
     } = req.query;
 
-    let schemes = db.getSchemes().filter(s => s.isPublished);
+    let schemes = db.getSchemes().filter(s => s.isPublished && !s.isArchived);
 
     // Search query by name, description, benefits, department
     if (q && typeof q === 'string') {
@@ -69,10 +71,19 @@ router.get('/', (req: Request, res: Response) => {
       schemes.sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
     }
 
+    const total = schemes.length;
+    let paginatedSchemes = schemes;
+    if (page && limit) {
+      const pageNum = Math.max(1, parseInt(String(page), 10) || 1);
+      const limitNum = Math.max(1, Math.min(100, parseInt(String(limit), 10) || 20));
+      const startIndex = (pageNum - 1) * limitNum;
+      paginatedSchemes = schemes.slice(startIndex, startIndex + limitNum);
+    }
+
     return res.json({
       success: true,
-      total: schemes.length,
-      schemes
+      total,
+      schemes: paginatedSchemes
     });
   } catch (err) {
     console.error('Error fetching schemes:', err);
@@ -82,7 +93,7 @@ router.get('/', (req: Request, res: Response) => {
 
 // GET /api/schemes/categories & /api/schemes/categories/summary
 router.get(['/categories', '/categories/summary'], (_req: Request, res: Response) => {
-  const schemes = db.getSchemes().filter(s => s.isPublished);
+  const schemes = db.getSchemes().filter(s => s.isPublished && !s.isArchived);
   const categories: Record<string, number> = {
     'Women Empowerment': 0,
     'Student Scholarships': 0,

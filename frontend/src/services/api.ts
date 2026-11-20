@@ -350,6 +350,65 @@ class UnifiedApiService {
     return this.chatWithAssistant(message, language, history);
   }
 
+  // 10b. Persistent Conversations & Voice Management
+  async createConversation(language = 'kn', title?: string) {
+    try {
+      const res = await apiClient.post('/assistant/conversations', { language, title });
+      return res.data;
+    } catch {
+      return { success: false, conversation: { id: `conv_${Date.now()}`, language, messages: [] } };
+    }
+  }
+
+  async getConversations() {
+    try {
+      const res = await apiClient.get('/assistant/conversations');
+      return res.data;
+    } catch {
+      return { success: false, conversations: [] };
+    }
+  }
+
+  async getConversation(id: string) {
+    try {
+      const res = await apiClient.get(`/assistant/conversations/${id}`);
+      return res.data;
+    } catch {
+      return { success: false, conversation: null };
+    }
+  }
+
+  async deleteConversation(id: string) {
+    try {
+      const res = await apiClient.delete(`/assistant/conversations/${id}`);
+      return res.data;
+    } catch {
+      return { success: false };
+    }
+  }
+
+  async sendMessageToConversation(conversationId: string, message: string, language?: string) {
+    try {
+      const res = await apiClient.post(`/assistant/conversations/${conversationId}/messages`, { message, language });
+      return res.data;
+    } catch {
+      return this.chatWithAssistant(message, language);
+    }
+  }
+
+  async getVoiceProfiles() {
+    try {
+      const res = await apiClient.get('/voice/profiles');
+      return res.data?.profiles || [];
+    } catch {
+      return [
+        { id: 'kavya-indic', name: 'Kavya (Primary Indian Female Voice)', gender: 'female', isDefault: true },
+        { id: 'priya-in', name: 'Priya (Public Service)', gender: 'female' },
+        { id: 'neerja-in', name: 'Neerja (Gentle Tone)', gender: 'female' }
+      ];
+    }
+  }
+
   async getVoiceStudioStatus(): Promise<{ success: boolean; online: boolean; serviceUrl?: string; engine?: string; voices?: string[] }> {
     try {
       const res = await apiClient.get('/assistant/voice/status');
@@ -401,12 +460,24 @@ class UnifiedApiService {
     return adminService.publishScheme(id, isPublished);
   }
 
+  archiveScheme(id: string, isArchived?: boolean) {
+    return adminService.archiveScheme(id, isArchived);
+  }
+
   deleteScheme(id: string) {
     return adminService.deleteScheme(id);
   }
 
   getAdminUsers() {
     return adminService.getUsers();
+  }
+
+  getUserDetails(id: string) {
+    return adminService.getUserDetails(id);
+  }
+
+  updateUserStatus(id: string, status: 'active' | 'suspended') {
+    return adminService.updateUserStatus(id, status);
   }
 
   getAdminMetrics() {

@@ -19,6 +19,7 @@
   "author": "CBP Project Team",
   "license": "ISC",
   "dependencies": {
+    "@types/ws": "^8.18.2",
     "bcryptjs": "^2.4.3",
     "compression": "^1.8.2",
     "cors": "^2.8.5",
@@ -26,7 +27,8 @@
     "express": "^4.21.2",
     "express-rate-limit": "^8.7.4",
     "helmet": "^8.3.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "ws": "^8.23.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

@@ -44,6 +44,7 @@ export interface User {
   preferences?: UserPreferences;
   sessions?: UserSession[];
   documents?: DocumentItem[];
+  accountStatus?: 'active' | 'suspended';
   createdAt: string;
   updatedAt?: string;
 }
@@ -94,6 +95,9 @@ export interface Scheme {
   lastUpdated: string;
   isVerified: boolean;
   isPublished: boolean;
+  isArchived?: boolean;
+  verifiedBy?: string;
+  officialSourceUrl?: string;
   viewCount: number;
   sourceVerificationStatus: 'Official Government Verified' | 'Sample Entry';
 }
@@ -201,3 +205,33 @@ export interface AdminActivityLog {
   details: string;
   timestamp: string;
 }
+
+export interface ConversationMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  speechText?: string;
+  audioUrl?: string;
+  speechDuration?: number;
+  language?: string;
+  suggestedSchemes?: Array<{
+    id: string;
+    name: string;
+    category: string;
+    slug: string;
+    officialWebsite: string;
+  }>;
+  modelUsed?: string;
+  timestamp: string;
+}
+
+export interface Conversation {
+  id: string;
+  userId?: string;
+  title: string;
+  language: string;
+  messages: ConversationMessage[];
+  createdAt: string;
+  updatedAt: string;
+}
+

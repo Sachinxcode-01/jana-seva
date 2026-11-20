@@ -37,8 +37,23 @@ export const adminService = {
     return res.data;
   },
 
+  async archiveScheme(id: string, isArchived?: boolean): Promise<{ success: boolean; message: string; scheme?: Scheme }> {
+    const res = await apiClient.patch(`/admin/schemes/${id}/archive`, { isArchived });
+    return res.data;
+  },
+
   async getUsers(): Promise<{ success: boolean; users: any[]; count: number }> {
     const res = await apiClient.get('/admin/users');
+    return res.data;
+  },
+
+  async getUserDetails(id: string): Promise<{ success: boolean; user?: any; message?: string }> {
+    const res = await apiClient.get(`/admin/users/${id}`);
+    return res.data;
+  },
+
+  async updateUserStatus(id: string, status: 'active' | 'suspended'): Promise<{ success: boolean; message: string; user?: any }> {
+    const res = await apiClient.patch(`/admin/users/${id}/status`, { status });
     return res.data;
   },
 

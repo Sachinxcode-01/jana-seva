@@ -9,21 +9,21 @@ const router = Router();
 // POST /api/eligibility/check
 router.post('/check', optionalAuthenticate, (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { 
-      age, 
-      state, 
-      occupation, 
-      gender, 
-      beneficiaryCategory, 
-      annualIncome, 
-      educationLevel, 
-      hasBPLCard 
+    const {
+      age,
+      state,
+      occupation,
+      gender,
+      beneficiaryCategory,
+      annualIncome,
+      educationLevel,
+      hasBPLCard
     } = req.body;
 
     if (age === undefined || !state || !occupation || !beneficiaryCategory) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Age, state, occupation, and beneficiary category are required.' 
+      return res.status(400).json({
+        success: false,
+        message: 'Age, state, occupation, and beneficiary category are required.'
       });
     }
 
@@ -38,7 +38,7 @@ router.post('/check', optionalAuthenticate, (req: AuthenticatedRequest, res: Res
       hasBPLCard: Boolean(hasBPLCard)
     };
 
-    const allSchemes = db.getSchemes().filter(s => s.isPublished);
+    const allSchemes = db.getSchemes().filter(s => s.isPublished && !s.isArchived);
     const evaluatedResults = allSchemes.map(scheme => evaluateEligibility(scheme, input));
 
     // Sort: Eligible first with highest score, then partially eligible

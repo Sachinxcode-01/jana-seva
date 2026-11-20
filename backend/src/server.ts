@@ -10,6 +10,8 @@ import eligibilityRoutes from './routes/eligibilityRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import assistantRoutes from './routes/assistantRoutes.js';
+import voiceRoutes from './modules/voice/voice.controller.js';
+import { voiceStreamGateway } from './modules/voice/voice-stream.gateway.js';
 
 const app = express();
 
@@ -78,9 +80,10 @@ app.get('/api/health', (_req: Request, res: Response) => {
 app.use(['/api/auth', '/api/v1/auth'], authRoutes);
 app.use(['/api/schemes', '/api/v1/schemes'], schemeRoutes);
 app.use(['/api/eligibility', '/api/v1/eligibility'], eligibilityRoutes);
-app.use(['/api/user', '/api/users', '/api/v1/users'], userRoutes);
+app.use(['/api/user', '/api/users', '/api/v1/user', '/api/v1/users'], userRoutes);
 app.use(['/api/admin', '/api/v1/admin'], adminRoutes);
 app.use(['/api/assistant', '/api/v1/assistant'], assistantRoutes);
+app.use(['/api/voice', '/api/v1/voice'], voiceRoutes);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {
@@ -105,6 +108,9 @@ const server = app.listen(PORT, () => {
   console.log(`  Mode: ${CONFIG.NODE_ENV}                            `);
   console.log(`=======================================================`);
 });
+
+// Initialize real-time voice streaming WebSocket gateway on /ws/assistant
+voiceStreamGateway.initialize(server);
 
 // Graceful shutdown handlers
 process.on('SIGTERM', () => {

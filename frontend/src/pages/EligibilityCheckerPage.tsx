@@ -179,10 +179,10 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                       type="button"
                       onClick={() => step > s.num && setStep(s.num as any)}
                       className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 border ${step === s.num
-                          ? 'bg-[#8f8bff] text-[#050507] border-[#8f8bff] shadow-[0_0_15px_rgba(143,139,255,0.45)] scale-110'
-                          : step > s.num
-                            ? 'bg-[#1ed760] text-[#050507] border-[#1ed760] cursor-pointer'
-                            : 'bg-white/[0.04] text-[#8a8a97] border-white/10'
+                        ? 'bg-[#8f8bff] text-[#050507] border-[#8f8bff] shadow-[0_0_15px_rgba(143,139,255,0.45)] scale-110'
+                        : step > s.num
+                          ? 'bg-[#1ed760] text-[#050507] border-[#1ed760] cursor-pointer'
+                          : 'bg-white/[0.04] text-[#8a8a97] border-white/10'
                         }`}
                     >
                       {step > s.num ? <CheckCircle2 className="w-4 h-4 stroke-[2.5]" /> : s.num}
@@ -244,8 +244,8 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                         key={g.val}
                         onClick={() => setGender(g.val as any)}
                         className={`p-3.5 rounded-xl border cursor-pointer transition-all ${gender === g.val
-                            ? 'bg-[#8f8bff]/15 border-[#8f8bff]/60 text-[#f5f5f8] shadow-[0_0_15px_rgba(143,139,255,0.2)]'
-                            : 'bg-white/[0.02] border-white/10 hover:border-white/20 text-[#b6b6c2]'
+                          ? 'bg-[#8f8bff]/15 border-[#8f8bff]/60 text-[#f5f5f8] shadow-[0_0_15px_rgba(143,139,255,0.2)]'
+                          : 'bg-white/[0.02] border-white/10 hover:border-white/20 text-[#b6b6c2]'
                           }`}
                       >
                         <div className="flex items-center justify-between">
@@ -407,8 +407,8 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                     <div
                       onClick={() => setHasBPLCard(true)}
                       className={`p-4 rounded-xl border cursor-pointer transition-all ${hasBPLCard
-                          ? 'bg-[#1ed760]/10 border-[#1ed760]/40 text-[#f5f5f8] shadow-[0_0_15px_rgba(30,215,96,0.15)]'
-                          : 'bg-white/[0.02] border-white/10 hover:border-white/20 text-[#b6b6c2]'
+                        ? 'bg-[#1ed760]/10 border-[#1ed760]/40 text-[#f5f5f8] shadow-[0_0_15px_rgba(30,215,96,0.15)]'
+                        : 'bg-white/[0.02] border-white/10 hover:border-white/20 text-[#b6b6c2]'
                         }`}
                     >
                       <div className="flex items-center justify-between">
@@ -423,8 +423,8 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                     <div
                       onClick={() => setHasBPLCard(false)}
                       className={`p-4 rounded-xl border cursor-pointer transition-all ${!hasBPLCard
-                          ? 'bg-[#8f8bff]/15 border-[#8f8bff]/40 text-[#f5f5f8] shadow-[0_0_15px_rgba(143,139,255,0.15)]'
-                          : 'bg-white/[0.02] border-white/10 hover:border-white/20 text-[#b6b6c2]'
+                        ? 'bg-[#8f8bff]/15 border-[#8f8bff]/40 text-[#f5f5f8] shadow-[0_0_15px_rgba(143,139,255,0.15)]'
+                        : 'bg-white/[0.02] border-white/10 hover:border-white/20 text-[#b6b6c2]'
                         }`}
                     >
                       <div className="flex items-center justify-between">
@@ -527,11 +527,10 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                             {user && (
                               <button
                                 onClick={() => handleSaveToHistory(res)}
-                                className={`px-2.5 py-1.5 rounded-xl border text-xs font-semibold flex items-center space-x-1 cursor-pointer transition-all ${
-                                  savedHistoryMap[res.schemeId]
+                                className={`px-2.5 py-1.5 rounded-xl border text-xs font-semibold flex items-center space-x-1 cursor-pointer transition-all ${savedHistoryMap[res.schemeId]
                                     ? 'bg-[#1ed760]/20 text-[#1ed760] border-[#1ed760]/40'
                                     : 'bg-white/5 text-[#8a8a97] hover:text-white border-white/10'
-                                }`}
+                                  }`}
                                 title={savedHistoryMap[res.schemeId] ? "Saved to your Citizen Eligibility History" : "Save to Eligibility History"}
                               >
                                 {savedHistoryMap[res.schemeId] ? <CheckCircle2 className="w-3.5 h-3.5 text-[#1ed760]" /> : <Bookmark className="w-3.5 h-3.5" />}
@@ -618,9 +617,32 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                               {res.schemeName}
                             </h4>
                           </div>
-                          <span className="text-xs font-mono text-[#8a8a97] bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/5">
-                            {res.matchScore}% Compatibility
-                          </span>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs font-mono text-[#8a8a97] bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/5">
+                              {res.matchScore}% Compatibility
+                            </span>
+                            {user && (
+                              <button
+                                onClick={() => handleSaveToHistory(res)}
+                                className={`px-2 py-1 rounded-lg border text-[11px] font-semibold flex items-center space-x-1 cursor-pointer transition-all ${savedHistoryMap[res.schemeId]
+                                    ? 'bg-[#1ed760]/20 text-[#1ed760] border-[#1ed760]/40'
+                                    : 'bg-white/5 text-[#8a8a97] hover:text-white border-white/10'
+                                  }`}
+                                title="Save to History"
+                              >
+                                {savedHistoryMap[res.schemeId] ? <CheckCircle2 className="w-3 h-3 text-[#1ed760]" /> : <Bookmark className="w-3 h-3" />}
+                                <span>{savedHistoryMap[res.schemeId] ? "Saved" : "Save"}</span>
+                              </button>
+                            )}
+                            {onViewSchemeDetails && (
+                              <button
+                                onClick={() => onViewSchemeDetails(res.schemeId)}
+                                className="bytune-pill px-2.5 py-1 text-[11px] font-medium cursor-pointer hover:border-[#8f8bff]/40 hover:text-[#8f8bff]"
+                              >
+                                Details
+                              </button>
+                            )}
+                          </div>
                         </div>
 
                         {/* Unmet conditions */}
