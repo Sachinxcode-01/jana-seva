@@ -21,7 +21,7 @@ export interface UserSession {
 export interface DocumentItem {
   id: string;
   name: string;
-  category: 'Identity' | 'Residence' | 'Income & Caste' | 'Education' | 'Agriculture & Land' | 'Other';
+  category: 'Identity' | 'Income' | 'Residence' | 'Education' | 'Category' | 'Banking' | 'Income & Caste' | 'Agriculture & Land' | 'Other';
   status: 'available' | 'pending' | 'not_applicable';
   notes?: string;
   documentNumber?: string;

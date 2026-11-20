@@ -583,15 +583,18 @@ const INITIAL_NOTIFICATIONS: AppNotification[] = [
 ];
 
 export const DEFAULT_DOCUMENTS: DocumentItem[] = [
-  { id: 'doc-aadhaar', name: 'Aadhaar Card (Seeded with NPCI/Bank)', category: 'Identity', status: 'pending', updatedAt: new Date().toISOString() },
-  { id: 'doc-ration', name: 'Ration Card (APL / BPL / Antyodaya)', category: 'Residence', status: 'pending', updatedAt: new Date().toISOString() },
-  { id: 'doc-income', name: 'Income Certificate (RD Number Verified)', category: 'Income & Caste', status: 'pending', updatedAt: new Date().toISOString() },
-  { id: 'doc-caste', name: 'Caste / Community Certificate', category: 'Income & Caste', status: 'pending', updatedAt: new Date().toISOString() },
-  { id: 'doc-domicile', name: 'Domicile / Residential Certificate', category: 'Residence', status: 'pending', updatedAt: new Date().toISOString() },
-  { id: 'doc-passbook', name: 'Bank Account Passbook / Statement', category: 'Identity', status: 'pending', updatedAt: new Date().toISOString() },
-  { id: 'doc-land-rtc', name: 'Land Ownership RTC / Pahani (Bhoomi)', category: 'Agriculture & Land', status: 'pending', updatedAt: new Date().toISOString() },
-  { id: 'doc-student-id', name: 'Student Bonafide / Enrollment Certificate', category: 'Education', status: 'not_applicable', notes: 'Applicable for ongoing student dependents', updatedAt: new Date().toISOString() },
-  { id: 'doc-disability', name: 'UDID / Disability Certificate', category: 'Other', status: 'not_applicable', notes: 'Only required for Divyangjan welfare schemes', updatedAt: new Date().toISOString() }
+  { id: 'doc-voter-id', name: 'Voter ID Card', category: 'Identity', status: 'available', notes: 'Valid Election Commission Electoral Photo ID', updatedAt: new Date().toISOString() },
+  { id: 'doc-other-id', name: 'Other Accepted Identity Proof', category: 'Identity', status: 'pending', notes: 'Government photo identification (Driving License, PAN, Passport)', updatedAt: new Date().toISOString() },
+  { id: 'doc-income', name: 'Income Certificate', category: 'Income', status: 'available', notes: 'Revenue Department certified annual household income (RD Number)', updatedAt: new Date().toISOString() },
+  { id: 'doc-residence', name: 'Residence Certificate', category: 'Residence', status: 'available', notes: 'Gram Panchayat / Ward Municipal residential certificate', updatedAt: new Date().toISOString() },
+  { id: 'doc-domicile', name: 'Domicile Certificate', category: 'Residence', status: 'pending', notes: 'Karnataka state domicile proof for welfare programs', updatedAt: new Date().toISOString() },
+  { id: 'doc-marks-cards', name: 'Marks Cards', category: 'Education', status: 'pending', notes: 'SSLC / PUC / Degree semester marks transcripts', updatedAt: new Date().toISOString() },
+  { id: 'doc-study-cert', name: 'Study Certificate', category: 'Education', status: 'pending', notes: 'Study certificate countersigned by BEO / DDPU where required', updatedAt: new Date().toISOString() },
+  { id: 'doc-bonafide', name: 'Bonafide Certificate', category: 'Education', status: 'pending', notes: 'Current academic year enrollment endorsement from college/school', updatedAt: new Date().toISOString() },
+  { id: 'doc-caste', name: 'Caste Certificate', category: 'Category', status: 'available', notes: 'SC / ST / OBC category certificate with RD verification number', updatedAt: new Date().toISOString() },
+  { id: 'doc-ews', name: 'EWS Certificate', category: 'Category', status: 'not_applicable', notes: 'Economically Weaker Section eligibility certificate (if applicable)', updatedAt: new Date().toISOString() },
+  { id: 'doc-bank-proof', name: 'Bank Account Proof', category: 'Banking', status: 'available', notes: 'Aadhaar-seeded bank account passbook copy for DBT disbursement', updatedAt: new Date().toISOString() },
+  { id: 'doc-land-rtc', name: 'Land Ownership RTC / Pahani', category: 'Agriculture & Land', status: 'pending', notes: 'Bhoomi RTC record for agricultural subsidies', updatedAt: new Date().toISOString() }
 ];
 
 class Database {
@@ -967,6 +970,25 @@ createUser(user: User): User {
       this.saveDatabase(this.data);
     }
     return documents;
+  }
+
+  updateUserSingleDocument(userId: string, documentId: string, updates: Partial<DocumentItem>): DocumentItem | null {
+    const user = this.data.users.find(u => u.id === userId);
+    if (!user) return null;
+    const docs: DocumentItem[] = user.documents || JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
+    user.documents = docs;
+    const docIndex = docs.findIndex(d => d.id === documentId);
+    if (docIndex === -1) {
+      return null;
+    }
+    docs[docIndex] = {
+      ...docs[docIndex],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+    user.updatedAt = new Date().toISOString();
+    this.saveDatabase(this.data);
+    return docs[docIndex];
   }
 
   // Active User Sessions
