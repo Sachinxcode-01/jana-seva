@@ -63,6 +63,20 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({
               }`}>
               {scheme.classification === 'State' ? t('stateScheme') : t('centralScheme')}
             </span>
+            {/* Classification / State Pill */}
+            {scheme.classification === 'State' ? (
+              <span className={`text-[10.5px] font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1 border shrink-0 ${isKarnataka
+                ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                : 'bg-[#f3c64f]/15 text-[#f3c64f] border border-[#f3c64f]/30'
+                }`}>
+                <MapPin className="w-2.5 h-2.5 shrink-0 opacity-80" />
+                <span className="truncate max-w-[120px]">{scheme.state}</span>
+              </span>
+            ) : (
+              <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider shrink-0 bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30">
+                {t('centralScheme')}
+              </span>
+            )}
 
             {/* State Domicile Tag */}
             <span className={`text-[10.5px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1 border shrink-0 ${isKarnataka
@@ -149,35 +163,40 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({
       </div>
 
       {/* Footer Actions */}
-      <div className="px-4 sm:px-5 py-3 sm:py-3.5 bg-black/30 border-t border-white/[0.06] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-2">
-        <div className="flex items-center justify-between sm:justify-start text-[11px] text-[#8a8a97] font-normal">
-          <div className="flex items-center">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#1ed760] mr-1.5 shrink-0" />
-            <span>Official Verified</span>
+      {/* Footer Actions */}
+      <div className="px-4 sm:px-5 py-3 sm:py-3.5 bg-black/30 border-t border-white/[0.06] flex flex-col gap-2.5">
+        <div className="flex items-center justify-between text-[11px] text-[#8a8a97] font-normal">
+          <div className="flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#1ed760] shrink-0" />
+            <span className="font-normal text-[#8a8a97]">Official Verified</span>
           </div>
-          <span className="sm:hidden text-[10px] text-[#60606c] font-mono">
-            {scheme.classification === 'State' ? 'State' : 'Central'}
+          <span className="text-[10px] text-[#8a8a97] font-mono bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/[0.06] shrink-0">
+            {scheme.classification === 'State' ? t('stateScheme') : t('centralScheme')}
+            {scheme.classification === 'State' ? (scheme.state || t('stateScheme')) : t('centralScheme')}
           </span>
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex items-center gap-2 w-full">
           {onCheckEligibility && (
             <button
               onClick={() => onCheckEligibility(scheme)}
-              className="flex-1 sm:flex-initial flex items-center justify-center space-x-1.5 text-xs font-medium text-[#8f8bff] bg-[#8f8bff]/15 hover:bg-[#8f8bff]/25 active:bg-[#8f8bff]/30 px-3.5 py-2 sm:py-1.5 rounded-full transition-all border border-[#8f8bff]/30 hover:border-[#8f8bff]/50 cursor-pointer shadow-sm active:scale-95 whitespace-nowrap"
+              className="flex-1 min-w-0 flex items-center justify-center space-x-1.5 text-xs font-medium text-[#8f8bff] bg-[#8f8bff]/15 hover:bg-[#8f8bff]/25 active:bg-[#8f8bff]/30 px-3 py-2 rounded-full transition-all border border-[#8f8bff]/30 hover:border-[#8f8bff]/50 cursor-pointer shadow-sm active:scale-95 group/eligibility"
               title="Check Scheme Eligibility"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#f3c64f] shrink-0" />
-              <span>Check Eligibility</span>
+              <span className="truncate">
+                <span className="hidden sm:inline 2xl:hidden xl:inline">Check </span>Eligibility
+              </span>
             </button>
           )}
 
           <button
             onClick={() => onViewDetails(scheme)}
-            className="flex-1 sm:flex-initial bytune-pill flex items-center justify-center space-x-1.5 text-xs font-medium px-4 py-2 sm:py-1.5 hover:border-[#8f8bff]/40 hover:text-[#8f8bff] cursor-pointer bg-white/[0.04] transition-all active:scale-95 whitespace-nowrap"
+            className={`${onCheckEligibility ? 'flex-1' : 'w-full'} min-w-0 bytune-pill flex items-center justify-center space-x-1.5 text-xs font-medium px-3.5 py-2 hover:border-[#8f8bff]/40 hover:text-[#8f8bff] cursor-pointer bg-white/[0.04] transition-all active:scale-95 group/view`}
+            title={t('viewDetails')}
           >
-            <span>{t('viewDetails')}</span>
-            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+            <span className="truncate">{t('viewDetails')}</span>
+            <ArrowRight className="w-3.5 h-3.5 shrink-0 group-hover/view:translate-x-1 transition-transform" />
           </button>
         </div>
       </div>
