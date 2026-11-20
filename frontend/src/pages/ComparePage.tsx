@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
-import { Scale, CheckCircle2, X, ExternalLink, Plus, Eye } from 'lucide-react';
+import { Scale, CheckCircle2, X, ExternalLink, Plus, Eye, Bookmark, BookmarkCheck } from 'lucide-react';
 import { Scheme } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 
 interface ComparePageProps {
   schemes: Scheme[];
   onSelectScheme: (scheme: Scheme) => void;
+  savedSchemeIds?: string[];
+  onToggleSaveScheme?: (schemeId: string) => void;
 }
 
-export const ComparePage: React.FC<ComparePageProps> = ({ schemes, onSelectScheme }) => {
+export const ComparePage: React.FC<ComparePageProps> = ({
+  schemes,
+  onSelectScheme,
+  savedSchemeIds = [],
+  onToggleSaveScheme
+}) => {
   const { t } = useLanguage();
   const [selectedIds, setSelectedIds] = useState<string[]>([
     schemes[0]?.id || 'scheme-gruha-lakshmi',
@@ -101,15 +108,35 @@ export const ComparePage: React.FC<ComparePageProps> = ({ schemes, onSelectSchem
                       </h3>
                       <p className="text-[11px] text-[#8a8a97] font-normal">{s.department}</p>
                     </div>
-                    {selectedIds.length > 1 && (
-                      <button
-                        onClick={() => handleRemoveScheme(s.id)}
-                        className="bytune-pill p-1.5 text-[#8a8a97] hover:text-rose-400 cursor-pointer"
-                        title="Remove from comparison"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    )}
+                    <div className="flex items-center space-x-1.5 shrink-0">
+                      {onToggleSaveScheme && (
+                        <button
+                          onClick={() => onToggleSaveScheme(s.id)}
+                          className={`p-1.5 rounded-full border transition-all cursor-pointer ${
+                            savedSchemeIds.includes(s.id)
+                              ? 'text-[#8f8bff] bg-[#8f8bff]/20 border-[#8f8bff]/40 shadow-[0_0_12px_rgba(143,139,255,0.4)]'
+                              : 'text-[#8a8a97] hover:text-[#f5f5f8] border-white/10 bg-white/[0.03] hover:bg-white/[0.08]'
+                          }`}
+                          title={savedSchemeIds.includes(s.id) ? "Saved to Bookmarks" : "Save Scheme"}
+                          aria-label={savedSchemeIds.includes(s.id) ? "Saved to Bookmarks" : "Save Scheme"}
+                        >
+                          {savedSchemeIds.includes(s.id) ? (
+                            <BookmarkCheck className="w-3.5 h-3.5 fill-[#8f8bff]" />
+                          ) : (
+                            <Bookmark className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      )}
+                      {selectedIds.length > 1 && (
+                        <button
+                          onClick={() => handleRemoveScheme(s.id)}
+                          className="bytune-pill p-1.5 text-[#8a8a97] hover:text-rose-400 cursor-pointer"
+                          title="Remove from comparison"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </th>
               ))}

@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import {
   Sparkles, CheckCircle2, AlertCircle, XCircle, FileText,
   ExternalLink, ArrowRight, RotateCcw, ShieldCheck, Info,
-  ChevronRight, ArrowLeft, Calculator, SlidersHorizontal
+  ChevronRight, ArrowLeft, Calculator, SlidersHorizontal, Bookmark, BookmarkCheck
 } from 'lucide-react';
 import { api, FALLBACK_SCHEMES } from '../services/api';
 import { EligibilityResult } from '../types';
 import { EquationWorkflow } from '../components/EquationWorkflow';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { ALL_INDIAN_STATES } from '../utils/indiaStates';
 
 interface EligibilityCheckerPageProps {
@@ -16,9 +17,12 @@ interface EligibilityCheckerPageProps {
 
 export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ onViewSchemeDetails }) => {
   const { language, t } = useLanguage();
+  const { user } = useAuth();
   const [viewMode, setViewMode] = useState<'wizard' | 'equation'>('wizard');
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [loading, setLoading] = useState(false);
+  const [savedHistoryMap, setSavedHistoryMap] = useState<Record<string, boolean>>({});
+  const [historyToast, setHistoryToast] = useState<string | null>(null);
 
   // Form states
   const [age, setAge] = useState<number>(22);
@@ -66,8 +70,44 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
     setResults(null);
   };
 
+  const handleSaveToHistory = async (res: EligibilityResult) => {
+    try {
+      await api.saveEligibilityEvaluation({
+        schemeId: res.schemeId,
+        schemeName: res.schemeName,
+        category: res.category,
+        matchScore: res.matchScore,
+        isEligible: res.isEligible,
+        matchingReasons: res.matchingReasons,
+        unmetConditions: res.unmetConditions,
+        requiredDocuments: res.requiredDocuments,
+        inputCriteria: {
+          age,
+          state,
+          occupation,
+          beneficiaryCategory,
+          annualIncome,
+          gender,
+          educationLevel
+        }
+      });
+      setSavedHistoryMap(prev => ({ ...prev, [res.schemeId]: true }));
+      setHistoryToast(`Evaluation for "${res.schemeName}" saved to your history.`);
+      setTimeout(() => setHistoryToast(null), 3000);
+    } catch (e) {
+      console.warn('Error saving to history:', e);
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8 text-[#f5f5f8]">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8 text-[#f5f5f8] relative">
+      {/* Toast Alert */}
+      {historyToast && (
+        <div className="fixed bottom-6 right-6 z-50 p-4 rounded-2xl bg-[#101016] border border-[#1ed760]/30 text-[#1ed760] text-xs shadow-2xl flex items-center space-x-2 animate-in slide-in-from-bottom duration-200">
+          <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <span>{historyToast}</span>
+        </div>
+      )}
       {/* Page Title & Mode Switcher */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
         <div>
@@ -484,6 +524,20 @@ export const EligibilityCheckerPage: React.FC<EligibilityCheckerPageProps> = ({ 
                             <span className="text-xs font-mono font-medium text-[#1ed760] bg-[#1ed760]/10 px-3 py-1 rounded-full border border-[#1ed760]/20">
                               {res.matchScore}% Match
                             </span>
+                            {user && (
+                              <button
+                                onClick={() => handleSaveToHistory(res)}
+                                className={`px-2.5 py-1.5 rounded-xl border text-xs font-semibold flex items-center space-x-1 cursor-pointer transition-all ${
+                                  savedHistoryMap[res.schemeId]
+                                    ? 'bg-[#1ed760]/20 text-[#1ed760] border-[#1ed760]/40'
+                                    : 'bg-white/5 text-[#8a8a97] hover:text-white border-white/10'
+                                }`}
+                                title={savedHistoryMap[res.schemeId] ? "Saved to your Citizen Eligibility History" : "Save to Eligibility History"}
+                              >
+                                {savedHistoryMap[res.schemeId] ? <CheckCircle2 className="w-3.5 h-3.5 text-[#1ed760]" /> : <Bookmark className="w-3.5 h-3.5" />}
+                                <span>{savedHistoryMap[res.schemeId] ? "Saved" : "Save"}</span>
+                              </button>
+                            )}
                             {onViewSchemeDetails && (
                               <button
                                 onClick={() => onViewSchemeDetails(res.schemeId)}

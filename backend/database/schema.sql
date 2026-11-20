@@ -185,6 +185,8 @@ CREATE TABLE notifications (
     message_hi TEXT,
     type VARCHAR(50) DEFAULT 'general',
     is_read BOOLEAN DEFAULT FALSE,
+    read_by JSONB DEFAULT '[]'::jsonb,
+    dismissed_by JSONB DEFAULT '[]'::jsonb,
     created_at TIMESTAMP
     WITH
         TIME ZONE DEFAULT CURRENT_TIMESTAMP

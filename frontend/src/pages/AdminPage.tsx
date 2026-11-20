@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Building2, Users, Eye, Plus,
-  Trash2, ShieldCheck
+  Trash2, ShieldCheck, Edit3, CheckCircle, XCircle, Search
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer
@@ -23,6 +23,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
   const [adminUsers, setAdminUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'schemes' | 'users' | 'logs'>('overview');
+  const [schemeSearch, setSchemeSearch] = useState('');
 
   // Add Scheme Modal state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -35,6 +36,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
   const [newBenefits, setNewBenefits] = useState('');
   const [newDocs, setNewDocs] = useState('');
   const [newWebsite, setNewWebsite] = useState('');
+
+  // Edit Scheme Modal state
+  const [editingScheme, setEditingScheme] = useState<Scheme | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editDept, setEditDept] = useState('');
+  const [editCat, setEditCat] = useState<SchemeCategory>('Women Empowerment');
+  const [editClass, setEditClass] = useState<'Central' | 'State'>('Central');
+  const [editState, setEditState] = useState('');
+  const [editDesc, setEditDesc] = useState('');
+  const [editBenefits, setEditBenefits] = useState('');
+  const [editDocs, setEditDocs] = useState('');
+  const [editWebsite, setEditWebsite] = useState('');
+  const [editIsPublished, setEditIsPublished] = useState(true);
+  const [editIsVerified, setEditIsVerified] = useState(true);
 
   const loadMetrics = async () => {
     try {
@@ -63,18 +78,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
 
     try {
       const res = await api.createScheme({
-          name: newName,
-          department: newDept,
-          category: newCat,
-          classification: newClass,
-          state: newState,
-          description: newDesc,
-          benefits: newBenefits.split('\n').filter(b => b.trim()),
-          requiredDocuments: newDocs.split('\n').filter(d => d.trim()),
-          officialWebsite: newWebsite || 'https://india.gov.in'
-        });
+        name: newName,
+        department: newDept,
+        category: newCat,
+        classification: newClass,
+        state: newState,
+        description: newDesc,
+        benefits: newBenefits.split('\n').filter(b => b.trim()),
+        requiredDocuments: newDocs.split('\n').filter(d => d.trim()),
+        officialWebsite: newWebsite || 'https://india.gov.in'
+      });
 
-          if (res.success) {
+      if (res.success) {
         setShowAddModal(false);
         setNewName('');
         setNewDept('');
@@ -99,6 +114,61 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
       } catch {
         onRefreshSchemes();
       }
+    }
+  };
+
+  const handleStartEdit = (scheme: Scheme) => {
+    setEditingScheme(scheme);
+    setEditName(scheme.name);
+    setEditDept(scheme.department);
+    setEditCat(scheme.category);
+    setEditClass(scheme.classification);
+    setEditState(scheme.state);
+    setEditDesc(scheme.description);
+    setEditBenefits(Array.isArray(scheme.benefits) ? scheme.benefits.join('\n') : '');
+    setEditDocs(Array.isArray(scheme.requiredDocuments) ? scheme.requiredDocuments.join('\n') : '');
+    setEditWebsite(scheme.officialWebsite || '');
+    setEditIsPublished(scheme.isPublished ?? true);
+    setEditIsVerified(scheme.isVerified ?? true);
+  };
+
+  const handleUpdateScheme = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingScheme || !editName.trim() || !editDept.trim() || !editDesc.trim()) return;
+
+    try {
+      const res = await api.updateScheme(editingScheme.id, {
+        name: editName,
+        department: editDept,
+        category: editCat,
+        classification: editClass,
+        state: editState,
+        description: editDesc,
+        benefits: editBenefits.split('\n').filter(b => b.trim()),
+        requiredDocuments: editDocs.split('\n').filter(d => d.trim()),
+        officialWebsite: editWebsite || 'https://india.gov.in',
+        isPublished: editIsPublished,
+        isVerified: editIsVerified
+      });
+
+      if (res.success) {
+        setEditingScheme(null);
+        onRefreshSchemes();
+        loadMetrics();
+      }
+    } catch {
+      setEditingScheme(null);
+      onRefreshSchemes();
+    }
+  };
+
+  const handleTogglePublish = async (scheme: Scheme) => {
+    try {
+      await api.publishScheme(scheme.id, !scheme.isPublished);
+      onRefreshSchemes();
+      loadMetrics();
+    } catch (e) {
+      console.error('Failed toggling publication status:', e);
     }
   };
 
@@ -274,253 +344,455 @@ export const AdminPage: React.FC<AdminPageProps> = ({ schemes, onRefreshSchemes 
 
       {/* Tab: Manage Schemes Table */}
       {activeTab === 'schemes' && (
-        <div className="bytune-card overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left divide-y divide-white/[0.08]">
-              <thead className="bg-[#0a0a0e]/80 text-[#8a8a97]">
-                <tr>
-                  <th className="p-4">Scheme Title</th>
-                  <th className="p-4">Department</th>
-                  <th className="p-4">Level</th>
-                  <th className="p-4">Category</th>
-                  <th className="p-4">Views</th>
-                  <th className="p-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.06] text-[#b6b6c2]">
-                {schemes.map((s) => (
-                  <tr key={s.id} className="hover:bg-white/[0.02]">
-                    <td className="p-4 font-medium text-[#f5f5f8]">{s.name}</td>
-                    <td className="p-4 text-[#8a8a97]">{s.department}</td>
-                    <td className="p-4">
-                      <span className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] ${s.classification === 'State' ? 'bg-[#f3c64f]/15 text-[#f3c64f] border border-[#f3c64f]/30' : 'bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30'
-                        }`}>
-                        {s.classification}
-                      </span>
-                    </td>
-                    <td className="p-4">{s.category}</td>
-                    <td className="p-4 font-mono text-[#f5f5f8]">{s.viewCount}</td>
-                    <td className="p-4 text-right">
-                      <button
-                        onClick={() => handleDeleteScheme(s.id)}
-                        className="bytune-pill p-1.5 text-[#8a8a97] hover:text-rose-400 cursor-pointer"
-                        title="Delete Scheme"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
+            <div className="bytune-card overflow-hidden space-y-4 p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8a8a97]" />
+                  <input
+                    type="text"
+                    value={schemeSearch}
+                    onChange={(e) => setSchemeSearch(e.target.value)}
+                    placeholder="Search scheme name, department or category..."
+                    className="w-full pl-10 pr-4 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-xs text-white focus:outline-none focus:border-[#8f8bff]/50"
+                  />
+                </div>
+                <div className="text-xs font-mono text-[#8a8a97]">
+                  Showing {schemes.filter(s => !schemeSearch || s.name.toLowerCase().includes(schemeSearch.toLowerCase()) || s.department.toLowerCase().includes(schemeSearch.toLowerCase())).length} of {schemes.length} schemes
+                </div>
+              </div>
+
+              <div className="overflow-x-auto rounded-xl border border-white/[0.08]">
+                <table className="w-full text-xs text-left divide-y divide-white/[0.08]">
+                  <thead className="bg-[#0a0a0e]/80 text-[#8a8a97]">
+                    <tr>
+                      <th className="p-3.5">Scheme Title</th>
+                      <th className="p-3.5">Department</th>
+                      <th className="p-3.5">Level</th>
+                      <th className="p-3.5">Category</th>
+                      <th className="p-3.5 text-center">Status</th>
+                      <th className="p-3.5 text-center">Verified</th>
+                      <th className="p-3.5 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/[0.06] text-[#b6b6c2]">
+                      {
+                        schemes
+                  .filter(s => !schemeSearch || s.name.toLowerCase().includes(schemeSearch.toLowerCase()) || s.department.toLowerCase().includes(schemeSearch.toLowerCase()))
+                          .map((s) => (
+                            <tr key={s.id} className="hover:bg-white/[0.02]">
+                                <td className="p-3.5 font-medium text-[#f5f5f8]">{s.name}</td>
+                                <td className="p-3.5 text-[#8a8a97]">{s.department}</td>
+                                <td className="p-3.5">
+                                  <span className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] ${s.classification === 'State' ? 'bg-[#f3c64f]/15 text-[#f3c64f] border border-[#f3c64f]/30' : 'bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30'
+                                    }`}>
+                                    {s.classification}
+                                  </span>
+                                </td>
+                                  <td className="p-3.5">{s.category}</td>
+                                  <td className="p-3.5 text-center">
+                                    <button
+                                      onClick={() => handleTogglePublish(s)}
+                                      className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] cursor-pointer transition-colors ${s.isPublished
+                                          ? 'bg-[#1ed760]/15 text-[#1ed760] border border-[#1ed760]/30 hover:bg-[#1ed760]/25'
+                                          : 'bg-white/10 text-[#8a8a97] border border-white/10 hover:bg-white/20'
+                                        }`}
+                                      title="Click to toggle publication"
+                                    >
+                                      {s.isPublished ? 'Published' : 'Draft'}
+                                    </button>
+                                  </td>
+                                  <td className="p-3.5 text-center">
+                                    <span className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full font-mono text-[10px] ${s.isVerified
+                                        ? 'bg-[#6fd8ff]/15 text-[#6fd8ff] border border-[#6fd8ff]/30'
+                                        : 'bg-white/10 text-[#8a8a97] border border-white/10'
+                                      }`}>
+                                      {s.isVerified ? 'Official Verified' : 'Unverified'}
+                                    </span>
+                                  </td>
+                                  <td className="p-3.5 text-right space-x-1">
+                                    <button
+                                      onClick={() => handleStartEdit(s)}
+                                      className="bytune-pill p-1.5 text-[#8a8a97] hover:text-[#8f8bff] cursor-pointer"
+                                      title="Edit Scheme Details"
+                                    >
+                                      <Edit3 className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteScheme(s.id)}
+                                      className="bytune-pill p-1.5 text-[#8a8a97] hover:text-rose-400 cursor-pointer"
+                                      title="Delete Scheme"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </td>
+                                </tr>
                 ))}
-              </tbody>
-            </table>
+                              </tbody>
+                            </table>
           </div>
-        </div>
+              </div>
       )}
 
-      {/* Tab: Users & Citizens */}
-      {activeTab === 'users' && (
-        <div className="bytune-card overflow-hidden">
-          <div className="p-5 border-b border-white/[0.08] flex items-center justify-between">
-            <div>
-              <h3 className="font-medium text-sm text-[#f5f5f8]">Registered Citizens & Accounts</h3>
-              <p className="text-[11px] text-[#8a8a97] mt-0.5">Directory of authenticated public accounts and administrators.</p>
-            </div>
-            <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/[0.04] text-[#6fd8ff] border border-white/10">
-              {adminUsers.length} Registered
-            </span>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left divide-y divide-white/[0.08]">
-              <thead className="bg-[#0a0a0e]/80 text-[#8a8a97]">
-                <tr>
-                  <th className="p-4">Full Name</th>
-                  <th className="p-4">Email</th>
-                  <th className="p-4">Role</th>
-                  <th className="p-4">State</th>
-                  <th className="p-4">Occupation</th>
-                  <th className="p-4">Created Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.06] text-[#b6b6c2]">
-                {adminUsers.map((u) => (
-                  <tr key={u.id} className="hover:bg-white/[0.02]">
-                    <td className="p-4 font-medium text-[#f5f5f8]">{u.fullName}</td>
-                    <td className="p-4 font-mono text-[#8a8a97]">{u.email}</td>
-                    <td className="p-4">
-                      <span className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] ${u.role === 'admin'
-                          ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30'
-                          : 'bg-[#1ed760]/15 text-[#1ed760] border border-[#1ed760]/30'
-                        }`}>
-                        {u.role.toUpperCase()}
-                      </span>
-                    </td>
-                    <td className="p-4">{u.state || 'Karnataka'}</td>
-                    <td className="p-4">{u.occupation || 'General Citizen'}</td>
-                    <td className="p-4 font-mono text-[11px] text-[#8a8a97]">
-                      {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'Active'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Tab: Audit Logs */}
-      {activeTab === 'logs' && (
-        <div className="bytune-card p-6 space-y-4">
-          <h3 className="font-medium text-sm text-[#f5f5f8]">Administrative Audit Trail</h3>
-          <div className="divide-y divide-white/[0.06] text-xs">
-            {(metrics?.recentLogs || []).map((l: any) => (
-              <div key={l.id} className="py-3 flex justify-between items-start gap-4">
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <span className="font-mono text-[#8f8bff]">{l.action}</span>
-                    <span className="text-white/20">•</span>
-                    <span className="font-medium text-[#f5f5f8]">{l.target}</span>
+              {/* Tab: Users & Citizens */}
+              {activeTab === 'users' && (
+                <div className="bytune-card overflow-hidden">
+                  <div className="p-5 border-b border-white/[0.08] flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium text-sm text-[#f5f5f8]">Registered Citizens & Accounts</h3>
+                      <p className="text-[11px] text-[#8a8a97] mt-0.5">Directory of authenticated public accounts and administrators.</p>
+                    </div>
+                    <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/[0.04] text-[#6fd8ff] border border-white/10">
+                      {adminUsers.length} Registered
+                    </span>
                   </div>
-                  <p className="text-[#8a8a97] mt-0.5">{l.details}</p>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs text-left divide-y divide-white/[0.08]">
+                      <thead className="bg-[#0a0a0e]/80 text-[#8a8a97]">
+                        <tr>
+                          <th className="p-4">Full Name</th>
+                          <th className="p-4">Email</th>
+                          <th className="p-4">Role</th>
+                          <th className="p-4">State</th>
+                          <th className="p-4">Occupation</th>
+                          <th className="p-4">Created Date</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/[0.06] text-[#b6b6c2]">
+                        {adminUsers.map((u) => (
+                          <tr key={u.id} className="hover:bg-white/[0.02]">
+                            <td className="p-4 font-medium text-[#f5f5f8]">{u.fullName}</td>
+                            <td className="p-4 font-mono text-[#8a8a97]">{u.email}</td>
+                            <td className="p-4">
+                              <span className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] ${u.role === 'admin'
+                                ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30'
+                                : 'bg-[#1ed760]/15 text-[#1ed760] border border-[#1ed760]/30'
+                                }`}>
+                                {u.role.toUpperCase()}
+                              </span>
+                            </td>
+                            <td className="p-4">{u.state || 'Karnataka'}</td>
+                            <td className="p-4">{u.occupation || 'General Citizen'}</td>
+                            <td className="p-4 font-mono text-[11px] text-[#8a8a97]">
+                              {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'Active'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                <span className="text-[10px] font-mono text-[#8a8a97] shrink-0">
-                  {new Date(l.timestamp).toLocaleDateString()}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+              )}
 
-      {/* Add New Scheme Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-[#050507]/80 backdrop-blur-xl flex items-center justify-center p-4">
-          <div className="bytune-card max-w-2xl w-full shadow-2xl border border-white/10 overflow-hidden max-h-[90vh] flex flex-col">
-            <div className="bg-[#0a0a0e]/90 text-[#f5f5f8] p-5 flex justify-between items-center border-b border-white/[0.08]">
-              <h3 className="font-medium text-sm">Add New Verified Government Scheme</h3>
-              <button onClick={() => setShowAddModal(false)} className="bytune-pill p-1 text-[#8a8a97] hover:text-white cursor-pointer">✕</button>
+              {/* Tab: Audit Logs */}
+              {activeTab === 'logs' && (
+                <div className="bytune-card p-6 space-y-4">
+                  <h3 className="font-medium text-sm text-[#f5f5f8]">Administrative Audit Trail</h3>
+                  <div className="divide-y divide-white/[0.06] text-xs">
+                    {(metrics?.recentLogs || []).map((l: any) => (
+                      <div key={l.id} className="py-3 flex justify-between items-start gap-4">
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <span className="font-mono text-[#8f8bff]">{l.action}</span>
+                            <span className="text-white/20">•</span>
+                            <span className="font-medium text-[#f5f5f8]">{l.target}</span>
+                          </div>
+                          <p className="text-[#8a8a97] mt-0.5">{l.details}</p>
+                        </div>
+                        <span className="text-[10px] font-mono text-[#8a8a97] shrink-0">
+                          {new Date(l.timestamp).toLocaleDateString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Add New Scheme Modal */}
+              {showAddModal && (
+                <div className="fixed inset-0 z-50 bg-[#050507]/80 backdrop-blur-xl flex items-center justify-center p-4">
+                  <div className="bytune-card max-w-2xl w-full shadow-2xl border border-white/10 overflow-hidden max-h-[90vh] flex flex-col">
+                    <div className="bg-[#0a0a0e]/90 text-[#f5f5f8] p-5 flex justify-between items-center border-b border-white/[0.08]">
+                      <h3 className="font-medium text-sm">Add New Verified Government Scheme</h3>
+                      <button onClick={() => setShowAddModal(false)} className="bytune-pill p-1 text-[#8a8a97] hover:text-white cursor-pointer">✕</button>
+                    </div>
+
+                    <form onSubmit={handleCreateScheme} className="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block font-medium text-[#b6b6c2] mb-1">Scheme Title</label>
+                          <input
+                            type="text"
+                            required
+                            value={newName}
+                            onChange={(e) => setNewName(e.target.value)}
+                            placeholder="e.g. Pradhan Mantri Awas Yojana"
+                            className="w-full py-2.5 px-4 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-medium text-[#b6b6c2] mb-1">Government Department</label>
+                          <input
+                            type="text"
+                            required
+                            value={newDept}
+                            onChange={(e) => setNewDept(e.target.value)}
+                            placeholder="e.g. Ministry of Housing & Urban Affairs"
+                            className="w-full py-2.5 px-4 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="block font-medium text-[#b6b6c2] mb-1">Category</label>
+                          <select
+                            value={newCat}
+                            onChange={(e) => setNewCat(e.target.value as any)}
+                            className="w-full py-2.5 px-3 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                          >
+                            <option value="Women Empowerment">Women Empowerment</option>
+                            <option value="Student Scholarships">Student Scholarships</option>
+                            <option value="Farmer Welfare">Farmer Welfare</option>
+                            <option value="Employment Opportunities">Employment Opportunities</option>
+                            <option value="Financial Assistance">Financial Assistance</option>
+                            <option value="Health and Social Welfare">Health and Social Welfare</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block font-medium text-[#b6b6c2] mb-1">Classification</label>
+                          <select
+                            value={newClass}
+                            onChange={(e) => setNewClass(e.target.value as any)}
+                            className="w-full py-2.5 px-3 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                          >
+                            <option value="Central">Central Scheme</option>
+                            <option value="State">Karnataka State Scheme</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block font-medium text-[#b6b6c2] mb-1">State Scope</label>
+                          <input
+                            type="text"
+                            value={newState}
+                            onChange={(e) => setNewState(e.target.value)}
+                            className="w-full py-2.5 px-4 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block font-medium text-[#b6b6c2] mb-1">Scheme Overview & Description</label>
+                        <textarea
+                          rows={2}
+                          required
+                          value={newDesc}
+                          onChange={(e) => setNewDesc(e.target.value)}
+                          placeholder="Detail the objectives and livelihood assistance provided..."
+                          className="w-full py-2 px-3 rounded-2xl border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-medium text-[#b6b6c2] mb-1">Key Benefits (One per line)</label>
+                        <textarea
+                          rows={2}
+                          value={newBenefits}
+                          onChange={(e) => setNewBenefits(e.target.value)}
+                          placeholder="₹2,000 monthly DBT&#10;Zero registration charges"
+                          className="w-full py-2 px-3 rounded-2xl border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-medium text-[#b6b6c2] mb-1">Required Documents (One per line)</label>
+                        <textarea
+                          rows={2}
+                          value={newDocs}
+                          onChange={(e) => setNewDocs(e.target.value)}
+                          placeholder="Aadhaar Card&#10;Ration Card&#10;Bank Passbook"
+                          className="w-full py-2 px-3 rounded-2xl border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-medium text-[#b6b6c2] mb-1">Official Application Website URL</label>
+                        <input
+                          type="url"
+                          value={newWebsite}
+                          onChange={(e) => setNewWebsite(e.target.value)}
+                          placeholder="https://..."
+                          className="w-full py-2.5 px-4 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                        />
+                      </div>
+
+                      <div className="pt-2">
+                        <button
+                          type="submit"
+                          className="bytune-btn-solid w-full py-3 rounded-full font-semibold cursor-pointer text-xs"
+                        >
+                          Publish Verified Scheme
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+
+              {/* Edit Scheme Modal */}
+              {editingScheme && (
+                <div className="fixed inset-0 z-50 bg-[#050507]/80 backdrop-blur-xl flex items-center justify-center p-4">
+                  <div className="bytune-card max-w-2xl w-full shadow-2xl border border-white/10 overflow-hidden max-h-[90vh] flex flex-col">
+                    <div className="bg-[#0a0a0e]/90 text-[#f5f5f8] p-5 flex justify-between items-center border-b border-white/[0.08]">
+                      <div>
+                        <h3 className="font-medium text-sm">Edit Government Scheme</h3>
+                        <p className="text-[10px] text-[#8a8a97]">ID: {editingScheme.id}</p>
+                      </div>
+                      <button onClick={() => setEditingScheme(null)} className="bytune-pill p-1 text-[#8a8a97] hover:text-white cursor-pointer">✕</button>
+                    </div>
+
+                    <form onSubmit={handleUpdateScheme} className="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block font-medium text-[#b6b6c2] mb-1">Scheme Title</label>
+                          <input
+                            type="text"
+                            required
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            className="w-full py-2.5 px-4 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-medium text-[#b6b6c2] mb-1">Government Department</label>
+                          <input
+                            type="text"
+                            required
+                            value={editDept}
+                            onChange={(e) => setEditDept(e.target.value)}
+                            className="w-full py-2.5 px-4 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="block font-medium text-[#b6b6c2] mb-1">Category</label>
+                          <select
+                            value={editCat}
+                            onChange={(e) => setEditCat(e.target.value as any)}
+                            className="w-full py-2.5 px-3 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                          >
+                            <option value="Women Empowerment">Women Empowerment</option>
+                            <option value="Student Scholarships">Student Scholarships</option>
+                            <option value="Farmer Welfare">Farmer Welfare</option>
+                            <option value="Employment Opportunities">Employment Opportunities</option>
+                            <option value="Financial Assistance">Financial Assistance</option>
+                            <option value="Health and Social Welfare">Health and Social Welfare</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block font-medium text-[#b6b6c2] mb-1">Classification</label>
+                          <select
+                            value={editClass}
+                            onChange={(e) => setEditClass(e.target.value as any)}
+                            className="w-full py-2.5 px-3 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                          >
+                            <option value="Central">Central Scheme</option>
+                            <option value="State">Karnataka State Scheme</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block font-medium text-[#b6b6c2] mb-1">State Scope</label>
+                          <input
+                            type="text"
+                            value={editState}
+                            onChange={(e) => setEditState(e.target.value)}
+                            className="w-full py-2.5 px-4 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block font-medium text-[#b6b6c2] mb-1">Scheme Overview & Description</label>
+                        <textarea
+                          rows={2}
+                          required
+                          value={editDesc}
+                          onChange={(e) => setEditDesc(e.target.value)}
+                          className="w-full py-2 px-3 rounded-2xl border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-medium text-[#b6b6c2] mb-1">Key Benefits (One per line)</label>
+                        <textarea
+                          rows={2}
+                          value={editBenefits}
+                          onChange={(e) => setEditBenefits(e.target.value)}
+                          className="w-full py-2 px-3 rounded-2xl border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-medium text-[#b6b6c2] mb-1">Required Documents (One per line)</label>
+                        <textarea
+                          rows={2}
+                          value={editDocs}
+                          onChange={(e) => setEditDocs(e.target.value)}
+                          className="w-full py-2 px-3 rounded-2xl border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-medium text-[#b6b6c2] mb-1">Official Application Website URL</label>
+                        <input
+                          type="url"
+                          value={editWebsite}
+                          onChange={(e) => setEditWebsite(e.target.value)}
+                          className="w-full py-2.5 px-4 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-6 py-2">
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={editIsPublished}
+                            onChange={(e) => setEditIsPublished(e.target.checked)}
+                            className="rounded border-white/20 bg-[#101016] text-[#8f8bff] focus:ring-0"
+                          />
+                          <span className="text-[#b6b6c2]">Published (Visible in Public Directory)</span>
+                        </label>
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={editIsVerified}
+                            onChange={(e) => setEditIsVerified(e.target.checked)}
+                            className="rounded border-white/20 bg-[#101016] text-[#1ed760] focus:ring-0"
+                          />
+                          <span className="text-[#b6b6c2]">Verified Scheme</span>
+                        </label>
+                      </div>
+
+                      <div className="flex items-center space-x-3 pt-2">
+                        <button
+                          type="button"
+                          onClick={() => setEditingScheme(null)}
+                          className="bytune-btn-ghost flex-1 py-3 rounded-full font-semibold cursor-pointer text-xs"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="bytune-btn-solid flex-1 py-3 rounded-full font-semibold cursor-pointer text-xs"
+                        >
+                          Save Scheme Changes
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
             </div>
-
-            <form onSubmit={handleCreateScheme} className="p-6 space-y-4 text-xs overflow-y-auto flex-1">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-medium text-[#b6b6c2] mb-1">Scheme Title</label>
-                  <input
-                    type="text"
-                    required
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    placeholder="e.g. Pradhan Mantri Awas Yojana"
-                    className="w-full py-2.5 px-4 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium text-[#b6b6c2] mb-1">Government Department</label>
-                  <input
-                    type="text"
-                    required
-                    value={newDept}
-                    onChange={(e) => setNewDept(e.target.value)}
-                    placeholder="e.g. Ministry of Housing & Urban Affairs"
-                    className="w-full py-2.5 px-4 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block font-medium text-[#b6b6c2] mb-1">Category</label>
-                  <select
-                    value={newCat}
-                    onChange={(e) => setNewCat(e.target.value as any)}
-                    className="w-full py-2.5 px-3 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
-                  >
-                    <option value="Women Empowerment">Women Empowerment</option>
-                    <option value="Student Scholarships">Student Scholarships</option>
-                    <option value="Farmer Welfare">Farmer Welfare</option>
-                    <option value="Employment Opportunities">Employment Opportunities</option>
-                    <option value="Financial Assistance">Financial Assistance</option>
-                    <option value="Health and Social Welfare">Health and Social Welfare</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-medium text-[#b6b6c2] mb-1">Classification</label>
-                  <select
-                    value={newClass}
-                    onChange={(e) => setNewClass(e.target.value as any)}
-                    className="w-full py-2.5 px-3 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
-                  >
-                    <option value="Central">Central Scheme</option>
-                    <option value="State">Karnataka State Scheme</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-medium text-[#b6b6c2] mb-1">State Scope</label>
-                  <input
-                    type="text"
-                    value={newState}
-                    onChange={(e) => setNewState(e.target.value)}
-                    className="w-full py-2.5 px-4 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-medium text-[#b6b6c2] mb-1">Scheme Overview & Description</label>
-                <textarea
-                  rows={2}
-                  required
-                  value={newDesc}
-                  onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder="Detail the objectives and livelihood assistance provided..."
-                  className="w-full py-2 px-3 rounded-2xl border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium text-[#b6b6c2] mb-1">Key Benefits (One per line)</label>
-                <textarea
-                  rows={2}
-                  value={newBenefits}
-                  onChange={(e) => setNewBenefits(e.target.value)}
-                  placeholder="₹2,000 monthly DBT&#10;Zero registration charges"
-                  className="w-full py-2 px-3 rounded-2xl border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium text-[#b6b6c2] mb-1">Required Documents (One per line)</label>
-                <textarea
-                  rows={2}
-                  value={newDocs}
-                  onChange={(e) => setNewDocs(e.target.value)}
-                  placeholder="Aadhaar Card&#10;Ration Card&#10;Bank Passbook"
-                  className="w-full py-2 px-3 rounded-2xl border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium text-[#b6b6c2] mb-1">Official Application Website URL</label>
-                <input
-                  type="url"
-                  value={newWebsite}
-                  onChange={(e) => setNewWebsite(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full py-2.5 px-4 rounded-full border border-white/10 bg-[#101016] text-[#f5f5f8] focus:border-[#8f8bff]/60 focus:outline-none"
-                />
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  className="bytune-btn-solid w-full py-3 rounded-full font-semibold cursor-pointer text-xs"
-                >
-                  Publish Verified Scheme
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+            );
 };

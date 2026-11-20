@@ -108,16 +108,31 @@ export const CitizenLayout: React.FC<CitizenLayoutProps> = ({ onOpenAssistant, c
       ]
     },
     {
-      group: 'PREFERENCES',
+      group: 'SETTINGS',
       items: [
-        { path: '/citizen/notifications', label: 'Notifications', icon: Bell, badge: unreadCount > 0 ? unreadCount : undefined },
-        { path: '/citizen/settings', label: 'Account & Security', icon: Shield }
+        {
+          path: '#language',
+          label: 'Language Preferences',
+          icon: Globe,
+          action: () => setLangDropdownOpen(prev => !prev)
+        },
+        { path: '/citizen/settings', label: 'Security Settings', icon: Shield },
+        { path: '/citizen/notifications', label: 'Notifications', icon: Bell, badge: unreadCount > 0 ? unreadCount : undefined }
       ]
     },
     {
       group: 'SUPPORT',
       items: [
         { path: '/contact', label: 'Help & Support', icon: HelpCircle },
+        {
+          path: '#logout',
+          label: 'Logout',
+          icon: LogOut,
+          action: () => {
+            logout();
+            navigate('/login');
+          }
+        }
       ]
     }
   ];

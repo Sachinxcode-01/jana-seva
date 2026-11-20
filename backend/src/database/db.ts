@@ -2,10 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
 import {
-    User, Scheme, SavedScheme, ApplicationRecord,
-    EligibilityAssessment, SavedEligibilityRecord, AppNotification, AdminActivityLog,
-    DocumentItem, UserSession
-  } from '../types.js';
+  User, Scheme, SavedScheme, ApplicationRecord,
+  EligibilityAssessment, SavedEligibilityRecord, AppNotification, AdminActivityLog,
+  DocumentItem, UserSession
+} from '../types.js';
 import { ALL_VERIFIED_SCHEMES } from './schemesData.js';
 
 interface DatabaseSchema {
@@ -704,48 +704,48 @@ class Database {
       console.error('Error writing to database file:', e);
       try {
         if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
-    } catch { }
-  }
-}
-
-// User Operations
-getUsers(): User[] {
-  return this.data.users;
-}
-
-getUserById(id: string): User | undefined {
-  return this.data.users.find(u => u.id === id);
-}
-
-getUserByEmail(email: string): User | undefined {
-  return this.data.users.find(u => u.email.toLowerCase() === email.toLowerCase());
-}
-
-getUserByEmailOrMobile(identifier: string): User | undefined {
-  const clean = identifier.trim().toLowerCase();
-  if (clean.includes('@')) {
-    return this.data.users.find(u => u.email.toLowerCase() === clean);
-  }
-  const cleanDigits = identifier.replace(/[^0-9]/g, '');
-  return this.data.users.find(u => {
-    if (u.email.toLowerCase() === clean) return true;
-    if (u.mobileNumber) {
-      const userDigits = u.mobileNumber.replace(/[^0-9]/g, '');
-      if (cleanDigits.length >= 10 && userDigits.endsWith(cleanDigits.slice(-10))) return true;
-      if (u.mobileNumber.trim() === identifier.trim()) return true;
+      } catch { }
     }
-    return false;
-  });
-}
-
-createUser(user: User): User {
-  if (user.documents === undefined) {
-    user.documents = DEFAULT_DOCUMENTS;
   }
-  this.data.users.push(user);
-  this.saveDatabase(this.data);
-  return user;
-}
+
+  // User Operations
+  getUsers(): User[] {
+    return this.data.users;
+  }
+
+  getUserById(id: string): User | undefined {
+    return this.data.users.find(u => u.id === id);
+  }
+
+  getUserByEmail(email: string): User | undefined {
+    return this.data.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+  }
+
+  getUserByEmailOrMobile(identifier: string): User | undefined {
+    const clean = identifier.trim().toLowerCase();
+    if (clean.includes('@')) {
+      return this.data.users.find(u => u.email.toLowerCase() === clean);
+    }
+    const cleanDigits = identifier.replace(/[^0-9]/g, '');
+    return this.data.users.find(u => {
+      if (u.email.toLowerCase() === clean) return true;
+      if (u.mobileNumber) {
+        const userDigits = u.mobileNumber.replace(/[^0-9]/g, '');
+        if (cleanDigits.length >= 10 && userDigits.endsWith(cleanDigits.slice(-10))) return true;
+        if (u.mobileNumber.trim() === identifier.trim()) return true;
+      }
+      return false;
+    });
+  }
+
+  createUser(user: User): User {
+    if (user.documents === undefined) {
+      user.documents = DEFAULT_DOCUMENTS;
+    }
+    this.data.users.push(user);
+    this.saveDatabase(this.data);
+    return user;
+  }
 
   updateUserProfile(id: string, updates: Partial<User>): User | null {
     const user = this.data.users.find(u => u.id === id);
@@ -816,7 +816,7 @@ createUser(user: User): User {
 
   incrementViewCount(id: string): void {
     const scheme = this.data.schemes.find(s => s.id === id);
-    if(scheme) {
+    if (scheme) {
       scheme.viewCount = (scheme.viewCount || 0) + 1;
       this.saveDatabase(this.data);
     }
@@ -878,7 +878,7 @@ createUser(user: User): User {
   }
 
   // Application Tracker
-  getUserApplications(userId: string): Array < ApplicationRecord & { scheme?: Scheme } > {
+  getUserApplications(userId: string): Array<ApplicationRecord & { scheme?: Scheme }> {
     return this.data.applications
       .filter(a => a.userId === userId)
       .map(a => ({
@@ -955,208 +955,221 @@ createUser(user: User): User {
   getUserDocuments(userId: string): DocumentItem[] {
     const user = this.data.users.find(u => u.id === userId);
     if (!user) return DEFAULT_DOCUMENTS;
-    if (user.documents === undefined) {
-      user.documents = DEFAULT_DOCUMENTS;
-      this.saveDatabase(this.data);
+      if (user.documents === undefined) {
+        user.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
+        this.saveDatabase(this.data);
+      }
+      return user.documents!;
     }
-    return user.documents;
-  }
 
-  updateUserDocuments(userId: string, documents: DocumentItem[]): DocumentItem[] {
-    const user = this.data.users.find(u => u.id === userId);
-    if (user) {
-      user.documents = documents;
+    updateUserDocuments(userId: string, documents: DocumentItem[]): DocumentItem[] {
+      const user = this.data.users.find(u => u.id === userId);
+      if (user) {
+        user.documents = documents;
+        user.updatedAt = new Date().toISOString();
+        this.saveDatabase(this.data);
+      }
+      return documents;
+    }
+
+    updateUserSingleDocument(userId: string, documentId: string, updates: Partial<DocumentItem>): DocumentItem | null {
+      const user = this.data.users.find(u => u.id === userId);
+      if (!user) return null;
+      if (user.documents === undefined) {
+        user.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
+      }
+      const docs = user.documents!;
+      let doc = docs.find((d: DocumentItem) => d.id === documentId);
+      if (!doc) {
+        const template = DEFAULT_DOCUMENTS.find(d => d.id === documentId);
+        const newDoc: DocumentItem = {
+          id: documentId,
+          name: template ? template.name : documentId,
+          category: template ? template.category : 'Other',
+          status: (updates.status as any) || 'pending',
+          documentNumber: updates.documentNumber || '',
+          notes: updates.notes || '',
+          updatedAt: new Date().toISOString()
+        };
+        docs.push(newDoc);
+        doc = newDoc;
+      } else {
+        if (updates.status !== undefined) doc.status = updates.status;
+        if (updates.documentNumber !== undefined) doc.documentNumber = updates.documentNumber;
+        if (updates.notes !== undefined) doc.notes = updates.notes;
+        doc.updatedAt = new Date().toISOString();
+      }
       user.updatedAt = new Date().toISOString();
       this.saveDatabase(this.data);
+      return doc;
     }
-    return documents;
-  }
 
-  updateUserSingleDocument(userId: string, documentId: string, updates: Partial<DocumentItem>): DocumentItem | null {
-    const user = this.data.users.find(u => u.id === userId);
-    if (!user) return null;
-    const docs: DocumentItem[] = user.documents || JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
-    user.documents = docs;
-    const docIndex = docs.findIndex(d => d.id === documentId);
-    if (docIndex === -1) {
-      return null;
+    // Active User Sessions
+    createSession(userId: string, session: UserSession): UserSession {
+      const user = this.data.users.find(u => u.id === userId);
+      if (user) {
+        user.sessions = user.sessions || [];
+        user.sessions.unshift(session);
+        // Keep only last 10 sessions
+        if (user.sessions.length > 10) user.sessions = user.sessions.slice(0, 10);
+        this.saveDatabase(this.data);
+      }
+      return session;
     }
-    docs[docIndex] = {
-      ...docs[docIndex],
-      ...updates,
-      updatedAt: new Date().toISOString()
-    };
-    user.updatedAt = new Date().toISOString();
-    this.saveDatabase(this.data);
-    return docs[docIndex];
-  }
 
-  // Active User Sessions
-  createSession(userId: string, session: UserSession): UserSession {
-    const user = this.data.users.find(u => u.id === userId);
-    if (user) {
-      user.sessions = user.sessions || [];
-      user.sessions.unshift(session);
-      // Keep only last 10 sessions
-      if (user.sessions.length > 10) user.sessions = user.sessions.slice(0, 10);
+    getUserSessions(userId: string): UserSession[] {
+      const user = this.data.users.find(u => u.id === userId);
+      return user?.sessions || [];
+    }
+
+    removeSession(userId: string, sessionId: string): boolean {
+      const user = this.data.users.find(u => u.id === userId);
+      if (!user || !user.sessions) return false;
+      const len = user.sessions.length;
+      user.sessions = user.sessions.filter(s => s.id !== sessionId);
+      if (user.sessions.length !== len) {
+        this.saveDatabase(this.data);
+        return true;
+      }
+      return false;
+    }
+
+    // Assessments
+    saveAssessment(assessment: EligibilityAssessment): void {
+      this.data.assessments.push(assessment);
       this.saveDatabase(this.data);
     }
-    return session;
-  }
 
-  getUserSessions(userId: string): UserSession[] {
-    const user = this.data.users.find(u => u.id === userId);
-    return user?.sessions || [];
-  }
+    getUserAssessments(userId: string): EligibilityAssessment[] {
+      return this.data.assessments.filter(a => a.userId === userId);
+    }
 
-  removeSession(userId: string, sessionId: string): boolean {
-    const user = this.data.users.find(u => u.id === userId);
-    if (!user || !user.sessions) return false;
-    const len = user.sessions.length;
-    user.sessions = user.sessions.filter(s => s.id !== sessionId);
-    if (user.sessions.length !== len) {
+    // Notifications
+    getNotifications(userId ?: string): AppNotification[] {
+      return this.data.notifications
+        .filter(n => {
+          if (n.userId) return n.userId === userId;
+          if (userId && n.dismissedBy?.includes(userId)) return false;
+          return true;
+        })
+        .map(n => {
+          if (!n.userId && userId) {
+            return {
+              ...n,
+              isRead: n.readBy?.includes(userId) ?? false
+            };
+          }
+          return n;
+        });
+    }
+
+    createNotification(notif: AppNotification): AppNotification {
+      this.data.notifications.unshift(notif);
+      this.saveDatabase(this.data);
+      return notif;
+    }
+
+    markNotificationAsRead(id: string, userId ?: string): boolean {
+      const notif = this.data.notifications.find(n => n.id === id);
+      if (!notif) return false;
+
+      if (notif.userId) {
+        if (userId && notif.userId !== userId) {
+          return false;
+        }
+        notif.isRead = true;
+        this.saveDatabase(this.data);
+        return true;
+      }
+
+      if (userId) {
+        notif.readBy = notif.readBy || [];
+        if (!notif.readBy.includes(userId)) {
+          notif.readBy.push(userId);
+          this.saveDatabase(this.data);
+        }
+        return true;
+      } else {
+        notif.isRead = true;
+        this.saveDatabase(this.data);
+        return true;
+      }
+    }
+
+    markAllNotificationsAsRead(userId ?: string): void {
+      this.data.notifications.forEach(n => {
+        if (n.userId) {
+          if (!userId || n.userId === userId) {
+            n.isRead = true;
+          }
+        } else if (userId) {
+          n.readBy = n.readBy || [];
+          if (!n.readBy.includes(userId)) {
+            n.readBy.push(userId);
+          }
+        } else {
+          n.isRead = true;
+        }
+      });
+      this.saveDatabase(this.data);
+    }
+
+    deleteNotification(id: string, userId ?: string): boolean {
+      const notif = this.data.notifications.find(n => n.id === id);
+      if (!notif) return false;
+
+      if (notif.userId) {
+        if (userId && notif.userId !== userId) {
+          return false;
+        }
+        this.data.notifications = this.data.notifications.filter(n => n.id !== id);
+        this.saveDatabase(this.data);
+        return true;
+      }
+
+      if (userId) {
+        notif.dismissedBy = notif.dismissedBy || [];
+        if (!notif.dismissedBy.includes(userId)) {
+          notif.dismissedBy.push(userId);
+          this.saveDatabase(this.data);
+        }
+        return true;
+      } else {
+        this.data.notifications = this.data.notifications.filter(n => n.id !== id);
+        this.saveDatabase(this.data);
+        return true;
+      }
+    }
+
+    // Admin Logs
+    addAdminLog(log: AdminActivityLog): void {
+      this.data.logs.unshift(log);
+      this.saveDatabase(this.data);
+    }
+
+    getAdminLogs(): AdminActivityLog[] {
+      return this.data.logs;
+    }
+
+    // Statutory Right to Erasure / Account Deletion (DPDP Act 2023 § 12 & GDPR Art 17)
+    deleteUserAccount(userId: string): boolean {
+      const userIdx = this.data.users.findIndex(u => u.id === userId);
+      if (userIdx === -1) return false;
+
+      // Purge user profile
+      this.data.users.splice(userIdx, 1);
+      // Cascade purge associated citizen personal records
+      this.data.savedSchemes = this.data.savedSchemes.filter(s => s.userId !== userId);
+      this.data.applications = this.data.applications.filter(a => a.userId !== userId);
+      this.data.assessments = this.data.assessments.filter(a => a.userId !== userId);
+      if (this.data.savedEligibilityRecords) {
+        this.data.savedEligibilityRecords = this.data.savedEligibilityRecords.filter(r => r.userId !== userId);
+      }
+      this.data.notifications = this.data.notifications.filter(n => n.userId !== userId);
+
       this.saveDatabase(this.data);
       return true;
     }
-    return false;
   }
 
-  // Assessments
-  saveAssessment(assessment: EligibilityAssessment): void {
-    this.data.assessments.push(assessment);
-    this.saveDatabase(this.data);
-  }
-
-  getUserAssessments(userId: string): EligibilityAssessment[] {
-    return this.data.assessments.filter(a => a.userId === userId);
-  }
-
-  // Notifications
-  getNotifications(userId ?: string): AppNotification[] {
-    return this.data.notifications
-      .filter(n => {
-        if (n.userId) return n.userId === userId;
-        if (userId && n.dismissedBy?.includes(userId)) return false;
-        return true;
-      })
-      .map(n => {
-        if (!n.userId && userId) {
-          return {
-            ...n,
-            isRead: n.readBy?.includes(userId) ?? false
-          };
-        }
-        return n;
-      });
-  }
-
-  createNotification(notif: AppNotification): AppNotification {
-    this.data.notifications.unshift(notif);
-    this.saveDatabase(this.data);
-    return notif;
-  }
-
-    markNotificationAsRead(id: string, userId?: string): boolean {
-      const notif = this.data.notifications.find(n => n.id === id);
-        if (!notif) return false;
-
-        if (notif.userId) {
-          if (userId && notif.userId !== userId) {
-            return false;
-          }
-          notif.isRead = true;
-          this.saveDatabase(this.data);
-          return true;
-        }
-
-        if (userId) {
-          notif.readBy = notif.readBy || [];
-          if (!notif.readBy.includes(userId)) {
-            notif.readBy.push(userId);
-            this.saveDatabase(this.data);
-          }
-          return true;
-        } else {
-          notif.isRead = true;
-          this.saveDatabase(this.data);
-          return true;
-        }
-      }
-
-      markAllNotificationsAsRead(userId ?: string): void {
-        this.data.notifications.forEach(n => {
-          if (n.userId) {
-            if (!userId || n.userId === userId) {
-              n.isRead = true;
-            }
-          } else if (userId) {
-            n.readBy = n.readBy || [];
-            if (!n.readBy.includes(userId)) {
-              n.readBy.push(userId);
-            }
-          } else {
-            n.isRead = true;
-          }
-        });
-        this.saveDatabase(this.data);
-      }
-
-      deleteNotification(id: string, userId ?: string): boolean {
-        const notif = this.data.notifications.find(n => n.id === id);
-        if (!notif) return false;
-
-        if (notif.userId) {
-          if (userId && notif.userId !== userId) {
-            return false;
-          }
-          this.data.notifications = this.data.notifications.filter(n => n.id !== id);
-          this.saveDatabase(this.data);
-          return true;
-        }
-
-        if (userId) {
-          notif.dismissedBy = notif.dismissedBy || [];
-          if (!notif.dismissedBy.includes(userId)) {
-            notif.dismissedBy.push(userId);
-            this.saveDatabase(this.data);
-          }
-          return true;
-        } else {
-          this.data.notifications = this.data.notifications.filter(n => n.id !== id);
-          this.saveDatabase(this.data);
-          return true;
-        }
-      }
-
-      // Admin Logs
-      addAdminLog(log: AdminActivityLog): void {
-        this.data.logs.unshift(log);
-        this.saveDatabase(this.data);
-      }
-
-      getAdminLogs(): AdminActivityLog[] {
-        return this.data.logs;
-      }
-
-      // Statutory Right to Erasure / Account Deletion (DPDP Act 2023 § 12 & GDPR Art 17)
-      deleteUserAccount(userId: string): boolean {
-        const userIdx = this.data.users.findIndex(u => u.id === userId);
-        if (userIdx === -1) return false;
-
-        // Purge user profile
-        this.data.users.splice(userIdx, 1);
-        // Cascade purge associated citizen personal records
-        this.data.savedSchemes = this.data.savedSchemes.filter(s => s.userId !== userId);
-        this.data.applications = this.data.applications.filter(a => a.userId !== userId);
-        this.data.assessments = this.data.assessments.filter(a => a.userId !== userId);
-        if (this.data.savedEligibilityRecords) {
-          this.data.savedEligibilityRecords = this.data.savedEligibilityRecords.filter(r => r.userId !== userId);
-        }
-        this.data.notifications = this.data.notifications.filter(n => n.userId !== userId);
-
-        this.saveDatabase(this.data);
-        return true;
-      }
-    }
-
-export const db = new Database();
+  export const db = new Database();

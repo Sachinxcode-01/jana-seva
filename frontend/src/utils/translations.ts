@@ -75,7 +75,21 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     totalUsers: 'Registered Citizens',
     totalSchemes: 'Total Schemes',
     verifiedSources: 'Verified Official Sources',
-    cumulativeViews: 'Citizen Portal Views'
+    cumulativeViews: 'Citizen Portal Views',
+    savedSchemes: 'Saved Schemes',
+    eligibilityHistory: 'Eligibility History',
+    myDocuments: 'My Documents',
+    myProfile: 'My Profile',
+    documentsPrepared: 'Documents Prepared',
+    profileCompletion: 'Profile Completion',
+    quickActions: 'Quick Actions',
+    recommendedSchemes: 'Recommended Schemes',
+    announcements: 'Announcements',
+    printChecklist: 'Print Checklist',
+    saveDetails: 'Save Details',
+    available: 'Available',
+    pending: 'Pending',
+    notApplicable: 'Not Applicable'
   },
   kn: {
     portalName: 'ಜನಸೇವಾ',
@@ -151,7 +165,21 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     totalUsers: 'ನೋಂದಾಯಿತ ನಾಗರಿಕರು',
     totalSchemes: 'ಒಟ್ಟು ಯೋಜನೆಗಳು',
     verifiedSources: 'ಪರಿಶೀಲಿಸಿದ ಅಧಿಕೃತ ಮೂಲಗಳು',
-    cumulativeViews: 'ನಾಗರಿಕ ಪೋರ್ಟಲ್ ವೀಕ್ಷಣೆಗಳು'
+    cumulativeViews: 'ನಾಗರಿಕ ಪೋರ್ಟಲ್ ವೀಕ್ಷಣೆಗಳು',
+    savedSchemes: 'ಉಳಿಸಿದ ಯೋಜನೆಗಳು',
+    eligibilityHistory: 'ಅರ್ಹತಾ ಇತಿಹಾಸ',
+    myDocuments: 'ನನ್ನ ದಾಖಲೆಗಳು',
+    myProfile: 'ನನ್ನ ಪ್ರೊಫೈಲ್',
+    documentsPrepared: 'ಸಿದ್ಧವಿರುವ ದಾಖಲೆಗಳು',
+    profileCompletion: 'ಪ್ರೊಫೈಲ್ ಪೂರ್ಣತೆ',
+    quickActions: 'ತ್ವರಿತ ಕ್ರಿಯೆಗಳು',
+    recommendedSchemes: 'ಶಿಫಾರಸು ಮಾಡಿದ ಯೋಜನೆಗಳು',
+    announcements: 'ಅಧಿಕೃತ ಪ್ರಕಟಣೆಗಳು',
+    printChecklist: 'ಪಟ್ಟಿ ಮುದ್ರಿಸಿ',
+    saveDetails: 'ವಿವರ ಉಳಿಸಿ',
+    available: 'ಲಭ್ಯವಿದೆ',
+    pending: 'ಬಾಕಿ ಇದೆ',
+    notApplicable: 'ಅನ್ವಯಿಸುವುದಿಲ್ಲ'
   },
   hi: {
     portalName: 'जनसेवा',
@@ -227,6 +255,20 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     totalUsers: 'पंजीकृत नागरिक',
     totalSchemes: 'कुल योजनाएं',
     verifiedSources: 'सत्यापित स्रोत',
-    cumulativeViews: 'कुल पोर्टल दृश्य'
+    cumulativeViews: 'कुल पोर्टल दृश्य',
+    savedSchemes: 'सहेजी गई योजनाएं',
+    eligibilityHistory: 'पात्रता इतिहास',
+    myDocuments: 'मेरे दस्तावेज',
+    myProfile: 'मेरी प्रोफाइल',
+    documentsPrepared: 'तैयार दस्तावेज',
+    profileCompletion: 'प्रोफ़ाइल पूर्णता',
+    quickActions: 'त्वरित कार्य',
+    recommendedSchemes: 'अनुशंसित योजनाएं',
+    announcements: 'आधिकारिक घोषणाएं',
+    printChecklist: 'चेकलिस्ट प्रिंट करें',
+    saveDetails: 'विवरण सहेजें',
+    available: 'उपलब्ध',
+    pending: 'लंबित',
+    notApplicable: 'लागू नहीं'
   }
 };

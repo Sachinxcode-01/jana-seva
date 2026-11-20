@@ -360,6 +360,8 @@ import { Scheme } from './types';
                       <ComparePage
                         schemes={schemes}
                         onSelectScheme={(s) => setSelectedScheme(s)}
+                        savedSchemeIds={savedSchemeIds}
+                        onToggleSaveScheme={handleToggleSaveScheme}
                       />
                     </PublicLayout>
                   }

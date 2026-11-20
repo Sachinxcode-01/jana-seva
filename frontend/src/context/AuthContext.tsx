@@ -34,84 +34,96 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [user]);
 
-    const refreshProfile = useCallback(async () => {
-      try {
-        const res = await api.getProfile();
-        if (res.success && res.user) {
-          setUser(res.user);
+  const refreshProfile = useCallback(async () => {
+    try {
+      const res = await api.getProfile();
+      if (res.success && res.user) {
+        setUser(res.user);
+      }
+    } catch (e) {
+      console.warn('Failed refreshing citizen profile:', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('janaseva_token');
+    if (token && user) {
+      refreshProfile();
+    }
+
+    const handleExpired = () => {
+      setUser(null);
+      api.setToken(null);
+      localStorage.removeItem('janaseva_user');
+      localStorage.removeItem('janaseva_token');
+    };
+    window.addEventListener('janaseva:session-expired', handleExpired);
+    return () => window.removeEventListener('janaseva:session-expired', handleExpired);
+  }, [refreshProfile]);
+
+  const login = async (emailOrMobile: string, pass: string, rememberMe: boolean = true) => {
+    setLoading(true);
+    try {
+      const res = await api.login(emailOrMobile, pass);
+      if (res.success && res.user) {
+        setUser(res.user);
+        if (rememberMe) {
+          localStorage.setItem('janaseva_remember_identifier', emailOrMobile);
+        } else {
+          localStorage.removeItem('janaseva_remember_identifier');
         }
-      } catch (e) {
-        console.warn('Failed refreshing citizen profile:', e);
+        return { success: true };
       }
-    }, []);
+      return { success: false, message: res.message || 'Login failed. Please check credentials.' };
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-      const token = localStorage.getItem('janaseva_token');
-      if (token && user) {
-        refreshProfile();
+  const loginAsDemoCitizen = async () => {
+    return await login('citizen@janaseva.gov.in', 'Citizen@123', true);
+  };
+
+  const loginAsDemoAdmin = async () => {
+    return await login('admin@janaseva.gov.in', 'Admin@123', true);
+  };
+
+  const register = async (data: any) => {
+    setLoading(true);
+    try {
+      const res = await api.register(data);
+      if (res.success && res.user) {
+        setUser(res.user);
+        return { success: true };
       }
-    }, [refreshProfile]);
+      return { success: false, message: res.message || 'Registration failed.' };
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const login = async (emailOrMobile: string, pass: string, rememberMe: boolean = true) => {
-      setLoading(true);
+  const forgotPassword = async (email: string) => {
+    setLoading(true);
+    try {
+      return await api.forgotPassword(email);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetPassword = async (email: string, otp: string, newPass: string) => {
+    setLoading(true);
+    try {
+      return await api.resetPassword(email, otp, newPass);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+    const logout = async () => {
       try {
-        const res = await api.login(emailOrMobile, pass);
-        if (res.success && res.user) {
-          setUser(res.user);
-          if (rememberMe) {
-            localStorage.setItem('janaseva_remember_identifier', emailOrMobile);
-          } else {
-            localStorage.removeItem('janaseva_remember_identifier');
-          }
-          return { success: true };
-        }
-        return { success: false, message: res.message || 'Login failed. Please check credentials.' };
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const loginAsDemoCitizen = async () => {
-      return await login('citizen@janaseva.gov.in', 'Citizen@123', true);
-    };
-
-    const loginAsDemoAdmin = async () => {
-      return await login('admin@janaseva.gov.in', 'Admin@123', true);
-    };
-
-    const register = async (data: any) => {
-      setLoading(true);
-      try {
-        const res = await api.register(data);
-        if (res.success && res.user) {
-          setUser(res.user);
-          return { success: true };
-        }
-        return { success: false, message: res.message || 'Registration failed.' };
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const forgotPassword = async (email: string) => {
-      setLoading(true);
-      try {
-        return await api.forgotPassword(email);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const resetPassword = async (email: string, otp: string, newPass: string) => {
-      setLoading(true);
-      try {
-        return await api.resetPassword(email, otp, newPass);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const logout = () => {
+        await api.logout();
+      } catch { }
       setUser(null);
       api.setToken(null);
       localStorage.removeItem('janaseva_user');

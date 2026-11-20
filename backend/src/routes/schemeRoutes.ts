@@ -6,14 +6,14 @@ const router = Router();
 // GET /api/schemes
 router.get('/', (req: Request, res: Response) => {
   try {
-    const { 
-      q, 
-      category, 
-      classification, 
-      state, 
-      beneficiary, 
+    const {
+      q,
+      category,
+      classification,
+      state,
+      beneficiary,
       department,
-      sortBy 
+      sortBy
     } = req.query;
 
     let schemes = db.getSchemes().filter(s => s.isPublished);
@@ -21,7 +21,7 @@ router.get('/', (req: Request, res: Response) => {
     // Search query by name, description, benefits, department
     if (q && typeof q === 'string') {
       const term = q.toLowerCase().trim();
-      schemes = schemes.filter(s => 
+      schemes = schemes.filter(s =>
         s.name.toLowerCase().includes(term) ||
         (s.name_kn && s.name_kn.toLowerCase().includes(term)) ||
         (s.name_hi && s.name_hi.toLowerCase().includes(term)) ||
@@ -48,7 +48,7 @@ router.get('/', (req: Request, res: Response) => {
 
     // Filter by Beneficiary Category
     if (beneficiary && typeof beneficiary === 'string' && beneficiary !== 'All') {
-      schemes = schemes.filter(s => 
+      schemes = schemes.filter(s =>
         s.beneficiaryCategory.toLowerCase() === beneficiary.toLowerCase() ||
         s.beneficiaryCategory === 'General'
       );
@@ -80,8 +80,8 @@ router.get('/', (req: Request, res: Response) => {
   }
 });
 
-// GET /api/schemes/categories/summary
-router.get('/categories/summary', (_req: Request, res: Response) => {
+// GET /api/schemes/categories & /api/schemes/categories/summary
+router.get(['/categories', '/categories/summary'], (_req: Request, res: Response) => {
   const schemes = db.getSchemes().filter(s => s.isPublished);
   const categories: Record<string, number> = {
     'Women Empowerment': 0,
@@ -138,6 +138,26 @@ router.get('/:idOrSlug', (req: Request, res: Response) => {
   } catch (err) {
     console.error('Error retrieving scheme:', err);
     return res.status(500).json({ success: false, message: 'Server error retrieving scheme details.' });
+  }
+});
+
+// GET /api/schemes/:idOrSlug/documents
+router.get(['/:idOrSlug/documents', '/:idOrSlug/required-documents'], (req: Request, res: Response) => {
+  try {
+    const idOrSlug = String(req.params.idOrSlug);
+    const scheme = db.getSchemeByIdOrSlug(idOrSlug);
+    if (!scheme) {
+      return res.status(404).json({ success: false, message: 'Scheme not found.' });
+    }
+    return res.json({
+      success: true,
+      schemeId: scheme.id,
+      schemeName: scheme.name,
+      requiredDocuments: scheme.requiredDocuments || []
+    });
+  } catch (err) {
+    console.error('Error fetching scheme documents:', err);
+    return res.status(500).json({ success: false, message: 'Server error retrieving scheme documents.' });
   }
 });
 
