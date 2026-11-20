@@ -1,11 +1,20 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Building2, ArrowUp, ExternalLink, Phone } from 'lucide-react';
 
 interface FooterProps {
-  setCurrentTab: (tab: string) => void;
+  setCurrentTab?: (tab: string) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ setCurrentTab }) => {
+  const navigate = useNavigate();
+
+  const handleNav = (tabId: string, path: string) => {
+    if (setCurrentTab) setCurrentTab(tabId);
+    navigate(path);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -36,7 +45,7 @@ export const Footer: React.FC<FooterProps> = ({ setCurrentTab }) => {
             <ul className="space-y-2">
               <li>
                 <button
-                  onClick={() => setCurrentTab('schemes')}
+                  onClick={() => handleNav('schemes', '/schemes')}
                   className="hover:text-[#f5f5f8] transition-colors cursor-pointer"
                 >
                   All Schemes
@@ -44,7 +53,7 @@ export const Footer: React.FC<FooterProps> = ({ setCurrentTab }) => {
               </li>
               <li>
                 <button
-                  onClick={() => setCurrentTab('eligibility')}
+                  onClick={() => handleNav('eligibility', '/eligibility')}
                   className="hover:text-[#f5f5f8] transition-colors cursor-pointer"
                 >
                   Eligibility Checker
@@ -52,7 +61,7 @@ export const Footer: React.FC<FooterProps> = ({ setCurrentTab }) => {
               </li>
               <li>
                 <button
-                  onClick={() => setCurrentTab('states')}
+                  onClick={() => handleNav('states', '/states')}
                   className="hover:text-[#f5f5f8] transition-colors cursor-pointer"
                 >
                   28 States Directory
@@ -60,7 +69,7 @@ export const Footer: React.FC<FooterProps> = ({ setCurrentTab }) => {
               </li>
               <li>
                 <button
-                  onClick={() => setCurrentTab('about')}
+                  onClick={() => handleNav('about', '/about')}
                   className="hover:text-[#f5f5f8] transition-colors cursor-pointer"
                 >
                   About Project
@@ -153,14 +162,14 @@ export const Footer: React.FC<FooterProps> = ({ setCurrentTab }) => {
 
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => setCurrentTab('compliance')}
+              onClick={() => handleNav('compliance', '/compliance')}
               className="hover:text-[#f5f5f8] transition-colors cursor-pointer"
             >
               Privacy & DPDP
             </button>
             <span className="text-white/10">•</span>
             <button
-              onClick={() => setCurrentTab('contact')}
+              onClick={() => handleNav('contact', '/contact')}
               className="hover:text-[#f5f5f8] transition-colors cursor-pointer"
             >
               Contact

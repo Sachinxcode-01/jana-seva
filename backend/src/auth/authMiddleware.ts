@@ -8,13 +8,14 @@ export interface AuthenticatedRequest extends Request {
   user?: User;
 }
 
-export function generateToken(user: User): string {
+export function generateToken(user: User, sessionId?: string): string {
   return jwt.sign(
     { 
       id: user.id, 
       email: user.email, 
       role: user.role,
-      fullName: user.fullName 
+      fullName: user.fullName,
+      sessionId
     },
     CONFIG.JWT_SECRET,
     { expiresIn: '7d' }
@@ -29,10 +30,16 @@ export function authenticate(req: AuthenticatedRequest, res: Response, next: Nex
 
   const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, CONFIG.JWT_SECRET) as { id: string };
+    const decoded = jwt.verify(token, CONFIG.JWT_SECRET) as { id: string; sessionId?: string };
     const user = db.getUserById(decoded.id);
     if (!user) {
       return res.status(401).json({ success: false, message: 'User not found or session expired.' });
+    }
+    if (decoded.sessionId) {
+      const activeSession = user.sessions?.some(s => s.id === decoded.sessionId);
+      if (!activeSession) {
+        return res.status(401).json({ success: false, message: 'Session expired or invalidated. Please sign in again.' });
+      }
     }
     req.user = user;
     next();

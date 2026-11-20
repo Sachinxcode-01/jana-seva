@@ -2,19 +2,56 @@ export type Language = 'en' | 'kn' | 'hi';
 
 export type Role = 'citizen' | 'admin';
 
+export interface UserPreferences {
+  language: 'en' | 'kn' | 'hi';
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+  schemeUpdates: boolean;
+  theme: 'dark' | 'light' | 'system';
+}
+
+export interface UserSession {
+  id: string;
+  ip: string;
+  userAgent: string;
+  loggedInAt: string;
+  lastActive: string;
+}
+
+export interface DocumentItem {
+  id: string;
+  name: string;
+  category: 'Identity' | 'Residence' | 'Income & Caste' | 'Education' | 'Agriculture & Land' | 'Other';
+  status: 'available' | 'pending' | 'not_applicable';
+  notes?: string;
+  documentNumber?: string;
+  updatedAt: string;
+}
+
 export interface User {
   id: string;
   fullName: string;
   email: string;
+  mobileNumber?: string;
   role: Role;
   state: string;
+  district?: string;
+  villageTown?: string;
   occupation: string;
+  beneficiaryCategory?: string;
   incomeRange: string;
+  gender?: 'Female' | 'Male' | 'Other';
+  preferredLanguage?: 'en' | 'kn' | 'hi';
+  preferences?: UserPreferences;
+  documents?: DocumentItem[];
+  sessions?: UserSession[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export type SchemeClassification = 'Central' | 'State';
 
-export type SchemeCategory = 
+export type SchemeCategory =
   | 'Women Empowerment'
   | 'Student Scholarships'
   | 'Farmer Welfare'
@@ -62,14 +99,23 @@ export interface Scheme {
   sourceVerificationStatus: string;
 }
 
+export type ApplicationStatus = 'Draft' | 'Submitted' | 'In Review' | 'Approved' | 'Rejected';
+
+export interface ApplicationTimelineEvent {
+  status: ApplicationStatus;
+  date: string;
+  note: string;
+}
+
 export interface ApplicationRecord {
   id: string;
   userId: string;
   schemeId: string;
   applicationRefNo: string;
   appliedDate: string;
-  status: 'Draft' | 'Submitted' | 'In Review' | 'Approved' | 'Rejected';
+  status: ApplicationStatus;
   notes: string;
+  timeline?: ApplicationTimelineEvent[];
   updatedAt: string;
   scheme?: Scheme;
 }
@@ -84,6 +130,29 @@ export interface EligibilityResult {
   unmetConditions: string[];
   requiredDocuments: string[];
   officialUrl: string;
+}
+
+export interface SavedEligibilityRecord {
+  id: string;
+  userId: string;
+  schemeId: string;
+  schemeName: string;
+  category: SchemeCategory;
+  matchScore: number;
+  isEligible: boolean;
+  matchingReasons: string[];
+  unmetConditions: string[];
+  requiredDocuments: string[];
+  evaluatedAt: string;
+  inputCriteria: {
+    age: number;
+    state: string;
+    occupation: string;
+    beneficiaryCategory: string;
+    annualIncome: number;
+    educationLevel?: string;
+    gender?: string;
+  };
 }
 
 export interface AppNotification {

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Building2, Bookmark, BookmarkCheck, ArrowRight,
-  ShieldCheck, Sparkles, MapPin, Users
+  ShieldCheck, Sparkles, MapPin, Users, Clock
 } from 'lucide-react';
 import { Scheme } from '../types';
 import { useLanguage } from '../context/LanguageContext';
@@ -58,16 +58,16 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({
           <div className="flex items-center gap-1.5 flex-wrap">
             {/* Classification Pill */}
             <span className={`text-[10.5px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider shrink-0 ${scheme.classification === 'State'
-                ? 'bg-[#f3c64f]/15 text-[#f3c64f] border border-[#f3c64f]/30'
-                : 'bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30'
+              ? 'bg-[#f3c64f]/15 text-[#f3c64f] border border-[#f3c64f]/30'
+              : 'bg-[#8f8bff]/15 text-[#8f8bff] border border-[#8f8bff]/30'
               }`}>
               {scheme.classification === 'State' ? t('stateScheme') : t('centralScheme')}
             </span>
 
             {/* State Domicile Tag */}
             <span className={`text-[10.5px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1 border shrink-0 ${isKarnataka
-                ? 'bg-amber-500/10 text-amber-300 border-amber-500/20'
-                : 'bg-white/[0.04] text-[#8a8a97] border-white/[0.08]'
+              ? 'bg-amber-500/10 text-amber-300 border-amber-500/20'
+              : 'bg-white/[0.04] text-[#8a8a97] border-white/[0.08]'
               }`}>
               <MapPin className="w-2.5 h-2.5 shrink-0 opacity-80" />
               <span className="truncate max-w-[90px]">{scheme.state}</span>
@@ -86,8 +86,8 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({
                 onToggleSave(scheme.id);
               }}
               className={`p-1.5 rounded-full transition-all border shrink-0 cursor-pointer ${isSaved
-                  ? 'text-[#8f8bff] bg-[#8f8bff]/20 border-[#8f8bff]/40 shadow-[0_0_12px_rgba(143,139,255,0.4)]'
-                  : 'text-[#8a8a97] hover:text-[#f5f5f8] border-white/10 bg-white/[0.03] hover:bg-white/[0.08]'
+                ? 'text-[#8f8bff] bg-[#8f8bff]/20 border-[#8f8bff]/40 shadow-[0_0_12px_rgba(143,139,255,0.4)]'
+                : 'text-[#8a8a97] hover:text-[#f5f5f8] border-white/10 bg-white/[0.03] hover:bg-white/[0.08]'
                 }`}
               title={isSaved ? "Saved to Bookmarks" : "Save Scheme"}
               aria-label={isSaved ? "Saved to Bookmarks" : "Save Scheme"}
@@ -133,6 +133,16 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({
               <p className="text-[11.5px] leading-relaxed text-[#b6b6c2] line-clamp-2">
                 {scheme.benefits[0]}
               </p>
+            </div>
+          )}
+
+          {/* Application Deadline Badge */}
+          {scheme.deadline && (
+            <div className="flex items-center space-x-1.5 text-[11px] text-amber-300 bg-amber-500/[0.08] px-2.5 py-1 rounded-lg border border-amber-500/20">
+              <Clock className="w-3 h-3 text-amber-400 shrink-0" />
+              <span className="truncate">
+                Deadline: <strong className="font-medium text-[#f5f5f8]">{scheme.deadline}</strong>
+              </span>
             </div>
           )}
         </div>

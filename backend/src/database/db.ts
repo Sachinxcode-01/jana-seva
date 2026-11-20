@@ -1,10 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
-import { 
-  User, Scheme, SavedScheme, ApplicationRecord, 
-  EligibilityAssessment, AppNotification, AdminActivityLog 
-} from '../types.js';
+import {
+    User, Scheme, SavedScheme, ApplicationRecord,
+    EligibilityAssessment, SavedEligibilityRecord, AppNotification, AdminActivityLog,
+    DocumentItem, UserSession
+  } from '../types.js';
+import { ALL_VERIFIED_SCHEMES } from './schemesData.js';
 
 interface DatabaseSchema {
   users: User[];
@@ -12,6 +14,7 @@ interface DatabaseSchema {
   savedSchemes: SavedScheme[];
   applications: ApplicationRecord[];
   assessments: EligibilityAssessment[];
+  savedEligibilityRecords: SavedEligibilityRecord[];
   notifications: AppNotification[];
   logs: AdminActivityLog[];
 }
@@ -66,6 +69,7 @@ const INITIAL_SCHEMES: Scheme[] = [
       offlineModeAvailable: true
     },
     officialWebsite: "https://sevasindhugs.karnataka.gov.in",
+    deadline: "Active - Open Year-Round / Monthly DBT on 20th",
     lastUpdated: "2026-02-15",
     isVerified: true,
     isPublished: true,
@@ -113,6 +117,7 @@ const INITIAL_SCHEMES: Scheme[] = [
       offlineModeAvailable: true
     },
     officialWebsite: "https://transport.karnataka.gov.in",
+    deadline: "Permanent Active Scheme / No Deadline",
     lastUpdated: "2026-01-20",
     isVerified: true,
     isPublished: true,
@@ -169,6 +174,7 @@ const INITIAL_SCHEMES: Scheme[] = [
       offlineModeAvailable: false
     },
     officialWebsite: "https://ssp.postmatric.karnataka.gov.in",
+    deadline: "Annual Academic Cycle: 31st December 2026",
     lastUpdated: "2026-02-10",
     isVerified: true,
     isPublished: true,
@@ -223,6 +229,7 @@ const INITIAL_SCHEMES: Scheme[] = [
       offlineModeAvailable: false
     },
     officialWebsite: "https://scholarships.gov.in",
+    deadline: "Pre-Matric: 30 Nov 2026 | Post-Matric: 31 Dec 2026",
     lastUpdated: "2026-01-30",
     isVerified: true,
     isPublished: true,
@@ -274,6 +281,7 @@ const INITIAL_SCHEMES: Scheme[] = [
       offlineModeAvailable: true
     },
     officialWebsite: "https://pmkisan.gov.in",
+    deadline: "Open Year-Round (Tranches: April, August, December)",
     lastUpdated: "2026-02-12",
     isVerified: true,
     isPublished: true,
@@ -323,6 +331,7 @@ const INITIAL_SCHEMES: Scheme[] = [
       offlineModeAvailable: true
     },
     officialWebsite: "https://pmfby.gov.in",
+    deadline: "Kharif Cutoff: 31 July 2026 | Rabi Cutoff: 31 Dec 2026",
     lastUpdated: "2026-02-05",
     isVerified: true,
     isPublished: true,
@@ -371,6 +380,7 @@ const INITIAL_SCHEMES: Scheme[] = [
       offlineModeAvailable: true
     },
     officialWebsite: "https://pmjay.gov.in",
+    deadline: "Open Year-Round / Lifelong Coverage with ABHA e-KYC",
     lastUpdated: "2026-01-25",
     isVerified: true,
     isPublished: true,
@@ -420,6 +430,7 @@ const INITIAL_SCHEMES: Scheme[] = [
       offlineModeAvailable: true
     },
     officialWebsite: "https://pmsvanidhi.mohua.gov.in",
+    deadline: "Active through 31st December 2026 / Rolling Credit",
     lastUpdated: "2026-02-01",
     isVerified: true,
     isPublished: true,
@@ -472,6 +483,7 @@ const INITIAL_SCHEMES: Scheme[] = [
       offlineModeAvailable: true
     },
     officialWebsite: "https://sevasindhugs.karnataka.gov.in",
+    deadline: "Continuous Registration for 2023-2026 Batches",
     lastUpdated: "2026-02-14",
     isVerified: true,
     isPublished: true,
@@ -522,6 +534,7 @@ const INITIAL_SCHEMES: Scheme[] = [
       offlineModeAvailable: true
     },
     officialWebsite: "https://www.mudra.org.in",
+    deadline: "Open Year-Round via all Member Lending Institutions",
     lastUpdated: "2026-02-08",
     isVerified: true,
     isPublished: true,
@@ -569,6 +582,18 @@ const INITIAL_NOTIFICATIONS: AppNotification[] = [
   }
 ];
 
+export const DEFAULT_DOCUMENTS: DocumentItem[] = [
+  { id: 'doc-aadhaar', name: 'Aadhaar Card (Seeded with NPCI/Bank)', category: 'Identity', status: 'pending', updatedAt: new Date().toISOString() },
+  { id: 'doc-ration', name: 'Ration Card (APL / BPL / Antyodaya)', category: 'Residence', status: 'pending', updatedAt: new Date().toISOString() },
+  { id: 'doc-income', name: 'Income Certificate (RD Number Verified)', category: 'Income & Caste', status: 'pending', updatedAt: new Date().toISOString() },
+  { id: 'doc-caste', name: 'Caste / Community Certificate', category: 'Income & Caste', status: 'pending', updatedAt: new Date().toISOString() },
+  { id: 'doc-domicile', name: 'Domicile / Residential Certificate', category: 'Residence', status: 'pending', updatedAt: new Date().toISOString() },
+  { id: 'doc-passbook', name: 'Bank Account Passbook / Statement', category: 'Identity', status: 'pending', updatedAt: new Date().toISOString() },
+  { id: 'doc-land-rtc', name: 'Land Ownership RTC / Pahani (Bhoomi)', category: 'Agriculture & Land', status: 'pending', updatedAt: new Date().toISOString() },
+  { id: 'doc-student-id', name: 'Student Bonafide / Enrollment Certificate', category: 'Education', status: 'not_applicable', notes: 'Applicable for ongoing student dependents', updatedAt: new Date().toISOString() },
+  { id: 'doc-disability', name: 'UDID / Disability Certificate', category: 'Other', status: 'not_applicable', notes: 'Only required for Divyangjan welfare schemes', updatedAt: new Date().toISOString() }
+];
+
 class Database {
   private data: DatabaseSchema;
 
@@ -580,7 +605,19 @@ class Database {
     if (fs.existsSync(DB_FILE_PATH)) {
       try {
         const fileContent = fs.readFileSync(DB_FILE_PATH, 'utf-8');
-        return JSON.parse(fileContent);
+        const parsed = JSON.parse(fileContent);
+        parsed.savedEligibilityRecords = parsed.savedEligibilityRecords || [];
+        parsed.applications = parsed.applications || [];
+        parsed.savedSchemes = parsed.savedSchemes || [];
+        parsed.notifications = parsed.notifications || [];
+        parsed.assessments = parsed.assessments || [];
+        parsed.users = parsed.users || [];
+        parsed.logs = parsed.logs || [];
+        if (!parsed.schemes || parsed.schemes.length < ALL_VERIFIED_SCHEMES.length) {
+          parsed.schemes = ALL_VERIFIED_SCHEMES;
+          this.saveDatabase(parsed);
+        }
+        return parsed;
       } catch (e) {
         console.error('Failed reading existing DB file, reinitializing...', e);
       }
@@ -637,6 +674,7 @@ class Database {
         }
       ],
       assessments: [],
+      savedEligibilityRecords: [],
       notifications: INITIAL_NOTIFICATIONS,
       logs: [
         {
@@ -663,33 +701,79 @@ class Database {
       console.error('Error writing to database file:', e);
       try {
         if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
-      } catch {}
+    } catch { }
+  }
+}
+
+// User Operations
+getUsers(): User[] {
+  return this.data.users;
+}
+
+getUserById(id: string): User | undefined {
+  return this.data.users.find(u => u.id === id);
+}
+
+getUserByEmail(email: string): User | undefined {
+  return this.data.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+}
+
+getUserByEmailOrMobile(identifier: string): User | undefined {
+  const clean = identifier.trim().toLowerCase();
+  if (clean.includes('@')) {
+    return this.data.users.find(u => u.email.toLowerCase() === clean);
+  }
+  const cleanDigits = identifier.replace(/[^0-9]/g, '');
+  return this.data.users.find(u => {
+    if (u.email.toLowerCase() === clean) return true;
+    if (u.mobileNumber) {
+      const userDigits = u.mobileNumber.replace(/[^0-9]/g, '');
+      if (cleanDigits.length >= 10 && userDigits.endsWith(cleanDigits.slice(-10))) return true;
+      if (u.mobileNumber.trim() === identifier.trim()) return true;
     }
-  }
+    return false;
+  });
+}
 
-  // User Operations
-  getUsers(): User[] {
-    return this.data.users;
+createUser(user: User): User {
+  if (user.documents === undefined) {
+    user.documents = DEFAULT_DOCUMENTS;
   }
+  this.data.users.push(user);
+  this.saveDatabase(this.data);
+  return user;
+}
 
-  getUserById(id: string): User | undefined {
-    return this.data.users.find(u => u.id === id);
-  }
+  updateUserProfile(id: string, updates: Partial<User>): User | null {
+    const user = this.data.users.find(u => u.id === id);
+    if (!user) return null;
 
-  getUserByEmail(email: string): User | undefined {
-    return this.data.users.find(u => u.email.toLowerCase() === email.toLowerCase());
-  }
+    if (updates.fullName !== undefined) user.fullName = updates.fullName.trim();
+    if (updates.mobileNumber !== undefined) user.mobileNumber = updates.mobileNumber.trim();
+    if (updates.state !== undefined) user.state = updates.state.trim();
+    if (updates.district !== undefined) user.district = updates.district.trim();
+    if (updates.villageTown !== undefined) user.villageTown = updates.villageTown.trim();
+    if (updates.occupation !== undefined) user.occupation = updates.occupation.trim();
+    if (updates.beneficiaryCategory !== undefined) user.beneficiaryCategory = updates.beneficiaryCategory.trim();
+    if (updates.incomeRange !== undefined) user.incomeRange = updates.incomeRange.trim();
+    if (updates.gender !== undefined) user.gender = updates.gender;
+    if (updates.preferredLanguage !== undefined) user.preferredLanguage = updates.preferredLanguage;
+    if (updates.preferences !== undefined) {
+      user.preferences = { ...(user.preferences || {}), ...updates.preferences } as any;
+    }
+    user.updatedAt = new Date().toISOString();
 
-  createUser(user: User): User {
-    this.data.users.push(user);
     this.saveDatabase(this.data);
     return user;
   }
 
-  updateUserPassword(email: string, passwordHash: string): boolean {
-    const user = this.data.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+  updateUserPassword(idOrEmail: string, passwordHash: string): boolean {
+    const user = this.data.users.find(u =>
+      u.id === idOrEmail || u.email.toLowerCase() === idOrEmail.toLowerCase()
+    );
     if (!user) return false;
     user.passwordHash = passwordHash;
+    user.updatedAt = new Date().toISOString();
     this.saveDatabase(this.data);
     return true;
   }
@@ -729,7 +813,7 @@ class Database {
 
   incrementViewCount(id: string): void {
     const scheme = this.data.schemes.find(s => s.id === id);
-    if (scheme) {
+    if(scheme) {
       scheme.viewCount = (scheme.viewCount || 0) + 1;
       this.saveDatabase(this.data);
     }
@@ -741,6 +825,31 @@ class Database {
       .filter(s => s.userId === userId)
       .map(s => s.schemeId);
     return this.data.schemes.filter(s => savedIds.includes(s.id));
+  }
+
+  addSavedScheme(userId: string, schemeId: string): { saved: boolean } {
+    const exists = this.data.savedSchemes.some(s => s.userId === userId && s.schemeId === schemeId);
+    if (!exists) {
+      this.data.savedSchemes.push({
+        id: `saved-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        userId,
+        schemeId,
+        savedAt: new Date().toISOString()
+      });
+      this.saveDatabase(this.data);
+    }
+    return { saved: true };
+  }
+
+  removeSavedScheme(userId: string, schemeId: string): { saved: boolean } {
+    const prevLen = this.data.savedSchemes.length;
+    this.data.savedSchemes = this.data.savedSchemes.filter(
+      s => !(s.userId === userId && s.schemeId === schemeId)
+    );
+    if (this.data.savedSchemes.length !== prevLen) {
+      this.saveDatabase(this.data);
+    }
+    return { saved: false };
   }
 
   toggleSaveScheme(userId: string, schemeId: string): { saved: boolean } {
@@ -766,7 +875,7 @@ class Database {
   }
 
   // Application Tracker
-  getUserApplications(userId: string): Array<ApplicationRecord & { scheme?: Scheme }> {
+  getUserApplications(userId: string): Array < ApplicationRecord & { scheme?: Scheme } > {
     return this.data.applications
       .filter(a => a.userId === userId)
       .map(a => ({
@@ -784,7 +893,21 @@ class Database {
   updateApplicationRecord(id: string, userId: string, updates: Partial<ApplicationRecord>): ApplicationRecord | null {
     const idx = this.data.applications.findIndex(a => a.id === id && a.userId === userId);
     if (idx === -1) return null;
-    this.data.applications[idx] = { ...this.data.applications[idx], ...updates, updatedAt: new Date().toISOString() };
+    const current = this.data.applications[idx];
+    const newTimeline = [...(current.timeline || [])];
+    if (updates.status && updates.status !== current.status) {
+      newTimeline.push({
+        status: updates.status,
+        date: new Date().toISOString().split('T')[0],
+        note: updates.notes || `Status updated to ${updates.status}`
+      });
+    }
+    this.data.applications[idx] = {
+      ...current,
+      ...updates,
+      timeline: newTimeline,
+      updatedAt: new Date().toISOString()
+    };
     this.saveDatabase(this.data);
     return this.data.applications[idx];
   }
@@ -793,6 +916,83 @@ class Database {
     const len = this.data.applications.length;
     this.data.applications = this.data.applications.filter(a => !(a.id === id && a.userId === userId));
     if (this.data.applications.length !== len) {
+      this.saveDatabase(this.data);
+      return true;
+    }
+    return false;
+  }
+
+  // Saved Eligibility History
+  saveEligibilityRecord(record: SavedEligibilityRecord): SavedEligibilityRecord {
+    this.data.savedEligibilityRecords = this.data.savedEligibilityRecords || [];
+    this.data.savedEligibilityRecords.unshift(record);
+    this.saveDatabase(this.data);
+    return record;
+  }
+
+  getUserEligibilityHistory(userId: string): SavedEligibilityRecord[] {
+    this.data.savedEligibilityRecords = this.data.savedEligibilityRecords || [];
+    return this.data.savedEligibilityRecords.filter(r => r.userId === userId);
+  }
+
+  deleteEligibilityHistoryRecord(id: string, userId: string): boolean {
+    this.data.savedEligibilityRecords = this.data.savedEligibilityRecords || [];
+    const len = this.data.savedEligibilityRecords.length;
+    this.data.savedEligibilityRecords = this.data.savedEligibilityRecords.filter(
+      r => !(r.id === id && r.userId === userId)
+    );
+    if (this.data.savedEligibilityRecords.length !== len) {
+      this.saveDatabase(this.data);
+      return true;
+    }
+    return false;
+  }
+
+  // Documents Checklist
+  getUserDocuments(userId: string): DocumentItem[] {
+    const user = this.data.users.find(u => u.id === userId);
+    if (!user) return DEFAULT_DOCUMENTS;
+    if (user.documents === undefined) {
+      user.documents = DEFAULT_DOCUMENTS;
+      this.saveDatabase(this.data);
+    }
+    return user.documents;
+  }
+
+  updateUserDocuments(userId: string, documents: DocumentItem[]): DocumentItem[] {
+    const user = this.data.users.find(u => u.id === userId);
+    if (user) {
+      user.documents = documents;
+      user.updatedAt = new Date().toISOString();
+      this.saveDatabase(this.data);
+    }
+    return documents;
+  }
+
+  // Active User Sessions
+  createSession(userId: string, session: UserSession): UserSession {
+    const user = this.data.users.find(u => u.id === userId);
+    if (user) {
+      user.sessions = user.sessions || [];
+      user.sessions.unshift(session);
+      // Keep only last 10 sessions
+      if (user.sessions.length > 10) user.sessions = user.sessions.slice(0, 10);
+      this.saveDatabase(this.data);
+    }
+    return session;
+  }
+
+  getUserSessions(userId: string): UserSession[] {
+    const user = this.data.users.find(u => u.id === userId);
+    return user?.sessions || [];
+  }
+
+  removeSession(userId: string, sessionId: string): boolean {
+    const user = this.data.users.find(u => u.id === userId);
+    if (!user || !user.sessions) return false;
+    const len = user.sessions.length;
+    user.sessions = user.sessions.filter(s => s.id !== sessionId);
+    if (user.sessions.length !== len) {
       this.saveDatabase(this.data);
       return true;
     }
@@ -810,8 +1010,22 @@ class Database {
   }
 
   // Notifications
-  getNotifications(userId?: string): AppNotification[] {
-    return this.data.notifications.filter(n => !n.userId || n.userId === userId);
+  getNotifications(userId ?: string): AppNotification[] {
+    return this.data.notifications
+      .filter(n => {
+        if (n.userId) return n.userId === userId;
+        if (userId && n.dismissedBy?.includes(userId)) return false;
+        return true;
+      })
+      .map(n => {
+        if (!n.userId && userId) {
+          return {
+            ...n,
+            isRead: n.readBy?.includes(userId) ?? false
+          };
+        }
+        return n;
+      });
   }
 
   createNotification(notif: AppNotification): AppNotification {
@@ -820,40 +1034,107 @@ class Database {
     return notif;
   }
 
-  markNotificationAsRead(id: string): void {
-    const notif = this.data.notifications.find(n => n.id === id);
-    if (notif) {
-      notif.isRead = true;
-      this.saveDatabase(this.data);
+    markNotificationAsRead(id: string, userId?: string): boolean {
+      const notif = this.data.notifications.find(n => n.id === id);
+        if (!notif) return false;
+
+        if (notif.userId) {
+          if (userId && notif.userId !== userId) {
+            return false;
+          }
+          notif.isRead = true;
+          this.saveDatabase(this.data);
+          return true;
+        }
+
+        if (userId) {
+          notif.readBy = notif.readBy || [];
+          if (!notif.readBy.includes(userId)) {
+            notif.readBy.push(userId);
+            this.saveDatabase(this.data);
+          }
+          return true;
+        } else {
+          notif.isRead = true;
+          this.saveDatabase(this.data);
+          return true;
+        }
+      }
+
+      markAllNotificationsAsRead(userId ?: string): void {
+        this.data.notifications.forEach(n => {
+          if (n.userId) {
+            if (!userId || n.userId === userId) {
+              n.isRead = true;
+            }
+          } else if (userId) {
+            n.readBy = n.readBy || [];
+            if (!n.readBy.includes(userId)) {
+              n.readBy.push(userId);
+            }
+          } else {
+            n.isRead = true;
+          }
+        });
+        this.saveDatabase(this.data);
+      }
+
+      deleteNotification(id: string, userId ?: string): boolean {
+        const notif = this.data.notifications.find(n => n.id === id);
+        if (!notif) return false;
+
+        if (notif.userId) {
+          if (userId && notif.userId !== userId) {
+            return false;
+          }
+          this.data.notifications = this.data.notifications.filter(n => n.id !== id);
+          this.saveDatabase(this.data);
+          return true;
+        }
+
+        if (userId) {
+          notif.dismissedBy = notif.dismissedBy || [];
+          if (!notif.dismissedBy.includes(userId)) {
+            notif.dismissedBy.push(userId);
+            this.saveDatabase(this.data);
+          }
+          return true;
+        } else {
+          this.data.notifications = this.data.notifications.filter(n => n.id !== id);
+          this.saveDatabase(this.data);
+          return true;
+        }
+      }
+
+      // Admin Logs
+      addAdminLog(log: AdminActivityLog): void {
+        this.data.logs.unshift(log);
+        this.saveDatabase(this.data);
+      }
+
+      getAdminLogs(): AdminActivityLog[] {
+        return this.data.logs;
+      }
+
+      // Statutory Right to Erasure / Account Deletion (DPDP Act 2023 § 12 & GDPR Art 17)
+      deleteUserAccount(userId: string): boolean {
+        const userIdx = this.data.users.findIndex(u => u.id === userId);
+        if (userIdx === -1) return false;
+
+        // Purge user profile
+        this.data.users.splice(userIdx, 1);
+        // Cascade purge associated citizen personal records
+        this.data.savedSchemes = this.data.savedSchemes.filter(s => s.userId !== userId);
+        this.data.applications = this.data.applications.filter(a => a.userId !== userId);
+        this.data.assessments = this.data.assessments.filter(a => a.userId !== userId);
+        if (this.data.savedEligibilityRecords) {
+          this.data.savedEligibilityRecords = this.data.savedEligibilityRecords.filter(r => r.userId !== userId);
+        }
+        this.data.notifications = this.data.notifications.filter(n => n.userId !== userId);
+
+        this.saveDatabase(this.data);
+        return true;
+      }
     }
-  }
-
-  // Admin Logs
-  addAdminLog(log: AdminActivityLog): void {
-    this.data.logs.unshift(log);
-    this.saveDatabase(this.data);
-  }
-
-  getAdminLogs(): AdminActivityLog[] {
-    return this.data.logs;
-  }
-
-  // Statutory Right to Erasure / Account Deletion (DPDP Act 2023 § 12 & GDPR Art 17)
-  deleteUserAccount(userId: string): boolean {
-    const userIdx = this.data.users.findIndex(u => u.id === userId);
-    if (userIdx === -1) return false;
-
-    // Purge user profile
-    this.data.users.splice(userIdx, 1);
-    // Cascade purge associated citizen personal records
-    this.data.savedSchemes = this.data.savedSchemes.filter(s => s.userId !== userId);
-    this.data.applications = this.data.applications.filter(a => a.userId !== userId);
-    this.data.assessments = this.data.assessments.filter(a => a.userId !== userId);
-    this.data.notifications = this.data.notifications.filter(n => n.userId !== userId);
-
-    this.saveDatabase(this.data);
-    return true;
-  }
-}
 
 export const db = new Database();

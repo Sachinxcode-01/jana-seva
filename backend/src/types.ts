@@ -189,6 +189,8 @@ export interface AppNotification {
   type: 'scheme_update' | 'application_reminder' | 'new_scheme' | 'general';
   isRead: boolean;
   createdAt: string;
+  readBy?: string[];
+  dismissedBy?: string[];
 }
 
 export interface AdminActivityLog {

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Building2, Globe2, User, LogOut,
   Menu, X, LayoutDashboard, ShieldCheck,
@@ -9,35 +10,59 @@ import { useAuth } from '../context/AuthContext';
 import { Language } from '../types';
 
 interface NavbarProps {
-  currentTab: string;
-  setCurrentTab: (tab: string) => void;
-  openAuthModal: () => void;
-  notificationsCount: number;
+  currentTab?: string;
+  setCurrentTab?: (tab: string) => void;
+  openAuthModal?: () => void;
+  notificationsCount?: number;
   onSelectStateFilter?: (stateName: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentTab,
   setCurrentTab,
-  openAuthModal
+  openAuthModal,
+  onSelectStateFilter
 }) => {
   const { language, setLanguage, t } = useLanguage();
   const { user, logout, isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
 
+  const pathToTabMap: Record<string, string> = {
+    '/': 'home',
+    '/schemes': 'schemes',
+    '/eligibility': 'eligibility',
+    '/compare': 'compare',
+    '/about': 'about',
+    '/contact': 'contact',
+    '/compliance': 'compliance',
+    '/citizen/dashboard': 'dashboard',
+    '/admin': 'admin'
+  };
+
+  const activeTabId = currentTab || pathToTabMap[location.pathname] || 'home';
+
+  const handleNav = (tabId: string, path: string) => {
+    if (setCurrentTab) setCurrentTab(tabId);
+    navigate(path);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const primaryNavItems = [
-    { id: 'home', label: t('home') },
-    { id: 'schemes', label: t('schemesNav') || t('exploreSchemes') },
-    { id: 'eligibility', label: t('eligibilityNav') || t('eligibilityChecker') },
-    { id: 'compare', label: t('compareNav') || t('compareSchemes') },
+    { id: 'home', path: '/', label: t('home') },
+    { id: 'schemes', path: '/schemes', label: t('schemesNav') || t('exploreSchemes') },
+    { id: 'eligibility', path: '/eligibility', label: t('eligibilityNav') || t('eligibilityChecker') },
+    { id: 'compare', path: '/compare', label: t('compareNav') || t('compareSchemes') },
   ];
 
   const secondaryNavItems = [
-    { id: 'about', label: t('aboutNav') || t('aboutUs') },
-    { id: 'contact', label: t('contactNav') || t('contact') },
+    { id: 'about', path: '/about', label: t('aboutNav') || t('aboutUs') },
+    { id: 'contact', path: '/contact', label: t('contactNav') || t('contact') },
   ];
 
   const allNavItems = [...primaryNavItems, ...secondaryNavItems];
@@ -60,7 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center space-x-3 xl:space-x-4 min-w-0">
             {/* Brand Logo & Title */}
             <div
-              onClick={() => setCurrentTab('home')}
+              onClick={() => handleNav('home', '/')}
               className="flex items-center space-x-2.5 cursor-pointer group select-none shrink-0"
             >
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#16161d] to-[#0a0a0e] text-[#8f8bff] flex items-center justify-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12)] border border-white/10 group-hover:border-[#8f8bff]/50 group-hover:shadow-[0_0_15px_rgba(143,139,255,0.3)] transition-all duration-300 shrink-0">
@@ -83,11 +108,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <nav className="hidden md:flex items-center space-x-0.5 bg-white/[0.03] p-1 rounded-full border border-white/[0.07] backdrop-blur-md">
               {/* Primary Links */}
               {primaryNavItems.map((item) => {
-                const isActive = currentTab === item.id;
+                const isActive = activeTabId === item.id;
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setCurrentTab(item.id)}
+                    onClick={() => handleNav(item.id, item.path)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${isActive
                       ? 'bg-[#f5f5f8] text-[#0a0a0c] font-semibold shadow-[0_0_15px_rgba(255,255,255,0.2)]'
                       : 'text-[#b6b6c2] hover:text-[#f5f5f8] hover:bg-white/[0.06]'
@@ -101,11 +126,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               {/* Secondary Links: Visible on XL, otherwise accessible in More dropdown */}
               <div className="hidden xl:flex items-center space-x-0.5">
                 {secondaryNavItems.map((item) => {
-                  const isActive = currentTab === item.id;
+                  const isActive = activeTabId === item.id;
                   return (
                     <button
                       key={item.id}
-                      onClick={() => setCurrentTab(item.id)}
+                      onClick={() => handleNav(item.id, item.path)}
                       className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${isActive
                         ? 'bg-[#f5f5f8] text-[#0a0a0c] font-semibold shadow-[0_0_15px_rgba(255,255,255,0.2)]'
                         : 'text-[#b6b6c2] hover:text-[#f5f5f8] hover:bg-white/[0.06]'
@@ -121,9 +146,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="xl:hidden relative">
                 <button
                   onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
-                  className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex items-center space-x-1 cursor-pointer ${secondaryNavItems.some(i => i.id === currentTab)
-                      ? 'bg-white/10 text-[#f5f5f8] font-semibold'
-                      : 'text-[#b6b6c2] hover:text-[#f5f5f8] hover:bg-white/[0.06]'
+                  className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex items-center space-x-1 cursor-pointer ${secondaryNavItems.some(i => i.id === activeTabId)
+                    ? 'bg-white/10 text-[#f5f5f8] font-semibold'
+                    : 'text-[#b6b6c2] hover:text-[#f5f5f8] hover:bg-white/[0.06]'
                     }`}
                 >
                   <span>More</span>
@@ -139,10 +164,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <button
                         key={item.id}
                         onClick={() => {
-                          setCurrentTab(item.id);
+                          handleNav(item.id, item.path);
                           setMoreDropdownOpen(false);
                         }}
-                        className={`w-full text-left px-3.5 py-2 text-xs flex items-center transition-colors cursor-pointer ${currentTab === item.id ? 'bg-[#8f8bff]/15 text-[#8f8bff] font-semibold' : 'hover:bg-white/5 text-[#b6b6c2]'
+                        className={`w-full text-left px-3.5 py-2 text-xs flex items-center transition-colors cursor-pointer ${activeTabId === item.id ? 'bg-[#8f8bff]/15 text-[#8f8bff] font-semibold' : 'hover:bg-white/5 text-[#b6b6c2]'
                           }`}
                       >
                         {item.label}
@@ -219,19 +244,30 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                     <button
                       onClick={() => {
-                        setCurrentTab('dashboard');
+                        handleNav('dashboard', '/citizen/dashboard');
                         setUserDropdownOpen(false);
                       }}
                       className="w-full text-left px-3.5 py-2 text-[13px] text-[#b6b6c2] hover:text-[#f5f5f8] hover:bg-white/5 flex items-center space-x-2 font-medium transition-colors cursor-pointer"
                     >
                       <LayoutDashboard className="w-4 h-4 text-[#8f8bff] shrink-0" />
-                      <span>{t('dashboard')}</span>
+                      <span>Citizen Dashboard</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        handleNav('profile', '/citizen/profile');
+                        setUserDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-3.5 py-2 text-[13px] text-[#b6b6c2] hover:text-[#f5f5f8] hover:bg-white/5 flex items-center space-x-2 font-medium transition-colors cursor-pointer"
+                    >
+                      <User className="w-4 h-4 text-[#8f8bff] shrink-0" />
+                      <span>My Profile</span>
                     </button>
 
                     {isAdmin && (
                       <button
                         onClick={() => {
-                          setCurrentTab('admin');
+                          handleNav('admin', '/admin');
                           setUserDropdownOpen(false);
                         }}
                         className="w-full text-left px-3.5 py-2 text-[13px] hover:bg-[#f3c64f]/10 flex items-center space-x-2 font-semibold text-[#f3c64f] transition-colors cursor-pointer"
@@ -246,7 +282,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onClick={() => {
                         logout();
                         setUserDropdownOpen(false);
-                        setCurrentTab('home');
+                        handleNav('home', '/');
                       }}
                       className="w-full text-left px-3.5 py-2 text-[13px] text-rose-400 hover:bg-rose-500/10 flex items-center space-x-2 font-medium transition-colors cursor-pointer"
                     >
@@ -257,13 +293,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </div>
             ) : (
-              <button
-                onClick={openAuthModal}
-                className="bytune-btn-solid h-9 px-5 text-[13.5px] flex items-center space-x-2 whitespace-nowrap cursor-pointer"
-              >
-                <User className="w-4 h-4 shrink-0 text-[#0a0a0c]" />
-                <span>{t('login')} / {t('register')}</span>
-              </button>
+              <div className="flex items-center space-x-2">
+                <Link
+                  to="/login"
+                  className="bytune-btn-solid h-9 px-4 text-[13px] flex items-center space-x-1.5 whitespace-nowrap cursor-pointer"
+                >
+                  <User className="w-3.5 h-3.5 shrink-0 text-[#0a0a0c]" />
+                  <span>Citizen Sign In</span>
+                </Link>
+                <Link
+                  to="/register"
+                  className="h-9 px-3.5 rounded-full border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-[13px] text-white flex items-center whitespace-nowrap cursor-pointer transition-colors"
+                >
+                  <span>Register</span>
+                </Link>
+              </div>
             )}
           </div>
 
@@ -271,7 +315,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="lg:hidden flex items-center space-x-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="w-9 h-9 rounded-full border border-white/10 bg-white/[0.04] flex items-center justify-center text-[#f5f5f8] hover:bg-white/10 transition-colors"
+              className="w-9 h-9 rounded-full border border-white/10 bg-white/[0.04] flex items-center justify-center text-[#f5f5f8] hover:bg-white/10 transition-colors cursor-pointer"
               aria-label="Toggle Menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -281,69 +325,87 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden mt-3 space-y-1 bg-[#0a0a0e]/95 backdrop-blur-xl p-3 rounded-2xl border border-white/10">
-            {allNavItems.map((item) => {
-              const isActive = currentTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setCurrentTab(item.id);
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`w-full text-left h-10 px-4 rounded-xl text-sm flex items-center justify-between transition-colors ${isActive
-                    ? 'bg-white/10 text-white font-semibold'
-                    : 'text-[#b6b6c2] hover:bg-white/5 font-normal'
-                    }`}
-                >
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
+            <div className="lg:hidden mt-3 space-y-1 bg-[#0a0a0e]/95 backdrop-blur-xl p-3 rounded-2xl border border-white/10 animate-in fade-in">
+              {allNavItems.map((item) => {
+                const isActive = activeTabId === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      handleNav(item.id, item.path);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`w-full text-left h-10 px-4 rounded-xl text-sm flex items-center justify-between transition-colors ${isActive
+                      ? 'bg-white/10 text-white font-semibold'
+                      : 'text-[#b6b6c2] hover:bg-white/5 font-normal'
+                      }`}
+                  >
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
 
-            <div className="pt-2 border-t border-white/10 space-y-2">
-              <div className="flex items-center justify-between px-2 text-xs text-[#8a8a97]">
-                <span>Language:</span>
-                <div className="flex space-x-1">
-                  {languages.map(l => (
-                    <button
-                      key={l.code}
-                      onClick={() => setLanguage(l.code)}
-                      className={`px-2 py-1 rounded-md text-xs font-mono ${language === l.code ? 'bg-[#8f8bff] text-black font-bold' : 'text-[#b6b6c2]'}`}
-                    >
-                      {l.label}
-                    </button>
-                  ))}
+              <div className="pt-2 border-t border-white/10 space-y-2">
+                <div className="flex items-center justify-between px-2 text-xs text-[#8a8a97]">
+                  <span>Language:</span>
+                  <div className="flex space-x-1">
+                    {languages.map(l => (
+                      <button
+                        key={l.code}
+                        onClick={() => setLanguage(l.code)}
+                        className={`px-2 py-1 rounded-md text-xs font-mono ${language === l.code ? 'bg-[#8f8bff] text-black font-bold' : 'text-[#b6b6c2]'}`}
+                      >
+                        {l.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {!user ? (
-                <button
-                  onClick={() => {
-                    openAuthModal();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="bytune-btn-solid w-full h-10 text-sm justify-center flex items-center space-x-2"
-                >
-                  <User className="w-4 h-4" />
-                  <span>{t('login')} / {t('register')}</span>
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    logout();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full h-10 px-4 rounded-xl text-sm text-rose-400 bg-rose-500/10 flex items-center space-x-2"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>{t('logout')}</span>
-                </button>
-              )}
+                {!user ? (
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="bytune-btn-solid h-10 text-xs justify-center flex items-center space-x-1.5"
+                  >
+                    <User className="w-3.5 h-3.5" />
+                    <span>Citizen Sign In</span>
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="h-10 px-3 rounded-xl border border-white/10 bg-white/5 text-xs text-white justify-center flex items-center"
+                  >
+                    <span>Register</span>
+                  </Link>
+                </div>
+                ) : (
+                <div className="space-y-1 pt-1">
+                  <Link
+                    to="/citizen/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full h-10 px-4 rounded-xl text-sm text-white bg-[#8f8bff]/15 flex items-center space-x-2 font-semibold"
+                  >
+                    <LayoutDashboard className="w-4 h-4 text-[#8f8bff]" />
+                    <span>Citizen Dashboard</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setMobileMenuOpen(false);
+                      handleNav('home', '/');
+                    }}
+                    className="w-full h-10 px-4 rounded-xl text-sm text-rose-400 bg-rose-500/10 flex items-center space-x-2 cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>{t('logout')}</span>
+                  </button>
+                </div>
+                )}
+              </div>
             </div>
-          </div>
         )}
-      </div>
+          </div>
     </header>
   );
 };

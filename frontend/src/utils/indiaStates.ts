@@ -36,5 +36,6 @@ export const ALL_INDIAN_STATES: StateInfo[] = [
   { name: 'Tripura', code: 'TR', type: 'State', capital: 'Agartala', officialPortal: 'https://tripura.gov.in', schemeCount: 8 },
   { name: 'Uttar Pradesh', code: 'UP', type: 'State', capital: 'Lucknow', officialPortal: 'https://up.gov.in', schemeCount: 24 },
   { name: 'Uttarakhand', code: 'UK', type: 'State', capital: 'Dehradun', officialPortal: 'https://uk.gov.in', schemeCount: 11 },
-  { name: 'West Bengal', code: 'WB', type: 'State', capital: 'Kolkata', officialPortal: 'https://wb.gov.in', schemeCount: 19 }
+  { name: 'West Bengal', code: 'WB', type: 'State', capital: 'Kolkata', officialPortal: 'https://wb.gov.in', schemeCount: 19 },
+  { name: 'Delhi', code: 'DL', type: 'State', capital: 'New Delhi', officialPortal: 'https://delhi.gov.in', schemeCount: 15 }
 ];

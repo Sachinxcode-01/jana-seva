@@ -238,7 +238,7 @@ export const SchemesPage: React.FC<SchemesPageProps> = ({
             >
               <option value="All">Central & State Combined</option>
               <option value="Central">Central Government</option>
-              <option value="State">Karnataka State Government</option>
+              <option value="State">State Governments (All States)</option>
             </select>
           </div>
 

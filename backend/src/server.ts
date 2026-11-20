@@ -74,13 +74,13 @@ app.get('/api/health', (_req: Request, res: Response) => {
   });
 });
 
-// Mount Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/schemes', schemeRoutes);
-app.use('/api/eligibility', eligibilityRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/assistant', assistantRoutes);
+// Mount Routes (supporting both legacy /api and standardized /api/v1 endpoints)
+app.use(['/api/auth', '/api/v1/auth'], authRoutes);
+app.use(['/api/schemes', '/api/v1/schemes'], schemeRoutes);
+app.use(['/api/eligibility', '/api/v1/eligibility'], eligibilityRoutes);
+app.use(['/api/user', '/api/users', '/api/v1/users'], userRoutes);
+app.use(['/api/admin', '/api/v1/admin'], adminRoutes);
+app.use(['/api/assistant', '/api/v1/assistant'], assistantRoutes);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {
@@ -122,3 +122,6 @@ process.on('SIGINT', () => {
     process.exit(0);
   });
 });
+
+export default app;
+export { app, server };
