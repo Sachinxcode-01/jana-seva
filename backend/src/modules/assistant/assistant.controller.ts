@@ -166,10 +166,16 @@ router.post('/conversations/:id/messages/stream', optionalAuthenticate, async (r
     // Send state event: retrieving
     res.write(`data: ${JSON.stringify({ event: 'state', state: 'retrieving' })}\n\n`);
 
-    const result = await assistantService.processQuery(
+    const { responseLength } = req.body;
+
+    const result = await assistantService.streamQuery(
       message.trim(),
       language || conversation.language,
-      historyTurns
+      historyTurns,
+      (token: string) => {
+        res.write(`data: ${JSON.stringify({ event: 'token', token })}\n\n`);
+      },
+      responseLength
     );
 
     // Send metadata and schemes event
@@ -219,12 +225,12 @@ router.post('/conversations/:id/messages/stream', optionalAuthenticate, async (r
 // 7. Backward-Compatible /chat endpoint (PRESERVES EXISTING WORKING FUNCTIONALITY)
 router.post('/chat', async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { message, language, history = [] } = req.body;
+    const { message, language, history = [], responseLength } = req.body;
     if (!message || typeof message !== 'string') {
       return res.status(400).json({ success: false, message: 'Message is required.' });
     }
 
-    const result = await assistantService.processQuery(message.trim(), language, history);
+    const result = await assistantService.processQuery(message.trim(), language, history, responseLength);
 
     return res.json({
       success: true,

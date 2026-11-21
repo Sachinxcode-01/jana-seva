@@ -409,88 +409,110 @@ class UnifiedApiService {
     }
   }
 
-  async getVoiceStudioStatus(): Promise<{ success: boolean; online: boolean; serviceUrl?: string; engine?: string; voices?: string[] }> {
-    try {
-      const res = await apiClient.get('/assistant/voice/status');
-      return res.data;
-    } catch {
-      return { success: false, online: false };
+  async getVoiceStudioStatus(): Promise < { success: boolean; online: boolean; serviceUrl?: string; engine?: string; voices?: string[]; models?: string[]; latencyMs?: number } > {
+      try {
+        const res = await apiClient.get('/voice/status');
+        return res.data;
+      } catch {
+        try {
+          const fallbackRes = await apiClient.get('/assistant/voice/status');
+          return fallbackRes.data;
+        } catch {
+          return { success: false, online: false };
+        }
+      }
     }
-  }
 
-  async synthesizeSpeechVoiceStudio(text: string, language: 'en' | 'kn' | 'hi' = 'en', voice = 'nova'): Promise<Blob | null> {
-    try {
-      const res = await apiClient.post('/assistant/voice/tts', { text, language, voice }, { responseType: 'blob' });
-      return res.data;
-    } catch (e) {
-      console.warn('VoiceStudio speech synthesis error:', e);
-      return null;
-    }
-  }
+      async synthesizeSpeechVoiceStudio(text: string, language: 'en' | 'kn' | 'hi' = 'en', voice = 'kavya-indic'): Promise<Blob | null> {
+        try {
+          const res = await apiClient.post('/voice/tts', { text, language, voice }, { responseType: 'blob' });
+          return res.data;
+        } catch (e) {
+          try {
+            const fallbackRes = await apiClient.post('/assistant/voice/tts', { text, language, voice }, { responseType: 'blob' });
+            return fallbackRes.data;
+          } catch {
+            console.warn('VoiceStudio speech synthesis error:', e);
+            return null;
+          }
+        }
+      }
 
   async transcribeSpeechVoiceStudio(audioBlob: Blob, language?: 'en' | 'kn' | 'hi'): Promise<string | null> {
-    try {
-      const arrayBuffer = await audioBlob.arrayBuffer();
-      let binary = '';
-      const bytes = new Uint8Array(arrayBuffer);
-      const len = bytes.byteLength;
-      for (let i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const base64 = window.btoa(binary);
+        try {
+          const arrayBuffer = await audioBlob.arrayBuffer();
+          let binary = '';
+          const bytes = new Uint8Array(arrayBuffer);
+          const len = bytes.byteLength;
+          for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          const base64 = window.btoa(binary);
 
-      const res = await apiClient.post('/assistant/voice/stt', { audioBase64: base64, language });
-      return res.data?.text || null;
-    } catch (e) {
-      console.warn('VoiceStudio speech transcription error:', e);
-      return null;
-    }
-  }
+          const res = await apiClient.post('/voice/stt', { audioBase64: base64, language, mimeType: audioBlob.type || 'audio/webm' });
+          return res.data?.text || null;
+        } catch (e) {
+          try {
+            const arrayBuffer = await audioBlob.arrayBuffer();
+            let binary = '';
+            const bytes = new Uint8Array(arrayBuffer);
+            for (let i = 0; i < bytes.byteLength; i++) {
+              binary += String.fromCharCode(bytes[i]);
+            }
+            const base64 = window.btoa(binary);
+            const fallbackRes = await apiClient.post('/assistant/voice/stt', { audioBase64: base64, language });
+            return fallbackRes.data?.text || null;
+          } catch {
+            console.warn('VoiceStudio speech transcription error:', e);
+            return null;
+          }
+        }
+      }
 
   // 11. Admin Schemes & Metrics
   createScheme(schemeData: any) {
-    return adminService.createScheme(schemeData);
-  }
+        return adminService.createScheme(schemeData);
+      }
 
   updateScheme(id: string, updates: Partial<Scheme>) {
-    return adminService.updateScheme(id, updates);
-  }
+        return adminService.updateScheme(id, updates);
+      }
 
   publishScheme(id: string, isPublished?: boolean) {
-    return adminService.publishScheme(id, isPublished);
-  }
+        return adminService.publishScheme(id, isPublished);
+      }
 
   archiveScheme(id: string, isArchived?: boolean) {
-    return adminService.archiveScheme(id, isArchived);
-  }
+        return adminService.archiveScheme(id, isArchived);
+      }
 
   deleteScheme(id: string) {
-    return adminService.deleteScheme(id);
-  }
+        return adminService.deleteScheme(id);
+      }
 
   getAdminUsers() {
-    return adminService.getUsers();
-  }
+        return adminService.getUsers();
+      }
 
   getUserDetails(id: string) {
-    return adminService.getUserDetails(id);
-  }
+        return adminService.getUserDetails(id);
+      }
 
   updateUserStatus(id: string, status: 'active' | 'suspended') {
-    return adminService.updateUserStatus(id, status);
-  }
+        return adminService.updateUserStatus(id, status);
+      }
 
   getAdminMetrics() {
-    return adminService.getMetrics();
-  }
+        return adminService.getMetrics();
+      }
 
   bulkImportSchemes(schemes: Partial<Scheme>[]) {
-    return adminService.bulkImportSchemes(schemes);
-  }
+        return adminService.bulkImportSchemes(schemes);
+      }
 
   exportSchemes(format: 'json' | 'csv' = 'json') {
-    return adminService.exportSchemes(format);
-  }
-}
+        return adminService.exportSchemes(format);
+      }
+    }
 
-export const api = new UnifiedApiService();
+    export const api = new UnifiedApiService();

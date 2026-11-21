@@ -4,6 +4,7 @@ import { SpeechTranscriptionResult } from './voice.types.js';
 export class SpeechRecognitionService {
   /**
    * Phonetic correction dictionary for Indian civic, scheme, and welfare terminology
+   * Normalizes common STT acoustic mistranscriptions into verified canonical forms
    */
   public normalizeSpeechQuery(query: string): string {
     let cleaned = query.trim();
@@ -60,6 +61,14 @@ export class SpeechRecognitionService {
     languageHint = 'en',
     mimeType = 'audio/webm'
   ): Promise<SpeechTranscriptionResult> {
+    if (!audioBuffer || audioBuffer.length === 0) {
+      return {
+        text: '',
+        languageDetected: languageHint,
+        confidence: 0
+      };
+    }
+
     const rawResult = await voiceStudioClient.transcribeSpeech(audioBuffer, languageHint, mimeType);
     if (!rawResult || !rawResult.text) {
       return {
@@ -73,7 +82,7 @@ export class SpeechRecognitionService {
     return {
       text: normalized,
       languageDetected: rawResult.languageDetected || languageHint,
-      confidence: 0.95
+      confidence: rawResult.confidence || 0.95
     };
   }
 }

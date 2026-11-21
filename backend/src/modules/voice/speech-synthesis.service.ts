@@ -39,17 +39,17 @@ export const OFFICIAL_INDIAN_FEMALE_VOICES: VoiceProfile[] = [
 
 export class SpeechSynthesisService {
   /**
-   * Formats prompt instructions for VoiceStudio's OmniVoice engine to ensure
-   * high quality Indian female delivery with proper cadence and respectful tone
+   * Generates instruction prompts for VoiceStudio's OmniVoice engine to ensure
+   * high quality Indian female delivery with proper cadence, respectful tone, and natural pauses
    */
   public getVoiceInstructions(language: string, voiceId = 'kavya-indic'): string {
-    const base = 'Indian female voice, warm, polite, empathetic, professional citizen welfare assistant, moderate pace, natural pauses, clear articulation of numbers and scheme names';
+    const base = 'Indian female voice, warm, friendly, respectful, empathetic, clear pronunciation of government welfare schemes and rupee amounts, moderate pace, natural pauses';
 
     switch (language) {
       case 'kn':
-        return `${base}, spoken in natural, respectful Kannada (ಕನ್ನಡ) with authentic regional pronunciation for Karnataka government schemes.`;
+        return `${base}, spoken in natural, respectful Kannada (ಕನ್ನಡ) with authentic Karnataka regional pronunciation for Seva Sindhu, Grama One, and State welfare schemes.`;
       case 'hi':
-        return `${base}, spoken in clear, respectful conversational Hindi (हिंदी) with polite honorifics.`;
+        return `${base}, spoken in clear, respectful conversational Hindi (हिंदी) with polite honorifics (जी, आपका) and clear articulation.`;
       case 'te':
         return `${base}, spoken in natural, polite Telugu (తెలుగు) with clear diction.`;
       case 'ta':
@@ -64,23 +64,24 @@ export class SpeechSynthesisService {
         return `${base}, spoken in friendly, clear Gujarati (ગુજરાતી).`;
       case 'en':
       default:
-        return `${base}, spoken in natural, fluent Indian English with clear pronunciation of Indian terms and currency.`;
+        return `${base}, spoken in natural, fluent Indian English with clear pronunciation of Indian civic terms and currency (Rupees).`;
     }
   }
 
   /**
-   * Splits a long assistant response into coherent sentence chunks for real-time streaming TTS
+   * Splits text into coherent sentence chunks for real-time streaming TTS
    */
   public splitIntoSentences(text: string): string[] {
     if (!text || text.trim().length === 0) return [];
 
-    // Clean markdown symbols first
+    // Strip markdown formatting symbols and clean URLs
     const clean = text
       .replace(/[*#_`~]/g, '')
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // [text](url) -> text
+      .replace(/https?:\/\/\S+/g, '') // remove raw URLs for speech
       .trim();
 
-    // Split on sentence boundaries including Indic danda (।)
+    // Split on sentence boundaries including Indic danda (।) and double newlines
     const sentenceRegex = /[^.!?।\n]+[.!?।\n]+/g;
     const matches = clean.match(sentenceRegex);
 
@@ -96,27 +97,27 @@ export class SpeechSynthesisService {
       if (!trimmed) continue;
 
       buffer += (buffer ? ' ' : '') + trimmed;
-      // Synthesize in chunks of at least 25 characters to sound natural
-      if (buffer.length >= 25 || trimmed.endsWith('?') || trimmed.endsWith('!')) {
-        sentences.push(buffer);
-        buffer = '';
+        // Synthesize in natural chunks of at least 30 characters
+        if (buffer.length >= 30 || trimmed.endsWith('?') || trimmed.endsWith('!')) {
+          sentences.push(buffer);
+          buffer = '';
+        }
       }
-    }
 
-    if (buffer.trim()) {
-      sentences.push(buffer.trim());
-    }
+      if (buffer.trim()) {
+        sentences.push(buffer.trim());
+      }
 
-    return sentences.filter(s => s.length > 0);
-  }
+      return sentences.filter(s => s.length > 0);
+    }
 
   /**
    * Synthesize text using VoiceStudio with fallback audio generation
    */
   public async synthesize(
-    text: string,
-    options: SpeechSynthesisOptions = {}
-  ): Promise<SpeechSynthesisResult | null> {
+      text: string,
+      options: SpeechSynthesisOptions = {}
+    ): Promise<SpeechSynthesisResult | null> {
     const voiceId = options.voice || 'kavya-indic';
     const lang = options.language || 'en';
     const instructions = options.instructions || this.getVoiceInstructions(lang, voiceId);
@@ -128,8 +129,55 @@ export class SpeechSynthesisService {
     });
   }
 
-  public getAvailableVoiceProfiles(): VoiceProfile[] {
-    return OFFICIAL_INDIAN_FEMALE_VOICES;
+  /**
+   * Streams audio chunks directly via VoiceStudio
+   */
+  public async synthesizeStream(
+      text: string,
+      options: SpeechSynthesisOptions = {},
+      onChunk: (chunk: Buffer) => void
+    ): Promise<boolean> {
+    const voiceId = options.voice || 'kavya-indic';
+    const lang = options.language || 'en';
+    const instructions = options.instructions || this.getVoiceInstructions(lang, voiceId);
+
+    return voiceStudioClient.synthesizeSpeechStream(text, {
+      ...options,
+      voice: voiceId,
+      instructions
+    }, onChunk);
+  }
+
+  /**
+   * Discovers and returns available voice profiles, merging verified Indian female
+   * profiles with dynamic voices reported by the active VoiceStudio engine
+   */
+  public async getAvailableVoiceProfiles(): Promise<VoiceProfile[]> {
+    const dynamicVoices = await voiceStudioClient.listVoices().catch(() => []);
+    if (dynamicVoices.length === 0) {
+      return OFFICIAL_INDIAN_FEMALE_VOICES;
+    }
+
+    const profiles: VoiceProfile[] = [...OFFICIAL_INDIAN_FEMALE_VOICES];
+    const existingIds = new Set(profiles.map(p => p.id.toLowerCase()));
+
+    for (const dv of dynamicVoices) {
+      const id = dv.voice_id || dv.id || dv.name;
+      if (!id || existingIds.has(id.toLowerCase())) continue;
+
+      profiles.push({
+        id,
+        name: dv.name || id,
+        gender: dv.gender || 'female',
+        accent: dv.accent || dv.description || 'VoiceStudio Engine Voice',
+        languageSupport: dv.languages || dv.language ? [dv.language] : ['en', 'kn', 'hi'],
+        description: dv.description || `VoiceStudio discovered voice (${id})`,
+        isDynamic: true
+      });
+      existingIds.add(id.toLowerCase());
+    }
+
+    return profiles;
   }
 }
 

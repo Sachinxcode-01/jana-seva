@@ -31,40 +31,48 @@ export class VoiceStreamGateway {
       this.sessions.set(ws, session);
 
       // Send initial ready event
-      this.sendJson(ws, {
-        type: 'ready',
-        message: 'JANASEVA Voice Assistant WebSocket Gateway Connected',
-        availableVoices: voiceService.getVoiceProfiles().map(v => v.id)
+      voiceService.getVoiceProfiles().then((profiles) => {
+          this.sendJson(ws, {
+            type: 'ready',
+            message: 'JANASEVA Voice Assistant WebSocket Gateway Connected',
+            availableVoices: profiles.map(v => v.id)
+          });
+        }).catch(() => {
+          this.sendJson(ws, {
+            type: 'ready',
+            message: 'JANASEVA Voice Assistant WebSocket Gateway Connected',
+            availableVoices: ['kavya-indic', 'priya-in', 'neerja-in', 'nova-in']
+          });
+        });
+
+        ws.on('message', async (data: Buffer | string) => {
+          try {
+            const payload = JSON.parse(data.toString());
+            await this.handleClientMessage(session, payload);
+          } catch (err: any) {
+            this.sendJson(ws, { type: 'error', message: 'Invalid WebSocket payload: ' + err.message });
+          }
+        });
+
+        ws.on('close', () => {
+          session.isCancelled = true;
+          this.sessions.delete(ws);
+        });
+
+        ws.on('error', (err) => {
+          console.warn('[VoiceStreamGateway] WebSocket error:', err.message);
+          session.isCancelled = true;
+          this.sessions.delete(ws);
+        });
       });
 
-      ws.on('message', async (data: Buffer | string) => {
-        try {
-          const payload = JSON.parse(data.toString());
-          await this.handleClientMessage(session, payload);
-        } catch (err: any) {
-          this.sendJson(ws, { type: 'error', message: 'Invalid WebSocket payload: ' + err.message });
-        }
-      });
+      console.log('✔ Real-Time Voice Assistant WebSocket Gateway mounted on /ws/assistant');
+    }
 
-      ws.on('close', () => {
-        session.isCancelled = true;
-        this.sessions.delete(ws);
-      });
+  private async handleClientMessage(session: StreamSession, payload: any): Promise < void> {
+      const { ws } = session;
 
-      ws.on('error', (err) => {
-        console.warn('[VoiceStreamGateway] WebSocket error:', err.message);
-        session.isCancelled = true;
-        this.sessions.delete(ws);
-      });
-    });
-
-    console.log('✔ Real-Time Voice Assistant WebSocket Gateway mounted on /ws/assistant');
-  }
-
-  private async handleClientMessage(session: StreamSession, payload: any): Promise<void> {
-    const { ws } = session;
-
-    switch (payload.type) {
+      switch(payload.type) {
       case 'init': {
         session.conversationId = payload.conversationId;
         if (payload.language) session.language = payload.language;
@@ -197,7 +205,7 @@ export class VoiceStreamGateway {
       }
 
       default:
-        this.sendJson(ws, { type: 'warning', message: `Unknown message type: ${payload.type}` });
+    this.sendJson(ws, { type: 'warning', message: `Unknown message type: ${payload.type} ` });
     }
   }
 

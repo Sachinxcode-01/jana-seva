@@ -180,7 +180,7 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
             const completeSentence = transcriptBufferRef.current.trim();
             if (completeSentence) {
               if (recognitionRef.current) {
-                try { recognitionRef.current.stop(); } catch {}
+                try { recognitionRef.current.stop(); } catch { }
               }
               setIsListening(false);
               transcriptBufferRef.current = '';
@@ -232,20 +232,32 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
     return () => {
       isMounted = false;
       clearInterval(timer);
+      stopAllAudio();
     };
   }, [isOpen]);
 
-  // Stop any active audio (VoiceStudio player or browser speechSynthesis)
+  // Stop any active audio (VoiceStudio player, media recorder, or browser speechSynthesis)
   const stopAllAudio = () => {
     if (audioPlayerRef.current) {
       audioPlayerRef.current.pause();
       audioPlayerRef.current.currentTime = 0;
+      audioPlayerRef.current = null;
     }
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+      try {
+        window.speechSynthesis.cancel();
+      } catch { }
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      try {
+        mediaRecorderRef.current.stop();
+      } catch { }
+      mediaRecorderRef.current = null;
     }
     setSpeakingMessageId(null);
     setIsSynthesizing(false);
+    setIsListening(false);
+    setIsRecordingAudio(false);
   };
 
   // Update speech recognition language when platform language changes
@@ -261,7 +273,7 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
     if (recognitionRef.current) {
       if (isListening) {
         if (speechSilenceTimerRef.current) clearTimeout(speechSilenceTimerRef.current);
-        try { recognitionRef.current.stop(); } catch {}
+        try { recognitionRef.current.stop(); } catch { }
         setIsListening(false);
         const sentenceToSend = (transcriptBufferRef.current || inputRef.current).trim();
         transcriptBufferRef.current = '';
@@ -275,8 +287,12 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
           recognitionRef.current.lang = langCode;
           recognitionRef.current.start();
           setIsListening(true);
-        } catch {
+        } catch (err: any) {
+          console.warn('SpeechRecognition start failed:', err);
           setIsListening(false);
+          if (err.name === 'NotAllowedError') {
+            alert("Microphone permission was denied. Please allow microphone access in your browser settings to speak.");
+          }
         }
       }
       return;
@@ -293,8 +309,15 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
         alert("Voice input is not supported in this browser. Please use Chrome, Edge, or Safari.");
         return;
       }
+      let stream: MediaStream | null = null;
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
         const mediaRecorder = new MediaRecorder(stream);
         mediaRecorderRef.current = mediaRecorder;
         audioChunksRef.current = [];
@@ -304,7 +327,9 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
         };
 
         mediaRecorder.onstop = async () => {
-          stream.getTracks().forEach(track => track.stop());
+          if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+          }
           const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
           if (audioBlob.size > 0) {
             setLoading(true);
@@ -320,9 +345,17 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
 
         mediaRecorder.start();
         setIsRecordingAudio(true);
-      } catch (err) {
+      } catch (err: any) {
         console.warn('Microphone error:', err);
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+        }
         setIsRecordingAudio(false);
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          alert("Microphone permission was denied. Please click the lock icon in your browser address bar and allow Microphone access.");
+        } else if (err.name === 'NotFoundError') {
+          alert("No microphone device was detected on your system.");
+        }
       }
     }
   };
@@ -386,7 +419,7 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
       setSpeakingMessageId(messageId);
       setIsSynthesizing(true);
       try {
-        const audioBlob = await api.synthesizeSpeechVoiceStudio(text, speakLang, 'nova');
+        const audioBlob = await api.synthesizeSpeechVoiceStudio(text, speakLang, 'kavya-indic');
         if (audioBlob) {
           const audioUrl = URL.createObjectURL(audioBlob);
           const audio = new Audio(audioUrl);
@@ -660,11 +693,10 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
               <button
                 onClick={() => setAutoSpeak(prev => !prev)}
                 title={autoSpeak ? "Voice Output: ON" : "Voice Output: OFF"}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors border cursor-pointer ${
-                  autoSpeak
+                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors border cursor-pointer ${autoSpeak
                     ? 'bg-[#22C55E]/15 text-[#22C55E] border-[#22C55E]/40'
                     : 'bg-[#161D2E] hover:bg-[#243045] text-[#94A3B8] hover:text-[#F8FAFC] border-[#243045]'
-                }`}
+                  }`}
                 aria-label="Toggle Auto Voice Output"
               >
                 {autoSpeak ? <Volume2 className="w-4 h-4 text-[#22C55E]" /> : <VolumeX className="w-4 h-4 text-[#94A3B8]" />}
@@ -725,11 +757,10 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
                   </div>
                 )}
 
-                <div className={`max-w-[85%] rounded-[16px] px-4 py-3 leading-relaxed relative ${
-                  m.sender === 'user'
+                <div className={`max-w-[85%] rounded-[16px] px-4 py-3 leading-relaxed relative ${m.sender === 'user'
                     ? 'bg-[#22C55E] text-[#0B0F17] font-medium rounded-tr-sm shadow-sm'
                     : 'bg-[#161D2E] text-[#F8FAFC] border border-[#243045] rounded-tl-sm shadow-sm'
-                }`}>
+                  }`}>
                   {m.sender === 'user' ? (
                     <p className="text-xs text-[#0B0F17] whitespace-pre-wrap font-medium">{m.text}</p>
                   ) : (
@@ -786,9 +817,8 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
                     </div>
                   )}
 
-                  <div className={`flex items-center justify-between mt-2 pt-1 border-t text-[9px] ${
-                    m.sender === 'user' ? 'border-[#0B0F17]/20 text-[#0B0F17]/70' : 'border-[#243045] text-[#94A3B8]'
-                  }`}>
+                  <div className={`flex items-center justify-between mt-2 pt-1 border-t text-[9px] ${m.sender === 'user' ? 'border-[#0B0F17]/20 text-[#0B0F17]/70' : 'border-[#243045] text-[#94A3B8]'
+                    }`}>
                     <div className="flex items-center space-x-1.5">
                       {m.sender === 'assistant' && (
                         <button
@@ -798,11 +828,10 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
                               ? "Stop voice readout"
                               : "Listen to audio readout"
                           }
-                          className={`flex items-center space-x-1 px-2 py-0.5 rounded-full transition-colors cursor-pointer ${
-                            speakingMessageId === m.id
+                          className={`flex items-center space-x-1 px-2 py-0.5 rounded-full transition-colors cursor-pointer ${speakingMessageId === m.id
                               ? 'bg-[#22C55E] text-[#0B0F17] font-semibold animate-pulse'
                               : 'bg-[#121826] text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#243045] border border-[#243045]'
-                          }`}
+                            }`}
                         >
                           {speakingMessageId === m.id ? (
                             isSynthesizing ? (
@@ -907,11 +936,10 @@ export const JanasevaAssistant: React.FC<JanasevaAssistantProps> = ({ onViewSche
                   ? "Stop listening"
                   : `Speak question in ${language.toUpperCase()}`
               }
-              className={`p-2.5 rounded-xl transition-all duration-300 cursor-pointer border ${
-                isListening || isRecordingAudio
+              className={`p-2.5 rounded-xl transition-all duration-300 cursor-pointer border ${isListening || isRecordingAudio
                   ? 'bg-rose-500 text-white border-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.6)] animate-pulse'
                   : 'bg-[#161D2E] hover:bg-[#243045] text-[#22C55E] border-[#243045]'
-              }`}
+                }`}
             >
               {isListening || isRecordingAudio ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
             </button>

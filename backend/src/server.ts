@@ -11,6 +11,7 @@ import userRoutes from './routes/userRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import assistantRoutes from './routes/assistantRoutes.js';
 import voiceRoutes from './modules/voice/voice.controller.js';
+import aiRoutes from './modules/ai/ai.controller.js';
 import { voiceStreamGateway } from './modules/voice/voice-stream.gateway.js';
 
 const app = express();
@@ -84,6 +85,7 @@ app.use(['/api/user', '/api/users', '/api/v1/user', '/api/v1/users'], userRoutes
 app.use(['/api/admin', '/api/v1/admin'], adminRoutes);
 app.use(['/api/assistant', '/api/v1/assistant'], assistantRoutes);
 app.use(['/api/voice', '/api/v1/voice'], voiceRoutes);
+app.use(['/api/ai', '/api/v1/ai'], aiRoutes);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {
