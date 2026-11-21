@@ -1,6 +1,6 @@
 import { apiClient } from './apiClient';
 import { Scheme } from '../types';
-
+`cd`
 export const adminService = {
   async getMetrics(): Promise<any> {
     const res = await apiClient.get('/admin/metrics');
@@ -39,6 +39,18 @@ export const adminService = {
 
   async archiveScheme(id: string, isArchived?: boolean): Promise<{ success: boolean; message: string; scheme?: Scheme }> {
     const res = await apiClient.patch(`/admin/schemes/${id}/archive`, { isArchived });
+    return res.data;
+  },
+
+  async bulkImportSchemes(schemes: Partial<Scheme>[]): Promise<{ success: boolean; message: string; created?: number; updated?: number; total?: number }> {
+    const res = await apiClient.post('/admin/schemes/bulk-import', { schemes });
+    return res.data;
+  },
+
+  async exportSchemes(format: 'json' | 'csv' = 'json'): Promise<any> {
+    const res = await apiClient.get(`/admin/schemes/export?format=${format}`, {
+      responseType: format === 'csv' ? 'blob' : 'json'
+    });
     return res.data;
   },
 

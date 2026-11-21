@@ -838,6 +838,27 @@ class Database {
     return scheme;
   }
 
+  bulkUpsertSchemes(newSchemes: Scheme[]): { created: number; updated: number; total: number } {
+    let created = 0;
+    let updated = 0;
+    for (const s of newSchemes) {
+      const idx = this.data.schemes.findIndex(existing => existing.id === s.id || (s.slug && existing.slug === s.slug));
+      if (idx !== -1) {
+        this.data.schemes[idx] = {
+          ...this.data.schemes[idx],
+          ...s,
+          lastUpdated: new Date().toISOString().split('T')[0]
+        };
+        updated++;
+      } else {
+        this.data.schemes.push(s);
+        created++;
+      }
+    }
+    this.saveDatabase(this.data);
+    return { created, updated, total: this.data.schemes.length };
+  }
+
   updateScheme(id: string, updates: Partial<Scheme>): Scheme | null {
     const idx = this.data.schemes.findIndex(s => s.id === id);
     if (idx === -1) return null;

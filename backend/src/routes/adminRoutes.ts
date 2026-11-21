@@ -133,6 +133,169 @@ router.post('/schemes', (req: AuthenticatedRequest, res: Response) => {
   }
 });
 
+// POST /api/admin/schemes/bulk-import
+router.post('/schemes/bulk-import', (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const admin = req.user!;
+    const rawList = Array.isArray(req.body) ? req.body : req.body.schemes;
+
+    if (!Array.isArray(rawList) || rawList.length === 0) {
+      return res.status(400).json({ success: false, message: 'Invalid payload. An array of schemes is required.' });
+    }
+
+    const validatedSchemes: Scheme[] = [];
+    const timestamp = Date.now();
+
+    for (let i = 0; i < rawList.length; i++) {
+      const item = rawList[i];
+      if (!item.name) continue;
+
+      const desc = item.description || item.detailedDescription || item.briefDescription || 'Government welfare initiative';
+      const slug = item.slug || item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const id = item.id || `scheme-${timestamp}-${i}`;
+
+      const scheme: Scheme = {
+        id,
+        slug,
+        name: item.name,
+        name_kn: item.name_kn || item.name,
+        name_hi: item.name_hi || item.name,
+        department: item.department || 'Government Department',
+        classification: item.classification === 'State' ? 'State' : 'Central',
+        state: item.state || (item.classification === 'State' ? 'Karnataka' : 'All India'),
+        category: item.category || 'Financial Assistance',
+        beneficiaryCategory: item.beneficiaryCategory || 'General',
+        description: desc,
+        description_kn: item.description_kn || desc,
+        description_hi: item.description_hi || desc,
+        benefits: Array.isArray(item.benefits) ? item.benefits : [item.benefits || 'Welfare benefit'],
+        eligibilityCriteria: item.eligibilityCriteria || {
+          minAge: Number(item.minAge) || undefined,
+          maxAge: Number(item.maxAge) || undefined,
+          maxAnnualIncome: Number(item.incomeLimit || item.maxAnnualIncome) || undefined,
+          rules: ['Resident Indian Citizen']
+        },
+        requiredDocuments: Array.isArray(item.requiredDocuments)
+          ? item.requiredDocuments
+          : (typeof item.requiredDocuments === 'string' ? item.requiredDocuments.split(';').map((d: string) => d.trim()).filter(Boolean) : ['Aadhaar Card']),
+        applicationProcedure: item.applicationProcedure || {
+          steps: ['Visit official website', 'Submit application'],
+          onlineUrl: item.officialWebsite || item.applicationUrl || 'https://india.gov.in',
+          offlineModeAvailable: true
+        },
+        officialWebsite: item.officialWebsite || item.applicationUrl || 'https://india.gov.in',
+        officialSourceUrl: item.officialSourceUrl || item.officialWebsite || 'https://india.gov.in',
+        deadline: item.deadline || 'Ongoing / No fixed deadline',
+        lastUpdated: new Date().toISOString().split('T')[0],
+        isVerified: item.isVerified !== undefined ? Boolean(item.isVerified) : true,
+        isPublished: item.isPublished !== undefined ? Boolean(item.isPublished) : true,
+        isArchived: Boolean(item.isArchived),
+        verifiedBy: admin.email,
+        viewCount: Number(item.viewCount) || 0,
+        sourceVerificationStatus: 'Official Government Verified'
+      };
+
+      validatedSchemes.push(scheme);
+    }
+
+    if (validatedSchemes.length === 0) {
+      return res.status(400).json({ success: false, message: 'No valid scheme records found in payload.' });
+    }
+
+    const result = db.bulkUpsertSchemes(validatedSchemes);
+
+    db.addAdminLog({
+      id: `log-${Date.now()}`,
+      adminEmail: admin.email,
+      action: 'BULK_IMPORT_SCHEMES',
+      target: `${result.created} created, ${result.updated} updated`,
+      details: `Bulk imported ${validatedSchemes.length} schemes into directory`,
+      timestamp: new Date().toISOString()
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `Bulk import successful: ${result.created} new schemes created, ${result.updated} existing schemes updated.`,
+      created: result.created,
+      updated: result.updated,
+      total: result.total
+    });
+  } catch (err) {
+    console.error('Error during bulk import:', err);
+    return res.status(500).json({ success: false, message: 'Server error processing bulk import.' });
+  }
+});
+
+// GET /api/admin/schemes/export
+router.get('/schemes/export', (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const format = (req.query.format as string) || 'json';
+    const schemes = db.getSchemes();
+
+    if (format === 'csv') {
+      const escapeCsv = (val: any) => {
+        if (val === null || val === undefined) return '""';
+        const str = String(val).replace(/"/g, '""');
+        return `"${str}"`;
+      };
+
+      const headers = [
+        'ID',
+        'Name',
+        'Name (Kannada)',
+        'Name (Hindi)',
+        'Department',
+        'Classification',
+        'State',
+        'Category',
+        'Target Beneficiary',
+        'Description',
+        'Benefits',
+        'Required Documents',
+        'Official Website',
+        'Deadline',
+        'Is Published',
+        'Is Verified'
+      ];
+
+      const rows = schemes.map(s => [
+        escapeCsv(s.id),
+        escapeCsv(s.name),
+        escapeCsv(s.name_kn || ''),
+        escapeCsv(s.name_hi || ''),
+        escapeCsv(s.department),
+        escapeCsv(s.classification),
+        escapeCsv(s.state),
+        escapeCsv(s.category),
+        escapeCsv(s.beneficiaryCategory || ''),
+        escapeCsv(s.description),
+        escapeCsv(Array.isArray(s.benefits) ? s.benefits.join('; ') : s.benefits),
+        escapeCsv(Array.isArray(s.requiredDocuments) ? s.requiredDocuments.join('; ') : s.requiredDocuments),
+        escapeCsv(s.officialWebsite),
+        escapeCsv(s.deadline || ''),
+        escapeCsv(s.isPublished ? 'Yes' : 'No'),
+        escapeCsv(s.isVerified ? 'Yes' : 'No')
+      ].join(','));
+
+      const csvContent = [headers.join(','), ...rows].join('\r\n');
+
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename=janaseva-schemes-${new Date().toISOString().split('T')[0]}.csv`);
+      return res.status(200).send(csvContent);
+    }
+
+    return res.json({
+      success: true,
+      count: schemes.length,
+      exportedAt: new Date().toISOString(),
+      schemes
+    });
+  } catch (err) {
+    console.error('Error exporting schemes:', err);
+    return res.status(500).json({ success: false, message: 'Server error exporting schemes.' });
+  }
+});
+
 // PUT /api/admin/schemes/:id
 router.put('/schemes/:id', (req: AuthenticatedRequest, res: Response) => {
   try {

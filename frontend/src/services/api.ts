@@ -483,6 +483,14 @@ class UnifiedApiService {
   getAdminMetrics() {
     return adminService.getMetrics();
   }
+
+  bulkImportSchemes(schemes: Partial<Scheme>[]) {
+    return adminService.bulkImportSchemes(schemes);
+  }
+
+  exportSchemes(format: 'json' | 'csv' = 'json') {
+    return adminService.exportSchemes(format);
+  }
 }
 
 export const api = new UnifiedApiService();
